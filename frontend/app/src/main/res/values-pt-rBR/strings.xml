@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Softmind</string>
+
+    <!--    Tela Apresentacao -->
+    <string name="chamada">Mapeando o caminho para uma mente mais saudável!</string>
+    <string name="iniciar">Relaxe e aproveite o processo</string>
+
+    <!--    Tela Login -->
+    <string name="texto_acesso">Acesse com o seu e-mail corporativo.</string>
+    <string name="texto_anonimo">De forma anônima suas respostas
+                                vão colaborar para que possamos
+                                mapear e ajudar nossos funcionários
+                                a terem um bom ambiente de trabalho.</string>
+    <string name="placeholder_email">Digite seu E-mail</string>
+    <string name="botao_iniciar">Iniciar</string>
+    <string name="logo_softmind">Logo Softmind</string>     <!-- Descrição da imagem -->
+    <string name="email_invalido">E-mail inválido. Por favor, verifique.</string> <!-- Msg de erro para e-mail inválido -->
+    <string name="icone_email">Ícone e-mail</string>
+
+    <!--Tela Emojis -->
+    <string name="saudacao1">Bem-vindo,</string>
+    <string name="saudacao2">Colega</string>
+    <string name="botao_checagem">Checagem diária</string>
+    <string name="emoji_hoje">Escolha o seu emoji de hoje!</string>
+    <string name="emoji_toque">Toque no emoji para representar</string>
+    <string name="emoji_sentir">Como você se sente hoje?</string>
+    <string name="emoji_acompanhar">Vamos acompanhar seu bem-estar!</string>
+    <string name="emoji_acompanhar1">De acordo com as suas respostas, vamos monitorar seu estado emocional!</string>
+    <string name="emoji_acompanhar2">Vamos as perguntas?</string>
+    <string name="emoji_agradecimento">Obrigado pela verificação</string>
+    <string name="emoji_agradecimento1">Isso nos ajuda a entender como se sente!</string>
+    <string name="emoji_descrição_medico">Logo Softmind</string>     <!-- Descrição da imagem do medico-->
+
+    <!--    Questões -->
+    <string name="psicologia">Psicologia Informativa</string>
+    <string name="pergunta_variavel">Pergunta</string>
+
+    <string name="pergunta_1">Como você avalia sua carga de trabalho?</string>
+    <string name="pergunta_2">Sua carga de trabalho afeta sua qualidade de vida?</string>
+    <string name="pergunta_3">Você trabalha além do seu horário regular?</string>
+    <string name="pergunta_4">Você tem apresentado sintomas como insônia,irritabilidade ou cansaço extremo? </string>
+    <string name="pergunta_5">Você sente que sua saúde mental prejudica sua produtividade no trabalho?</string>
+    <string name="pergunta_6">Como está o seu relacionamento com seu chefe numa escala de 1 a 5? (Sendo 01 - ruim e 05 - Ótimo)</string>
+    <string name="pergunta_7">Como está o seu relacionamento com seus colegas de trabalho numa escala de 1 a 5? (Sendo 01 - ruim e 05 - Ótimo)</string>
+    <string name="pergunta_8">Sinto que sou tratado(a) com respeito pelos meus colegas de trabalho. (Sendo 01 - ruim e 05 - Ótimo)</string>
+    <string name="pergunta_9">Consigo me relacionar de forma saudável e colaborativa com minha equipe. (Sendo 01 - ruim e 05 - Ótimo)</string>
+    <string name="pergunta_10">Tenho liberdade para expressar minhas opiniões sem medo de retaliações. (Sendo 01 - ruim e 05 - Ótimo)</string>
+    <string name="pergunta_11">Me sinto acolhido(a) e parte do time onde trabalho. (Sendo 01 - ruim e 05 - Ótimo)</string>
+    <string name="pergunta_12">Sinto que existe espírito de cooperação entre os colaboradores. (Sendo 01 - ruim e 05 - Ótimo)</string>
+    <string name="pergunta_13">Recebo orientações claras e objetivas sobre minhas atividades e responsabilidades. (Sendo 01 - ruim e 05 - Ótimo)</string>
+    <string name="pergunta_14">Sinto que posso me comunicar abertamente com minha liderança. (Sendo 01 - ruim e 05 - Ótimo)</string>
+    <string name="pergunta_15">As informações importantes circulam de forma eficiente dentro da empresa. (Sendo 01 - ruim e 05 - Ótimo)</string>
+    <string name="pergunta_16">Tenho clareza sobre as metas e os resultados esperados de mim. (Sendo 01 - ruim e 05 - Ótimo)</string>
+    <string name="pergunta_17">Minha liderança demonstra interesse pelo meu bem-estar no trabalho. (Sendo 01 - ruim e 05 - Ótimo)</string>
+    <string name="pergunta_18">Minha liderança está disponível para me ouvir quando necessário. (Sendo 01 - ruim e 05 - Ótimo)</string>
+    <string name="pergunta_19">Me sinto confortável para reportar problemas ou dificuldades ao meu líder. (Sendo 01 - ruim e 05 - Ótimo)</string>
+    <string name="pergunta_20">Minha liderança reconhece minhas entregas e esforços. (Sendo 01 - ruim e 05 - Ótimo)</string>
+    <string name="pergunta_21">Existe confiança e transparência na relação com minha liderança. (Sendo 01 - ruim e 05 - Ótimo)</string>
+    <string name="enviar">Enviar</string>
+
+    <!--    Alternativas -->
+    <string name="triste">Triste</string>
+    <string name="alegre">Alegre</string>
+    <string name="cansado">Cansado</string>
+    <string name="ansioso">Ansioso</string>
+    <string name="medo">Medo</string>
+    <string name="raiva">Raiva</string>
+    <string name="motivado">Motivado</string>
+    <string name="preocupado">Preocupado</string>
+    <string name="estressado">Estressado</string>
+    <string name="Animado">Animado</string>
+    <string name="Feliz">Feliz</string>
+    <string name="muito_leve">Muito Leve</string>
+    <string name="leve">Leve</string>
+    <string name="media">Média</string>
+    <string name="alta">Alta</string>
+    <string name="muito_alta">Muito alta</string>
+    <string name="nao">Não</string>
+    <string name="raramente">Raramente</string>
+    <string name="as_vezes">Às vezes</string>
+    <string name="Frequentemente">Frequentemente</string>
+    <string name="sempre">Sempre</string>
+    <string name="nunca">Nunca</string>
+
+    <!--    Encerramento -->
+    <string name="parabens">Parabéns!</string>
+    <string name="parabens1">Você concluiu a pesquisa diária!</string>
+    <string name="parabens3">Sua consistência é um exemplo 👏\n
+        Sua persistência está acima de </string>
+    <string name="parabens4">%\n
+        da empresa, continue assim!</string>
+    <string name="recomendacao">Recomendação do dia para você!</string>
+    <string name="recomendacao1">Assita filmes e séries com amigos, família e aproveite para passear!</string>
+    <string name="recomendacao2">Seu progresso importa!</string>
+    <string name="descricao_mulher">Mulher de blusa laranja</string>
+    <string name="botao_divirtase">Divirta-se!</string>
+    <string name="descrição_filmes">Imagens de filmes para assistir</string>     <!-- Descrição da imagem -->
+
+    <!--    Tela ADM -->
+    <string name="voltar">Voltar</string>
+    <string name="resumo_semanal">Resumo,</string>
+    <string name="resumo_semanal1">semanal</string>
+    <string name="texto_resumo">Nesta tela temos o resumo semanal da evolução dos sentimentos
+        dos nossos colegas para um melhor controle de atividades.</string>
+    <string name="emocionometro">Emocionômetro</string>
+    <string name="seg">Seg</string>
+    <string name="ter">Ter</string>
+    <string name="qua">Qua</string>
+    <string name="qui">Qui</string>
+    <string name="sex">Sex</string>
+    <string name="sab">Sáb</string>
+    <string name="dom">Dom</string>
+    <string name="dados">Dados</string>
+    <string name="percentual">Percentual de engajamento dos nossos colegas</string>
+    <string name="sentimento_destaque">Sentimento e destaque nesta semana</string>
+    <string name="bem_estar">O bem-estar emocional da </string>
+    <string name="bem_estar1">nossa equipe cresceu " "</string>
+    <string name="bem_estar2">nossa equipe sofreu queda de  </string>
+    <string name="pesquisa">Segundo as pesquisas, a equipe apresentou um quadro </string>
+    <string name="positivo">positivo</string>
+    <string name="negativo">negativo</string>
+    <string name="imprimir">Imprimir relatório</string>
+    <string name="adm_medica">Desenho de mulher em jaleco branco, com expressão sorridente.</string>     <!-- Descrição da imagem -->
+
+</resources>
