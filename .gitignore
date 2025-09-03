@@ -15,3 +15,5 @@ crashlytics-build.properties
 .kotlin/daemon/
 .kotlin/build/
 secrets.properties
+
+.env
