@@ -6,7 +6,6 @@ import br.com.atypical.Softmind.Company.entities.Company;
 import br.com.atypical.Softmind.Company.mapper.CompanyMapper;
 import br.com.atypical.Softmind.Company.repository.CompanyRepository;
 import lombok.RequiredArgsConstructor;
-import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,7 +21,7 @@ public class CompanyService {
 
     public CompanyDto create(CompanyCreateDto dto) {
         Company company = CompanyMapper.toEntity(dto);
-        Company saved = companyRepository.save(company);;
+        Company saved = companyRepository.save(company);
         return CompanyMapper.toDto(saved);
     }
 
@@ -36,7 +35,7 @@ public class CompanyService {
     }
 
     public Optional<CompanyDto> findByName(String name) {
-        return companyRepository.findByCnpj(name).map(CompanyMapper::toDto);
+        return companyRepository.findByName(name).map(CompanyMapper::toDto);
     }
 
     public Optional<CompanyDto> findByCnpj(String cnpj) {

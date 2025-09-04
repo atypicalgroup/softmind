@@ -7,12 +7,11 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;
 
-public interface CompanyRepository extends MongoRepository<Company, ObjectId> {
+public interface CompanyRepository extends MongoRepository<Company, String> {
 
-    Optional<Company> findById(String id);
     Optional<Company> findByName(String name);
     Optional<Company> findByEmail(String email);
     Optional<Company> findByCnpj(String cnpj);
 
-    void deleteById(String id);
+
 }
