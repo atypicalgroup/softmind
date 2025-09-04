@@ -1,4 +1,4 @@
-package br.com.atypical.Softmind.security.model;
+package br.com.atypical.Softmind.security.entities;
 
 import br.com.atypical.Softmind.shared.enums.Role;
 import lombok.AllArgsConstructor;
@@ -29,6 +29,8 @@ public class User implements UserDetails {
     private Role role;
 
     private boolean enabled = true;
+    private boolean mustChangePassword = false;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
