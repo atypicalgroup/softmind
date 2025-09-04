@@ -1,0 +1,12 @@
+package br.com.atypical.Softmind.Employee.repository;
+
+import br.com.atypical.Softmind.Employee.entities.Employee;
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface EmployeeRepository extends MongoRepository<Employee, String> {
+    List<Employee> findByCompanyId(String lastName);
+    Optional<Employee> findByEmail(String email);
+}
