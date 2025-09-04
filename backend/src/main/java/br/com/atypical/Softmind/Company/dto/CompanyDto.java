@@ -1,7 +1,6 @@
 package br.com.atypical.Softmind.Company.dto;
 
-import br.com.atypical.Softmind.shared.CompanyStatus;
-import org.bson.types.ObjectId;
+import br.com.atypical.Softmind.shared.enums.CompanyStatus;
 
 import java.time.LocalDateTime;
 

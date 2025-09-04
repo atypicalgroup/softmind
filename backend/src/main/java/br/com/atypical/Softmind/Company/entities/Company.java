@@ -1,6 +1,6 @@
 package br.com.atypical.Softmind.Company.entities;
 
-import br.com.atypical.Softmind.shared.CompanyStatus;
+import br.com.atypical.Softmind.shared.enums.CompanyStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

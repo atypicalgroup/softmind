@@ -3,7 +3,7 @@ package br.com.atypical.Softmind.Company.mapper;
 import br.com.atypical.Softmind.Company.dto.CompanyCreateDto;
 import br.com.atypical.Softmind.Company.dto.CompanyDto;
 import br.com.atypical.Softmind.Company.entities.Company;
-import br.com.atypical.Softmind.shared.CompanyStatus;
+import br.com.atypical.Softmind.shared.enums.CompanyStatus;
 
 import java.time.LocalDateTime;
 
