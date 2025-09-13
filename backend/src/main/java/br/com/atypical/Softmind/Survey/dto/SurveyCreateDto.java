@@ -1,4 +1,13 @@
 package br.com.atypical.Softmind.Survey.dto;
 
-public record SurveyCreateDto() {
+import br.com.atypical.Softmind.Survey.entities.Question;
+
+import java.util.List;
+
+public record SurveyCreateDto(
+        String companyId,
+        String title,
+        String description,
+        List<QuestionDto> questions
+) {
 }

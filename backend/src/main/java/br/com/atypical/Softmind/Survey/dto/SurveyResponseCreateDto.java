@@ -1,4 +1,9 @@
 package br.com.atypical.Softmind.Survey.dto;
 
-public record SurveyResponseCreateDto() {
-}
+import java.util.List;
+
+public record SurveyResponseCreateDto(
+        String surveyId,
+        String employeeId,
+        List<AnswerDto> answers
+) {}

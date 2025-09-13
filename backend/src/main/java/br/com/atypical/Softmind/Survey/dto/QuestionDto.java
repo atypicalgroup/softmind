@@ -1,4 +1,10 @@
 package br.com.atypical.Softmind.Survey.dto;
 
-public record QuestionDto() {
+import br.com.atypical.Softmind.shared.enums.QuestionType;
+
+public record QuestionDto(
+        String text,
+        QuestionType type,
+        String[] options
+) {
 }
