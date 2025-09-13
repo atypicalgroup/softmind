@@ -1,0 +1,69 @@
+package br.com.atypical.Softmind.Survey.service;
+
+import br.com.atypical.Softmind.Survey.dto.SurveyResponseCreateDto;
+import br.com.atypical.Softmind.Survey.entities.Answer;
+import br.com.atypical.Softmind.Survey.entities.SurveyParticipation;
+import br.com.atypical.Softmind.Survey.entities.SurveyResponse;
+import br.com.atypical.Softmind.Survey.repository.SurveyParticipationRepository;
+import br.com.atypical.Softmind.Survey.repository.SurveyResponseRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+
+@Service
+public class SurveyResponseService {
+
+    private final SurveyResponseRepository responseRepo;
+    private final SurveyParticipationRepository participationRepo;
+    private static final ZoneId ZONE_BR = ZoneId.of("America/Sao_Paulo");
+
+    public SurveyResponseService(SurveyResponseRepository r, SurveyParticipationRepository p) {
+        this.responseRepo = r;
+        this.participationRepo = p;
+    }
+
+    @Transactional
+    public SurveyResponse saveAnonymousDailyResponse(SurveyResponseCreateDto dto) {
+        LocalDate today = LocalDate.now(ZONE_BR);
+
+        // 1) Garante no máx. 1 resposta por dia
+        participationRepo.findByEmployeeIdAndSurveyIdAndParticipationDate(
+                dto.employeeId(), dto.surveyId(), today
+        ).ifPresent(p -> {
+            throw new RuntimeException("Já respondeu esta pesquisa hoje.");
+        });
+
+        // 2) Salva resposta anônima
+        SurveyResponse resp = new SurveyResponse();
+        resp.setSurveyId(dto.surveyId());
+        resp.setAnsweredAt(LocalDateTime.now(ZONE_BR));
+        resp.setAnswers(dto.answers().stream().map(a -> {
+            Answer ans = new Answer();
+            ans.setQuestionText(a.questionText());
+            ans.setResponse(a.response());
+            return ans;
+        }).toList());
+        SurveyResponse saved = responseRepo.save(resp);
+
+        // 3) Registra participação
+        SurveyParticipation part = new SurveyParticipation();
+        part.setEmployeeId(dto.employeeId());
+        part.setSurveyId(dto.surveyId());
+        part.setParticipationDate(today);
+        part.setCreatedAt(LocalDateTime.now(ZONE_BR));
+        part.setUniqueKey(dto.employeeId() + "|" + dto.surveyId() + "|" + today);
+        participationRepo.save(part);
+
+        return saved;
+    }
+
+    public long countEmployeeResponses(String employeeId, String surveyId) {
+        return participationRepo.countByEmployeeIdAndSurveyId(employeeId, surveyId);
+    }
+}
+
+
+
