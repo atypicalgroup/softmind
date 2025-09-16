@@ -10,6 +10,12 @@
                                 in having a good work environment.</string>
     <string name="placeholder_email">Enter your email</string>
     <string name="icone_email">E-mail icon</string>
+    <string name="icone_senha">Password icon</string>
+    <string name="ocultar_senha">Hide password</string>
+    <string name="mostrar_senha">Display password</string>
+    <string name="placeholder_senha">Enter your password</string>
+    <string name="senha_invalida">The password must have at least 6 characters</string>
+
 
     <string name="botao_iniciar">Start</string>
     <string name="logo_softmind">Softmind Logo</string>

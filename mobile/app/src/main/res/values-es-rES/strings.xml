@@ -12,6 +12,11 @@
                                 a tener un buen ambiente de trabajo.</string>
     <string name="placeholder_email">Ingrese su correo electrónico</string>
     <string name="icone_email">Icono de correo electrónico</string>
+    <string name="icone_senha">Icono de contraseña</string>
+    <string name="ocultar_senha">Ocultar contraseña</string>
+    <string name="mostrar_senha">Mostrar contraseña</string>
+    <string name="placeholder_senha">Ingrese su contraseña</string>
+    <string name="senha_invalida">La contraseña debe tener al menos 6 caracteres</string>
 
     <string name="botao_iniciar">Iniciar</string>
     <string name="logo_softmind">Logotipo de Softmind</string>
