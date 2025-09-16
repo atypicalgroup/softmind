@@ -43,7 +43,6 @@ fun EmailInputField(
     var hasInteracted by remember { mutableStateOf(false) }
     val isEmailValid = isValidEmail(email)
     val showErrorMessage = hasInteracted && !isEmailValid
-
     val focusRequester = remember { FocusRequester() }
 
     LaunchedEffect(Unit) {

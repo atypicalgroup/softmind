@@ -17,6 +17,11 @@
     <string name="logo_softmind">Logo Softmind</string>     <!-- Descrição da imagem -->
     <string name="email_invalido">E-mail inválido. Por favor, verifique.</string> <!-- Msg de erro para e-mail inválido -->
     <string name="icone_email">Ícone e-mail</string>
+    <string name="icone_senha">Ícone senha</string>
+    <string name="ocultar_senha">Ocultar senha</string>
+    <string name="mostrar_senha">Exibir senha</string>
+    <string name="placeholder_senha">Digite sua senha</string>
+    <string name="senha_invalida">A senha deve ter pelo menos 6 caracteres</string>
 
     <!--Tela Emojis -->
     <string name="saudacao1">Bem-vindo,</string>

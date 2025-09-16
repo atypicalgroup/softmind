@@ -1,5 +1,6 @@
 package br.com.fiap.softmind.screens
 
+import android.R.attr.password
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -30,11 +31,13 @@ import br.com.fiap.softmind.componentes.StartButton
 import br.com.fiap.softmind.helpers.validateOrCreateUser
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.rememberCoroutineScope
+import br.com.fiap.softmind.componentes.loginScreen.PasswordInputField
 
 
 @Composable
 fun LoginScreen(navController: NavController) {
     var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -55,6 +58,10 @@ fun LoginScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(32.dp))
 
         EmailInputField(email = email, onValueChange = { email = it })
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        PasswordInputField(password = password, onValueChange = { password = it })
 
         Spacer(modifier = Modifier.height(32.dp))
 

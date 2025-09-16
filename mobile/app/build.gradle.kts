@@ -66,5 +66,6 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
     kapt(libs.androidx.room.compiler)
+    implementation("androidx.compose.material:material-icons-extended:1.6.7") // Verifique e use a sua versão do Compose
 
 }
