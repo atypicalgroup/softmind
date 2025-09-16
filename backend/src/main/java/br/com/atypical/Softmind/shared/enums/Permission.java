@@ -1,6 +1,6 @@
 package br.com.atypical.Softmind.shared.enums;
 
-public enum Role {
+public enum Permission {
     ADMIN,
     EMPLOYEE,
 }

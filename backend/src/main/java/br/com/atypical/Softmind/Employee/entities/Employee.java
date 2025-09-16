@@ -1,7 +1,7 @@
 package br.com.atypical.Softmind.Employee.entities;
 
 
-import br.com.atypical.Softmind.Company.entities.Company;
+import br.com.atypical.Softmind.shared.enums.Permission;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,6 +24,7 @@ public class Employee {
     private String name;
     private String email;
     private String role;
+    private String permission = Permission.EMPLOYEE.toString();
     private String sector;
 
     private LocalDateTime createdAt = LocalDateTime.now();

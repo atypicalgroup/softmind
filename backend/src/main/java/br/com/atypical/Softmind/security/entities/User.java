@@ -1,12 +1,13 @@
 package br.com.atypical.Softmind.security.entities;
 
-import br.com.atypical.Softmind.shared.enums.Role;
+import br.com.atypical.Softmind.shared.enums.Permission;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
@@ -26,7 +27,7 @@ public class User implements UserDetails {
     private String companyId;
     private String employeeId;
 
-    private Role role;
+    private Permission permission;
 
     private boolean enabled = true;
     private boolean mustChangePassword = false;
@@ -34,8 +35,9 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(() -> role.name());
+        return List.of(new SimpleGrantedAuthority("ROLE_" + this.permission.name()));
     }
+
 
     @Override
     public boolean isAccountNonExpired() { return true; }

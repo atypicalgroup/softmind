@@ -1,15 +1,18 @@
 package br.com.atypical.Softmind.security.controller;
 
+import br.com.atypical.Softmind.security.dto.AdminRegisterDto;
+import br.com.atypical.Softmind.security.dto.AdminResponseDto;
+import br.com.atypical.Softmind.security.dto.LoginRequestDto;
+import br.com.atypical.Softmind.security.dto.LoginResponseDto;
 import br.com.atypical.Softmind.security.entities.User;
 import br.com.atypical.Softmind.security.helpers.jwt.JwtService;
 import br.com.atypical.Softmind.security.service.UserService;
-import br.com.atypical.Softmind.shared.enums.Role;
+import br.com.atypical.Softmind.shared.enums.Permission;
 import br.com.atypical.Softmind.shared.exceptions.BadRequestException;
 import br.com.atypical.Softmind.shared.exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,8 +26,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
-@Tag(name = "1. Autenticação", description = "Endpoints para login, registro e gerenciamento de usuários")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -35,29 +37,23 @@ public class AuthController {
     @Operation(
             summary = "Realiza login do usuário",
             description = "Autentica o usuário e retorna um JWT para uso nas próximas requisições",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Login realizado com sucesso"),
-                    @ApiResponse(responseCode = "401", description = "Credenciais inválidas", content = @Content)
-            }
+            tags = "Login"
     )
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest) {
+    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequest) {
         try {
-            String username = loginRequest.get("username");
-            String password = loginRequest.get("password");
-
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, password)
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.username(),
+                            loginRequest.password()
+                    )
             );
-
-            String token = jwtService.generateToken(username);
-
-            return ResponseEntity.ok(Map.of(
-                    "token", token,
-                    "username", username
-            ));
+            String token = jwtService.generateToken(loginRequest.username());
+            return ResponseEntity.ok(
+                    new LoginResponseDto(token, loginRequest.username())
+            );
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(401).body(Map.of("error", "Credenciais inválidas"));
+            return ResponseEntity.status(401).build();
         }
     }
 
@@ -67,7 +63,8 @@ public class AuthController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "Dados do usuário retornados"),
                     @ApiResponse(responseCode = "404", description = "Usuário não encontrado", content = @Content)
-            }
+            },
+            tags = "Funcionários"
     )
     @GetMapping("/me")
     public ResponseEntity<?> me(@AuthenticationPrincipal User userDetails) {
@@ -75,7 +72,7 @@ public class AuthController {
                 .map(user -> ResponseEntity.ok(Map.of(
                         "id", user.getId(),
                         "username", user.getUsername(),
-                        "role", user.getRole(),
+                        "role", user.getPermission(),
                         "companyId", user.getCompanyId(),
                         "employeeId", user.getEmployeeId(),
                         "mustChangePassword", user.isMustChangePassword()
@@ -85,40 +82,16 @@ public class AuthController {
 
     @Operation(
             summary = "Registra um novo administrador",
-            description = "Cria um usuário com role ADMIN vinculado a uma empresa"
+            description = "Cria um usuário com role ADMIN vinculado a uma empresa",
+            tags = "Autenticação"
     )
     @PostMapping("/register/admin")
-    public ResponseEntity<?> registerAdmin(@RequestBody Map<String, String> request) {
-        String username = request.get("username");
-        String password = request.get("password");
-        String companyId = request.get("companyId");
+    public ResponseEntity<AdminResponseDto> registerAdmin(@RequestBody AdminRegisterDto dto) {
+        User user = userService.register(dto.username(), dto.password(), null, null, Permission.ADMIN);
 
-        User user = userService.register(username, password, companyId, null, Role.ADMIN);
-        return ResponseEntity.ok(Map.of(
-                "message", "Usuário ADMIN registrado com sucesso",
-                "username", user.getUsername(),
-                "role", user.getRole()
-        ));
-    }
-
-    @Operation(
-            summary = "Registra um novo funcionário",
-            description = "Cria um usuário com role EMPLOYEE vinculado a um funcionário e a uma empresa"
-    )
-    @PostMapping("/register/employee")
-    public ResponseEntity<?> registerEmployee(@RequestBody Map<String, String> request) {
-        String username = request.get("username");
-        String password = request.get("password"); // normalmente genérica
-        String companyId = request.get("companyId");
-        String employeeId = request.get("employeeId");
-
-        User user = userService.registerEmployee(username, password, companyId, employeeId);
-        return ResponseEntity.ok(Map.of(
-                "message", "Usuário EMPLOYEE registrado com sucesso",
-                "username", user.getUsername(),
-                "role", user.getRole(),
-                "mustChangePassword", user.isMustChangePassword()
-        ));
+        return ResponseEntity.ok(
+                new AdminResponseDto(user.getId(), user.getUsername(), user.getPermission())
+        );
     }
 
     @Operation(
@@ -128,7 +101,8 @@ public class AuthController {
                     @ApiResponse(responseCode = "200", description = "Senha redefinida com sucesso"),
                     @ApiResponse(responseCode = "400", description = "Erro de validação", content = @Content),
                     @ApiResponse(responseCode = "404", description = "Usuário não encontrado", content = @Content)
-            }
+            },
+            tags = "Autenticação"
     )
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> request) {
@@ -153,5 +127,4 @@ public class AuthController {
 
         return ResponseEntity.ok(Map.of("message", "Senha redefinida com sucesso"));
     }
-
 }
