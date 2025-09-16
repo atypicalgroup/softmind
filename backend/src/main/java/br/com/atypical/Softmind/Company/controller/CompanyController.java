@@ -9,14 +9,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/companies")
+@RequestMapping("/api/companies")
 @RequiredArgsConstructor
-@Tag(name = "2. Empresas", description = "Gerenciamento das empresas cadastradas no sistema")
+@Tag(name = "Empresa", description = "Gerenciamento das empresas cadastradas no sistema gerenciado pelos administradores")
+@PreAuthorize("hasRole('ADMIN')")
 public class CompanyController {
 
     private final CompanyService service;
@@ -63,7 +65,7 @@ public class CompanyController {
             summary = "Busca empresa por CNPJ",
             description = "Retorna os dados de uma empresa a partir do CNPJ."
     )
-    @GetMapping("/cnpj/{cnpj}")
+    @GetMapping("/{cnpj}")
     public ResponseEntity<CompanyDto> getByCnpj(@PathVariable String cnpj) {
         return service.findByCnpj(cnpj)
                 .map(ResponseEntity::ok)
@@ -74,7 +76,7 @@ public class CompanyController {
             summary = "Busca empresa por nome",
             description = "Retorna os dados de uma empresa a partir do nome."
     )
-    @GetMapping("/name/{name}")
+    @GetMapping("/{name}")
     public ResponseEntity<CompanyDto> getByName(@PathVariable String name) {
         return service.findByName(name)
                 .map(ResponseEntity::ok)
@@ -85,7 +87,7 @@ public class CompanyController {
             summary = "Busca empresa por e-mail",
             description = "Retorna os dados de uma empresa a partir do e-mail cadastrado."
     )
-    @GetMapping("/email/{email}")
+    @GetMapping("/{email}")
     public ResponseEntity<CompanyDto> getByEmail(@PathVariable String email) {
         return service.findByEmail(email)
                 .map(ResponseEntity::ok)

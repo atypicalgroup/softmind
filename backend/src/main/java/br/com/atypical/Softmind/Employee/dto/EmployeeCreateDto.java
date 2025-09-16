@@ -17,9 +17,16 @@ public record EmployeeCreateDto(
                 example = "maria.silva@empresa.com.br")
         String email,
 
+        @Schema(description = "Senha Inicial de acesso",
+                example = "User@123")
+        String password,
+
         @Schema(description = "Cargo ou função do funcionário",
                 example = "Analista de RH")
         String role,
+
+        @Schema(description = "Permissão de uso da aplicacão", example = "EMPLOYEE")
+        String permission,
 
         @Schema(description = "Setor/departamento do funcionário",
                 example = "Recursos Humanos")

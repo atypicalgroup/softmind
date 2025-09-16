@@ -6,8 +6,12 @@ import br.com.atypical.Softmind.Employee.dto.EmployeeDto;
 import br.com.atypical.Softmind.Employee.entities.Employee;
 import br.com.atypical.Softmind.Employee.mapper.EmployeeMapper;
 import br.com.atypical.Softmind.Employee.repository.EmployeeRepository;
+import br.com.atypical.Softmind.security.entities.User;
+import br.com.atypical.Softmind.security.repository.UserRepository;
+import br.com.atypical.Softmind.shared.enums.Permission;
 import br.com.atypical.Softmind.shared.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,6 +25,8 @@ public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final CompanyRepository companyRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
 
     public EmployeeDto create(EmployeeCreateDto dto) {
 
@@ -28,9 +34,21 @@ public class EmployeeService {
             throw new NotFoundException("Empresa não encontrada para o ID: " + dto.companyId());
         }
 
+        // cria o Employee
         Employee employee = EmployeeMapper.toEntity(dto);
-        Employee saved = employeeRepository.save(employee);
-        return EmployeeMapper.toDto(saved);
+        Employee savedEmployee = employeeRepository.save(employee);
+
+        User user = new User();
+        user.setUsername(savedEmployee.getEmail());
+        user.setPassword(passwordEncoder.encode(dto.password()));
+        user.setCompanyId(savedEmployee.getCompanyId());
+        user.setEmployeeId(savedEmployee.getId());
+        user.setPermission(Permission.valueOf(dto.permission()));
+        user.setEnabled(true);
+
+        userRepository.save(user);
+
+        return EmployeeMapper.toDto(savedEmployee);
     }
 
     public List<EmployeeDto> findAll() {

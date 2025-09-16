@@ -7,7 +7,9 @@ import br.com.atypical.Softmind.Survey.entities.Question;
 import br.com.atypical.Softmind.Survey.entities.Survey;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class SurveyMapper {
@@ -16,14 +18,18 @@ public class SurveyMapper {
         survey.setCompanyId(dto.companyId());
         survey.setTitle(dto.title());
         survey.setDescription(dto.description());
-        survey.setQuestions(dto.questions().stream()
-                .map(q -> {
-                    var question = new Question();
-                    question.setText(q.text());
-                    question.setType(q.type());
-                    question.setOptions(q.options());
-                    return question;
-                }).toList());
+        survey.setQuestions(
+                dto.questions() == null ? new ArrayList<>() :
+                        dto.questions().stream()
+                                .map(q -> {
+                                    var question = new Question();
+                                    question.setText(q.text());
+                                    question.setType(q.type()); // cuidado: se no DTO vem String, converte com QuestionType.valueOf(...)
+                                    question.setOptions(q.options());
+                                    return question;
+                                })
+                                .collect(Collectors.toCollection(ArrayList::new)) // ✅ mutável
+        );
         return survey;
     }
 
