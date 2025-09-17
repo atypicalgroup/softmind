@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/companies")
+@RequestMapping("/companies")
 @RequiredArgsConstructor
 @Tag(name = "Empresa", description = "Gerenciamento das empresas cadastradas no sistema gerenciado pelos administradores")
 @PreAuthorize("hasRole('ADMIN')")
