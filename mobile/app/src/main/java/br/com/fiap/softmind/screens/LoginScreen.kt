@@ -34,7 +34,8 @@ import br.com.fiap.softmind.componentes.loginScreen.EmailInputField
 import br.com.fiap.softmind.componentes.loginScreen.LoginLogo
 import br.com.fiap.softmind.componentes.loginScreen.LoginTitle
 import br.com.fiap.softmind.componentes.loginScreen.PasswordInputField
-import br.com.fiap.softmind.helpers.validateOrCreateUser
+import br.com.fiap.softmind.data.remote.ApiClient
+import br.com.fiap.softmind.data.remote.model.LoginRequest
 import kotlinx.coroutines.launch
 
 @SuppressLint("StringFormatInvalid")
@@ -111,30 +112,52 @@ fun LoginScreen(navController: NavController) {
         val context = LocalContext.current
         val coroutineScope = rememberCoroutineScope()
         StartButton(onClick = {
-            if (email.isNotBlank() && android.util.Patterns.EMAIL_ADDRESS.matcher(email)
-                    .matches()
-            ) {
-                val role = if (email.contains("admin")) "admin" else "funcionario"
-
+            if (email.isNotBlank() && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                 coroutineScope.launch {
-                    val user = validateOrCreateUser(email, role, context)
-                    Log.d("LOGIN", "Usuário autenticado: ${user.email}, Role: ${user.role}")
+                    try {
+                        // Cria o objeto de request
+                        val request = LoginRequest(username = email, password = password)
 
-                    if (user.role == "admin") {
-                        navController.navigate("AdminScreen")
-                    } else {
-                        navController.navigate("EmojiScreen")
+                        // Faz a chamada ao backend (suspend fun, sem enqueue)
+                        val response = ApiClient.authService.login(request)
+
+                        if (response.isSuccessful) {
+                            val loginResponse = response.body()
+                            val token = loginResponse?.token
+
+                            if (token != null) {
+                                Log.d("LOGIN", "Token recebido: $token")
+                                Toast.makeText(context, "Login realizado com sucesso", Toast.LENGTH_SHORT).show()
+
+                                // 👉 Aqui você pode salvar o token em DataStore/SharedPreferences
+
+                                // Navegação de acordo com a role
+                                if (email.contains("admin")) {
+                                    navController.navigate("AdminScreen")
+                                } else {
+                                    navController.navigate("EmojiScreen")
+                                }
+                            } else {
+                                Toast.makeText(context, "Erro: resposta inválida", Toast.LENGTH_SHORT).show()
+                            }
+                        } else {
+                            Toast.makeText(context, "Usuário ou senha incorretos", Toast.LENGTH_SHORT).show()
+                        }
+                    } catch (e: Exception) {
+                        Toast.makeText(context, "Falha na conexão: ${e.message}", Toast.LENGTH_SHORT).show()
+                        Log.e("LOGIN", "Erro ao fazer login", e)
                     }
                 }
             } else {
                 Toast.makeText(context, "Digite um e-mail válido", Toast.LENGTH_SHORT).show()
             }
         })
+
         Spacer(modifier = Modifier.weight(0.3f))
     }
 }
 
-@Preview(showBackground = true, locale = "pt-rBR")
+@Preview(showBackground = true, locale = "pt-BR")
 @Composable
 fun LoginScreenPreview() {
     LoginScreen(navController = NavHostController(LocalContext.current))

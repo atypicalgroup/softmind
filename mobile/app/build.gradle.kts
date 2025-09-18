@@ -54,9 +54,6 @@ dependencies {
     implementation(libs.navigation.ui)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.storage)
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.converter.gson)
-    implementation(libs.androidx.compose.foundation.layout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -67,6 +64,13 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
     kapt(libs.androidx.room.compiler)
+
     implementation("androidx.compose.material:material-icons-extended:1.6.7") // Verifique e use a sua versão do Compose
+
+    //INTEGRACAO BACKEND
+
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.logging)
 
 }
