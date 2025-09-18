@@ -126,7 +126,7 @@ fun LoginScreen(navController: NavController) {
     }
 }
 
-@Preview(showBackground = true, locale = "pt-rBR")
+@Preview(showBackground = true, locale = "pt-BR")
 @Composable
 fun LoginScreenPreview() {
     LoginScreen(navController = NavHostController(LocalContext.current))
