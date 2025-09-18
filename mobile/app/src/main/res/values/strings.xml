@@ -15,7 +15,13 @@
     <string name="mostrar_senha">Display password</string>
     <string name="placeholder_senha">Enter your password</string>
     <string name="senha_invalida">The password must have at least 6 characters</string>
-
+    <string name="inserir_email_resete">Please enter your email to send a redefinition link.</string>
+    <string name="redefinir_senha">Redefinient password</string>
+    <string name="email">E-mail</string>
+    <string name="cancelar">Cancel</string>
+    <string name="esqueceu_senha">Forgot the password?</string>">
+    <string name="msg_redefinicao_senha">Password redefinition request sent to the email:</string>">
+    <string name="msg_brinde_redefinicao_senha">Submitted redefinition link</string>">
 
     <string name="botao_iniciar">Start</string>
     <string name="logo_softmind">Softmind Logo</string>

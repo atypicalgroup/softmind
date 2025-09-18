@@ -1,5 +1,7 @@
 package br.com.fiap.softmind.screens
 
+import ForgotPasswordDialog
+import android.annotation.SuppressLint
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -19,10 +21,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import br.com.fiap.softmind.R
 import br.com.fiap.softmind.componentes.LoginDescription
 import br.com.fiap.softmind.componentes.StartButton
 import br.com.fiap.softmind.componentes.loginScreen.ClickableTextLink
@@ -34,10 +38,36 @@ import br.com.fiap.softmind.data.remote.ApiClient
 import br.com.fiap.softmind.data.remote.model.LoginRequest
 import kotlinx.coroutines.launch
 
+@SuppressLint("StringFormatInvalid")
 @Composable
 fun LoginScreen(navController: NavController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
+    // 1. ADICIONADO: Estado para controlar a visibilidade do pop-up
+    var showDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    // 2. ADICIONADO: Bloco que exibe o pop-up se 'showDialog' for verdadeiro
+    if (showDialog) {
+        ForgotPasswordDialog(
+            onDismissRequest = {
+                showDialog = false
+            },
+            onConfirm = { emailParaReset ->
+
+                val logMessage = context.getString(R.string.msg_redefinicao_senha, emailParaReset)
+                Log.d("RESET_SENHA", logMessage)
+
+                val toastMessage = context.getString(R.string.msg_brinde_redefinicao_senha, emailParaReset)
+                Toast.makeText(context, toastMessage, Toast.LENGTH_LONG).show()
+
+                // TODO: Aqui você chamaria seu ViewModel para fazer a requisição à API de reset
+
+                showDialog = false
+            }
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -65,10 +95,11 @@ fun LoginScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        ClickableTextLink(text = "Esqueceu a senha?",
+        ClickableTextLink(
+            text = stringResource(id = R.string.esqueceu_senha),
             onClick = {
 
-                //Lógica para abrir a tela de recuperação de senha
+                showDialog = true
 
             })
 
