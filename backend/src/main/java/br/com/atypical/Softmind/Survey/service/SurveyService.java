@@ -32,8 +32,8 @@ public class SurveyService {
 
         Question feeling = new Question();
         feeling.setText("Qual o seu sentimento de hoje?");
-        feeling.setType(QuestionType.TEXT);
-        feeling.setOptions(null);
+        emoji.setType(QuestionType.EMOJI);
+        emoji.setOptions(new String[] {"😀","😐","😢","😡","😍","😴"});
 
         survey.getQuestions().add(0, feeling);
         survey.getQuestions().add(0, emoji);
