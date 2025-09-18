@@ -1,11 +1,8 @@
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -52,6 +49,9 @@ fun ForgotPasswordDialog(
     val showErrorMessage = hasInteracted && !isEmailValid
     val focusRequester = remember { FocusRequester() }
 
+    // Adiciona uma validação extra para o botão de confirmação
+    val isConfirmButtonEnabled = android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
     }
@@ -59,19 +59,27 @@ fun ForgotPasswordDialog(
     AlertDialog(
         onDismissRequest = onDismissRequest,
         title = {
-            Text(stringResource(R.string.redefinir_senha),
+            Text(
+                stringResource(R.string.redefinir_senha),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
         },
         text = {
-            Column (horizontalAlignment = Alignment.CenterHorizontally){
-                Text(stringResource(R.string.inserir_email_resete),
-                    textAlign = TextAlign.Center)
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    stringResource(R.string.inserir_email_resete),
+                    textAlign = TextAlign.Center
+                )
                 Spacer(modifier = Modifier.height(16.dp))
                 OutlinedTextField(
                     value = email,
-                    onValueChange = { email = it },
+                    onValueChange = { newValue ->
+                        email = newValue
+                        if (!hasInteracted && newValue.isNotEmpty()) {
+                            hasInteracted = true
+                        }
+                    },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Email,
                         imeAction = ImeAction.Done
@@ -86,7 +94,7 @@ fun ForgotPasswordDialog(
                     },
                     label = { Text(stringResource(R.string.email)) },
                     shape = RoundedCornerShape(36.dp),
-                    colors = TextFieldDefaults.run{
+                    colors = TextFieldDefaults.run {
                         outlinedTextFieldColors(
                             focusedBorderColor = Color(0xFF00BFA5),
                             unfocusedBorderColor = Color(0xFFD9D9D9),
@@ -115,33 +123,27 @@ fun ForgotPasswordDialog(
                             )
                     )
                 }
-
             }
         },
 
-
-        confirmButton = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
+        dismissButton = {
+            TextButton(
+                onClick = onDismissRequest
             ) {
-                TextButton(
-                    onClick = onDismissRequest
-                ) {
-                    Text(stringResource(R.string.cancelar))
-                }
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                TextButton(
-                    onClick = {
-                        onConfirm(email)
-                    }
-                ) {
-                    Text(stringResource(R.string.enviar))
-                }
+                Text(stringResource(R.string.cancelar))
             }
         },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onConfirm(email)
+                },
+                //O botão "Enviar" só fica habilitado se o e-mail for válido.
+                enabled = isConfirmButtonEnabled
+            ) {
+                Text(stringResource(R.string.enviar))
+            }
+        }
     )
 }
 
