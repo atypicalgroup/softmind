@@ -40,6 +40,7 @@ import br.com.fiap.softmind.componentes.InterFont
 import br.com.fiap.softmind.componentes.admScreen.AdmCalendar
 import br.com.fiap.softmind.componentes.admScreen.AdmHeader
 import br.com.fiap.softmind.componentes.admScreen.AdmTextHeader
+import br.com.fiap.softmind.componentes.admScreen.LogoutButton
 import br.com.fiap.softmind.data.model.Engagement
 import br.com.fiap.softmind.utils.generatePdfFromEngagement
 import br.com.fiap.softmind.utils.openPdfFile
@@ -255,8 +256,19 @@ fun AdminScreen(
                 )
             }
         }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        LogoutButton(
+            onClick = {
+                navController.navigate("LoginScreen")
+            },
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
     }
 }
+
+
 
 fun mapEmoji(fileName: String?): String {
     return when (fileName) {
