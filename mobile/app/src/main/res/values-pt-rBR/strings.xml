@@ -134,6 +134,8 @@
     <string name="positivo">positivo</string>
     <string name="negativo">negativo</string>
     <string name="imprimir">Imprimir relatório</string>
-    <string name="adm_medica">Desenho de mulher em jaleco branco, com expressão sorridente.</string>     <!-- Descrição da imagem -->
+    <string name="adm_medica">Desenho de mulher em jaleco branco, com expressão sorridente.</string>
+    <string name="sair">Sair</string>
+
 
 </resources>
