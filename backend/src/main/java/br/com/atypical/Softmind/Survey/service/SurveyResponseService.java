@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Optional;
 
 @Service
 public class SurveyResponseService {
@@ -64,6 +65,20 @@ public class SurveyResponseService {
         return participationRepo.countByEmployeeIdAndSurveyId(employeeId, surveyId);
     }
 
+    public String getEmojiResponse(String employeeId, String surveyId) {
+        Optional<SurveyResponse> optionalResponse = responseRepo
+                .findTopBySurveyIdAndEmployeeIdOrderByAnsweredAtDesc(employeeId, surveyId);
+
+        SurveyResponse response = optionalResponse
+                .orElseThrow(() -> new RuntimeException("Nenhuma resposta encontrada"));
+
+        if (response.getAnswers().isEmpty()) {
+            throw new RuntimeException("Nenhuma resposta registrada");
+        }
+
+        // já devolve só o emoji
+        return response.getAnswers().get(0).getResponse();
+    }
 
 
 

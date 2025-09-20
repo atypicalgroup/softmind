@@ -1,6 +1,6 @@
 package br.com.atypical.Softmind.Suggestion.dto;
 
-public record FilmsDto(
+public record MovieDto(
         String nomeFilme,
         String categoriaFilme
 ) {
