@@ -127,4 +127,12 @@
     <string name="descricao_mulher">Mujer con manga de color naranja</string>
     <string name="sair">Salir</string>
 
+    <string name="pontos_de_apoio">Puntos de apoyo</string>
+    <string name="titulo_pontos_de_apoio">Puntos de apoyo</string>
+    <string name="texto_horario_funcionamento">Servicio de lunes a viernes, de 08:00 a 18:00.</string>
+    <string name="nome_responsavel_label">Responsable:</string>
+    <string name="nome_responsavel_valor">Maria Silva</string>
+    <string name="telefone_responsavel_label">Teléfono:</string>
+    <string name="telefone_responsavel_valor">(11) 99999-8888</string>
+
 </resources>
