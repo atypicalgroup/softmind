@@ -123,7 +123,15 @@
     <string name="imprimir">Print report</string>
     <string name="adm_medica">Illustration of a woman in a white lab coat, with a smiling expression.</string>
     <string name="descricao_mulher">Women with a orange shirt</string>
-    <string name="sair">Exit</string>
+    <string name="sair" translatable="false">Exit</string>
+
+    <string name="pontos_de_apoio">Support points</string>
+    <string name="titulo_pontos_de_apoio">Support points</string>
+    <string name="texto_horario_funcionamento">Service from Monday to Friday, from 08:00 to 18:00.</string>
+    <string name="nome_responsavel_label">Responsible:</string>
+    <string name="nome_responsavel_valor">Maria Silva</string>
+    <string name="telefone_responsavel_label">Telephone:</string>
+    <string name="telefone_responsavel_valor">(11) 99999-8888</string>
 
 
 </resources>
