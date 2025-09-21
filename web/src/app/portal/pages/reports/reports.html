@@ -1,0 +1,104 @@
+<div class="reports container py-4">
+
+  <!-- Header -->
+  <div class="mb-4">
+    <h2>Relatórios</h2>
+    <p class="text-muted">Gere e visualize relatórios de engajamento e bem-estar dos colaboradores.</p>
+  </div>
+
+  <!-- Filtros -->
+  <div class="card shadow-sm p-4 mb-4">
+    <h5 class="mb-3">Filtros</h5>
+    <form class="row g-3">
+      <div class="col-md-4">
+        <label for="period" class="form-label">Período</label>
+        <select id="period" class="form-select">
+          <option selected>Últimos 7 dias</option>
+          <option>Últimos 30 dias</option>
+          <option>Últimos 6 meses</option>
+          <option>Personalizado</option>
+        </select>
+      </div>
+
+      <div class="col-md-4">
+        <label for="sector" class="form-label">Setor</label>
+        <select id="sector" class="form-select">
+          <option selected>Todos</option>
+          <option>Recursos Humanos</option>
+          <option>Financeiro</option>
+          <option>Operações</option>
+        </select>
+      </div>
+
+      <div class="col-md-4 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary w-100">Gerar Relatório</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Cards resumo -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card shadow-sm p-3 text-center">
+        <h6>Colaboradores Ativos</h6>
+        <p class="fs-4 fw-bold text-primary">85%</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm p-3 text-center">
+        <h6>Pesquisas Respondidas</h6>
+        <p class="fs-4 fw-bold text-success">120</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm p-3 text-center">
+        <h6>Nível de Satisfação</h6>
+        <p class="fs-4 fw-bold text-warning">4.2 / 5</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm p-3 text-center">
+        <h6>Alertas Críticos</h6>
+        <p class="fs-4 fw-bold text-danger">3</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabela -->
+  <div class="card shadow-sm p-4">
+    <h5 class="mb-3">Relatórios Gerados</h5>
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Data</th>
+          <th>Título</th>
+          <th>Setor</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>21/09/2025</td>
+          <td>Engajamento Semanal</td>
+          <td>Todos</td>
+          <td><span class="badge bg-success">Concluído</span></td>
+          <td>
+            <button class="btn btn-sm btn-outline-primary me-2">Ver</button>
+            <button class="btn btn-sm btn-outline-secondary">Exportar</button>
+          </td>
+        </tr>
+        <tr>
+          <td>15/09/2025</td>
+          <td>Pesquisa de Satisfação</td>
+          <td>RH</td>
+          <td><span class="badge bg-warning text-dark">Em andamento</span></td>
+          <td>
+            <button class="btn btn-sm btn-outline-primary me-2">Ver</button>
+            <button class="btn btn-sm btn-outline-secondary">Exportar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
