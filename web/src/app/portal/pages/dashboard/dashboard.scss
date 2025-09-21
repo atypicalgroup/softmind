@@ -1,0 +1,72 @@
+.dashboard {
+  .dashboard-header {
+    h2 {
+      font-weight: 600;
+      color: #212529;
+    }
+
+    p {
+      font-size: 0.95rem;
+      color: #6c757d;
+    }
+  }
+
+  // Cards de KPIs
+  .card {
+    border-radius: 10px;
+    transition: transform 0.2s ease-in-out;
+
+    &:hover {
+      transform: translateY(-3px);
+    }
+
+    h6 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      margin: 0;
+    }
+  }
+
+  // Gráfico placeholder
+  .chart-placeholder {
+    height: 280px;
+    background: #f8f9fa;
+    border: 1px dashed #dee2e6;
+    border-radius: 8px;
+    color: #6c757d;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  // Lista de sentimentos
+  .list-group-item {
+    font-size: 0.95rem;
+    font-weight: 500;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .badge {
+      font-size: 0.85rem;
+      padding: 0.4em 0.6em;
+    }
+  }
+
+  // Tabela de setores
+  table {
+    th {
+      font-weight: 600;
+      background-color: #f8f9fa;
+    }
+
+    td {
+      vertical-align: middle;
+    }
+  }
+}
