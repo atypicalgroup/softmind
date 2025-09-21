@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-validate',
@@ -9,14 +9,17 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
   styleUrl: './validate.scss'
 })
 export class Validate {
-  form = this.fb.group({
-    d1: ['', [Validators.required, Validators.pattern('[0-9]')]],
-    d2: ['', [Validators.required, Validators.pattern('[0-9]')]],
-    d3: ['', [Validators.required, Validators.pattern('[0-9]')]],
-    d4: ['', [Validators.required, Validators.pattern('[0-9]')]],
-  });
+  form!: FormGroup;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder) {
+    this.form = this.fb.group({
+      d1: ['', [Validators.required, Validators.pattern('[0-9]')]],
+      d2: ['', [Validators.required, Validators.pattern('[0-9]')]],
+      d3: ['', [Validators.required, Validators.pattern('[0-9]')]],
+      d4: ['', [Validators.required, Validators.pattern('[0-9]')]],
+    });
+  }
+
 
   // Junta os dígitos em um código só
   get code(): string {

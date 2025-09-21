@@ -7,10 +7,19 @@
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="code-form">
     <div class="d-flex gap-3 mb-4">
-      <input type="text" maxlength="1" formControlName="d1" class="form-control code-input" autofocus>
-      <input type="text" maxlength="1" formControlName="d2" class="form-control code-input">
-      <input type="text" maxlength="1" formControlName="d3" class="form-control code-input">
-      <input type="text" maxlength="1" formControlName="d4" class="form-control code-input">
+
+      <input type="text" maxlength="1" formControlName="d1" class="form-control code-input" autofocus
+       aria-label="Dígito 1">
+      <input type="text" maxlength="1" formControlName="d2"
+       class="form-control code-input"
+       aria-label="Dígito 2">
+      <input type="text" maxlength="1" formControlName="d3"
+       class="form-control code-input"
+       aria-label="Dígito 3">
+      <input type="text" maxlength="1" formControlName="d4"
+       class="form-control code-input"
+       aria-label="Dígito 4">
+
     </div>
 
     <button type="submit" class="btn btn-primary w-100">
