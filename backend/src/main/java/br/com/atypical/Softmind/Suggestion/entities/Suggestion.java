@@ -17,7 +17,7 @@ public class Suggestion {
     @Id
     private String idSuggestion;
     private List<Channel> psychologist;
-    private List<Films> film;
+    private List<Movie> movie;
     private List<PhysicalActivity> physicalActivity;
     private List<Tour> tour;
 

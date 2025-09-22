@@ -65,6 +65,22 @@ public class SurveyResponseService {
     public long countEmployeeResponses(String employeeId, String surveyId) {
         return participationRepo.countByEmployeeIdAndSurveyId(employeeId, surveyId);
     }
+
+    public String getEmojiResponse(String surveyId, String employeeId) {
+        Optional<SurveyResponse> optionalResponse = responseRepo
+                .findTopBySurveyIdAndEmployeeIdOrderByAnsweredAtDesc(surveyId, employeeId);
+
+        SurveyResponse response = optionalResponse
+                .orElseThrow(() -> new RuntimeException("Nenhuma resposta encontrada"));
+
+        if (response.getAnswers().isEmpty()) {
+            throw new RuntimeException("Nenhuma resposta registrada");
+        }
+
+        // já devolve só o emoji
+        return response.getAnswers().get(0).getResponse();
+    }
+
 }
 
 
