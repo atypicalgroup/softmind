@@ -22,7 +22,7 @@ public class SurveyParticipation {
     @Indexed
     private String surveyId;
     @Indexed
-    private LocalDate participationDate;
+    private LocalDateTime participationDate;
     private LocalDateTime createdAt;
     @Indexed(unique = true)
     private String uniqueKey; // employeeId + "|" + surveyId + "|" + participationDate.toString()
