@@ -37,7 +37,7 @@ public class TourService {
                 .collect(Collectors.toList());
     }
 
-    public TourDto atualizarTour(String nameTour, TourDto tourDto){
+    public TourDto atualizarPasseio(String nameTour, TourDto tourDto){
         Tour tour = buscarPasseioPorNome(nameTour);
 
         if (tourDto.nameTour() != null) tour.setNameTour(tourDto.nameTour());

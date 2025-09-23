@@ -86,6 +86,6 @@ public class TourController {
     )
     @PutMapping("/{nameTour}")
     public ResponseEntity<TourDto> atualizarPasseio(@PathVariable String nameTour, @RequestBody @Valid TourDto tourDto){
-        return ResponseEntity.ok(tourService.atualizarTour(nameTour, tourDto));
+        return ResponseEntity.ok(tourService.atualizarPasseio(nameTour, tourDto));
     }
 }
