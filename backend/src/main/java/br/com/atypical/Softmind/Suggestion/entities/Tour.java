@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Tour {
 
-    private String tipoPasseio;
-    private String descricaoPasseio;
-    private String localPasseio;
+    private String nameTour;
+    private String typeTour;
+    private String descriptionTour;
+    private String placeTour;
 }
