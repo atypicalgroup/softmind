@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -22,6 +23,7 @@ import br.com.fiap.softmind.R
 import br.com.fiap.softmind.componentes.emojiScreen.CardSection
 import br.com.fiap.softmind.componentes.emojiScreen.EmojiCardDoctor
 import br.com.fiap.softmind.componentes.emojiScreen.EmojiHeader
+import br.com.fiap.softmind.componentes.emojiScreen.SupportPointsSection
 import br.com.fiap.softmind.ui.theme.BackgroundColor
 
 @Composable
@@ -29,11 +31,17 @@ fun EmojiScreen(navController: NavController) {
     var emojiSelecionado1 by remember { mutableStateOf(false) }
     var emojiSelecionado2 by remember { mutableStateOf(false) }
 
+    // Para fins de exemplo, vamos usar valores fixos:
+    val horarioDoBackend = "Atendimento online 24h"
+    val nomeDoBackend = "Equipe de Apoio SoftMind"
+    val telefoneDoBackend = "0800 123 456"
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(BackgroundColor)
-            .padding(top = 22.dp, start = 10.dp, end = 10.dp)
+            .padding(top = 22.dp, start = 10.dp, end = 10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         EmojiHeader()
 
@@ -86,10 +94,19 @@ fun EmojiScreen(navController: NavController) {
                 navController.navigate("QuestionScreen")
             }
         )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        SupportPointsSection(
+            horarioFuncionamento = horarioDoBackend,
+            nomeResponsavel = nomeDoBackend,
+            telefoneResponsavel = telefoneDoBackend
+        )
+
     }
 }
 
-@androidx.compose.ui.tooling.preview.Preview(showBackground = true,
+@androidx.compose.ui.tooling.preview.Preview(
+    showBackground = true,
     showSystemUi = false, locale = "pt-rBR"
 )
 @Composable

@@ -7,10 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Tour {
+public class Movie {
 
-    private String nameTour;
-    private String typeTour;
-    private String descriptionTour;
-    private String placeTour;
+    private String nomeFilme;
+    private String categoriaFilme;
+
+    //necessito resgatar algum atributo de survey para logica de humor e filmes
 }
