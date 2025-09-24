@@ -123,7 +123,7 @@
     <string name="imprimir">Print report</string>
     <string name="adm_medica">Illustration of a woman in a white lab coat, with a smiling expression.</string>
     <string name="descricao_mulher">Women with a orange shirt</string>
-    <string name="sair" translatable="false">Exit</string>
+    <string name="sair">Exit</string>
 
     <string name="pontos_de_apoio">Support points</string>
     <string name="titulo_pontos_de_apoio">Support points</string>
