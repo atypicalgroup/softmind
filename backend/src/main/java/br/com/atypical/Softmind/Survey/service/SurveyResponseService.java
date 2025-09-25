@@ -19,10 +19,12 @@ public class SurveyResponseService {
     private final SurveyResponseRepository responseRepo;
     private final SurveyParticipationRepository participationRepo;
     private static final ZoneId ZONE_BR = ZoneId.of("America/Sao_Paulo");
+    private final SurveyService surveyService;
 
-    public SurveyResponseService(SurveyResponseRepository r, SurveyParticipationRepository p) {
+    public SurveyResponseService(SurveyResponseRepository r, SurveyParticipationRepository p, SurveyService surveyService) {
         this.responseRepo = r;
         this.participationRepo = p;
+        this.surveyService = surveyService;
     }
 
     @Transactional
@@ -45,7 +47,7 @@ public class SurveyResponseService {
         resp.setAnswers(dto.answers().stream().map(a -> {
             Answer ans = new Answer();
             ans.setQuestionText(a.questionText());
-            ans.setResponse(a.response());
+            ans.setResponse(surveyService.mapEmojiToDescription(a.response()));
             return ans;
         }).toList());
         SurveyResponse saved = responseRepo.save(resp);
