@@ -87,4 +87,16 @@ public class SurveyService {
         return mapper.toDto(survey);
     }
 
+    public String mapEmojiToDescription(String emoji) {
+        return switch (emoji){
+            case "😀" -> "Feliz";
+            case "😐" -> "Neutro";
+            case "😢" -> "Triste";
+            case "😡" -> "Raiva";
+            case "😍" -> "Apaixonado";
+            case "😴" -> "Cansado";
+            default -> emoji;
+        };
+    }
+
 }
