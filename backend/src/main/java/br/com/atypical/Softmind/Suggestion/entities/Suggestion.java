@@ -1,5 +1,6 @@
 package br.com.atypical.Softmind.Suggestion.entities;
 
+import br.com.atypical.Softmind.Movie.entities.Movie;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
