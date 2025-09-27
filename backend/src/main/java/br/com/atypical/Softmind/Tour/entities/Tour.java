@@ -1,4 +1,4 @@
-package br.com.atypical.Softmind.Suggestion.entities;
+package br.com.atypical.Softmind.Tour.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

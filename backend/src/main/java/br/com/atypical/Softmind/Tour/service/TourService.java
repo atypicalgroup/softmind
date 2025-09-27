@@ -1,9 +1,9 @@
-package br.com.atypical.Softmind.Suggestion.service;
+package br.com.atypical.Softmind.Tour.service;
 
-import br.com.atypical.Softmind.Suggestion.dto.TourDto;
-import br.com.atypical.Softmind.Suggestion.entities.Tour;
-import br.com.atypical.Softmind.Suggestion.exception.RecursoNaoEncontradoException;
-import br.com.atypical.Softmind.Suggestion.repository.TourRepository;
+import br.com.atypical.Softmind.Tour.dto.TourDto;
+import br.com.atypical.Softmind.Tour.entities.Tour;
+import br.com.atypical.Softmind.Tour.exception.RecursoNaoEncontradoException;
+import br.com.atypical.Softmind.Tour.repository.TourRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

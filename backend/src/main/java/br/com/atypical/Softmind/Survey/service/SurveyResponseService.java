@@ -48,6 +48,8 @@ public class SurveyResponseService {
             Answer ans = new Answer();
             ans.setQuestionText(a.questionText());
             ans.setResponse(surveyService.mapEmojiToDescription(a.response()));
+            ans.setResponse(a.response()); // emoji
+            ans.setResponse(surveyService.mapEmojiToDescription(a.response()));  //talvez necessario criar uma setdescription para as entities
             return ans;
         }).toList());
         SurveyResponse saved = responseRepo.save(resp);

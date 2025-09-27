@@ -1,6 +1,5 @@
-package br.com.atypical.Softmind.Suggestion.dto;
+package br.com.atypical.Softmind.Tour.dto;
 
-import br.com.atypical.Softmind.Suggestion.entities.Tour;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record TourDto(

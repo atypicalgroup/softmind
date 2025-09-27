@@ -1,4 +1,4 @@
-package br.com.atypical.Softmind.Suggestion.entities;
+package br.com.atypical.Softmind.Psychologist.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,8 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Channel {
+public class Psychologist {
 
+    private Integer id;
     private String name;
     private String description;
     private String[] contactNumber;
