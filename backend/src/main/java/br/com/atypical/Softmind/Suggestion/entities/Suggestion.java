@@ -1,6 +1,8 @@
 package br.com.atypical.Softmind.Suggestion.entities;
 
 import br.com.atypical.Softmind.Movie.entities.Movie;
+import br.com.atypical.Softmind.Psychologist.entities.Psychologist;
+import br.com.atypical.Softmind.Tour.entities.Tour;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +19,7 @@ public class Suggestion {
 
     @Id
     private String idSuggestion;
-    private List<Channel> psychologist;
+    private List<Psychologist> psychologist;
     private List<Movie> movie;
     private List<PhysicalActivity> physicalActivity;
     private List<Tour> tour;

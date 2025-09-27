@@ -1,7 +1,7 @@
-package br.com.atypical.Softmind.Suggestion.controller;
+package br.com.atypical.Softmind.Tour.controller;
 
-import br.com.atypical.Softmind.Suggestion.dto.TourDto;
-import br.com.atypical.Softmind.Suggestion.service.TourService;
+import br.com.atypical.Softmind.Tour.dto.TourDto;
+import br.com.atypical.Softmind.Tour.service.TourService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;

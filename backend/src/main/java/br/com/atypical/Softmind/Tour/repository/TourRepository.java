@@ -1,8 +1,7 @@
-package br.com.atypical.Softmind.Suggestion.repository;
+package br.com.atypical.Softmind.Tour.repository;
 
-import br.com.atypical.Softmind.Suggestion.entities.Tour;
+import br.com.atypical.Softmind.Tour.entities.Tour;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
