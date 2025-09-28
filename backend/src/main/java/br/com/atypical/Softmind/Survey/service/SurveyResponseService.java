@@ -6,6 +6,7 @@ import br.com.atypical.Softmind.Survey.entities.SurveyParticipation;
 import br.com.atypical.Softmind.Survey.entities.SurveyResponse;
 import br.com.atypical.Softmind.Survey.repository.SurveyParticipationRepository;
 import br.com.atypical.Softmind.Survey.repository.SurveyResponseRepository;
+import br.com.atypical.Softmind.shared.utils.EmojiUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,9 +48,9 @@ public class SurveyResponseService {
         resp.setAnswers(dto.answers().stream().map(a -> {
             Answer ans = new Answer();
             ans.setQuestionText(a.questionText());
-            ans.setResponse(surveyService.mapEmojiToDescription(a.response()));
+            ans.setResponse(EmojiUtils.mapEmojiToDescription(a.response()));
             ans.setResponse(a.response()); // emoji
-            ans.setResponse(surveyService.mapEmojiToDescription(a.response()));  //talvez necessario criar uma setdescription para as entities
+            ans.setResponse(EmojiUtils.mapEmojiToDescription(a.response()));  //talvez necessario criar uma setdescription para as entities
             return ans;
         }).toList());
         SurveyResponse saved = responseRepo.save(resp);
@@ -86,6 +87,7 @@ public class SurveyResponseService {
     }
 
 }
+
 
 
 
