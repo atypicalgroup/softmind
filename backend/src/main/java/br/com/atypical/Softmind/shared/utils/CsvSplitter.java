@@ -117,8 +117,8 @@ public class CsvSplitter {
         }
 
         // Define the date range (15/09/2025 to 21/09/2025)
-        LocalDate startDate = LocalDate.of(2025, 9, 15);
-        LocalDate endDate = LocalDate.of(2025, 9, 21);
+        LocalDate startDate = LocalDate.of(2025, 9, 22);
+        LocalDate endDate = LocalDate.of(2025, 9, 28);
 
         AtomicInteger successCount = new AtomicInteger(0);
         AtomicInteger failCount = new AtomicInteger(0);

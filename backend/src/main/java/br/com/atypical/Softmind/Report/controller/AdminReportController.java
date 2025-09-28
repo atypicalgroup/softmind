@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Map;
 
 @RestController
@@ -28,7 +30,18 @@ public class AdminReportController {
             description = "Retorna a lista completa de empresas cadastradas."
     )
     @GetMapping
-    public ResponseEntity<AdminReportDTO> report(@RequestParam String companyId) {
-        return ResponseEntity.ok(service.getAdminReport(companyId));
+    public ResponseEntity<AdminReportDTO> report(@RequestParam String companyId,
+                                                 @RequestParam(required = false) LocalDate date) {
+        return ResponseEntity.ok(service.getAdminReport(companyId, date));
+    }
+
+    @Operation(
+            summary = "Lista todas as empresas",
+            description = "Retorna a lista completa de empresas cadastradas."
+    )
+    @GetMapping("/pdf")
+    public ResponseEntity<byte[]> reportPDF(@RequestParam String companyId,
+                                            @RequestParam(required = false) LocalDate date) throws IOException {
+        return ResponseEntity.ok(service.generateWeeklySummaryPdf(companyId, date));
     }
 }

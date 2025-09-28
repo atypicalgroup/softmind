@@ -20,6 +20,4 @@ public class SurveyResponse {
     private String employeeId;
     private List<Answer> answers;
     private LocalDateTime answeredAt;
-
-    // getters e setters
 }

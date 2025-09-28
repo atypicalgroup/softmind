@@ -9,7 +9,7 @@ import java.util.Map;
 @Getter
 @Builder
 public class AdminReportWeekSummaryDTO {
-    private final Map<String, String> mostVotedResponses;
+    private final Map<String, Map<String, Long>> mostVotedResponses;
     private final BigDecimal overallEngagement;
     private final SurveyParticipantsDTO participants;
 }

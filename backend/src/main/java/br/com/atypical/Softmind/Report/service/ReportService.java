@@ -17,9 +17,25 @@ import br.com.atypical.Softmind.Survey.repository.SurveyParticipationRepository;
 import br.com.atypical.Softmind.Survey.repository.SurveyRepository;
 import br.com.atypical.Softmind.Survey.repository.SurveyResponseRepository;
 import br.com.atypical.Softmind.shared.enums.QuestionType;
+import br.com.atypical.Softmind.shared.utils.EmojiUtils;
+import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.UnitValue;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.DayOfWeek;
@@ -29,6 +45,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,14 +53,28 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ReportService {
 
+    private static final String HEALTHY_QUESTION = "Qual o seu Emoji do dia?";
+    private final Map<String, Integer> EMOJI_MAPPING = Map.of(
+            "Apaixonado", 100,
+            "Feliz", 50,
+            "Neutro", 0,
+            "Cansado", -25,
+            "Triste", -50,
+            "Raiva", -100
+    );
+
     private final SurveyRepository surveyRepository;
     private final SurveyResponseRepository surveyResponseRepository;
     private final SurveyParticipationRepository surveyParticipationRepository;
     private final EmployeeRepository employeeRepository;
 
-    public AdminReportDTO getAdminReport(String companyId) {
-        var startOfWeek = LocalDate.now().with(DayOfWeek.MONDAY).atStartOfDay();
-        var endOfWeek = LocalDate.now().with(DayOfWeek.SUNDAY).atTime(23, 59, 59);
+
+    public AdminReportDTO getAdminReport(String companyId, LocalDate date) {
+        var startOfWeek = Optional.ofNullable(date).orElse(LocalDate.now()).with(DayOfWeek.MONDAY).atStartOfDay();
+        var endOfWeek = Optional.ofNullable(date).orElse(LocalDate.now()).with(DayOfWeek.SUNDAY).atTime(23, 59, 59);
+
+        var startOfPreviousWeek = startOfWeek.minusDays(1).with(DayOfWeek.MONDAY);
+        var endOfPreviousWeek = startOfPreviousWeek.with(DayOfWeek.SUNDAY).toLocalDate().atTime(23, 59, 59);
 
         var surveys = surveyRepository.findByCompanyId(companyId);
         var companyEmployees = employeeRepository.findByCompanyId(companyId).stream().filter(Employee::isActive).toList();
@@ -52,18 +83,56 @@ public class ReportService {
                 .map(survey -> buildSurveySummary(survey, companyEmployees, startOfWeek, endOfWeek))
                 .toList();
 
+        List<SurveySummaryDTO> previousWeeksurveySummaryList = surveys.stream()
+                .map(survey -> buildSurveySummary(survey, companyEmployees, startOfPreviousWeek, endOfPreviousWeek))
+                .toList();
+
         AdminReportWeekSummaryDTO summary = buildAdminReportSummary(surveySummaryList, companyEmployees);
+
+        var previousWeekAggregatedGlobalQuestions = aggregateGlobalQuestions(previousWeeksurveySummaryList);
+        BigDecimal averageOfPreviousWeek = calculateAverageHealthy(previousWeekAggregatedGlobalQuestions);
+
+        var weekAggregatedGlobalQuestions = aggregateGlobalQuestions(surveySummaryList);
+        BigDecimal averageOfWeek = calculateAverageHealthy(weekAggregatedGlobalQuestions);
+
+        BigDecimal healthyPercentage = getHealthyPercentage(averageOfPreviousWeek, averageOfWeek);
 
         return AdminReportDTO.builder()
                 .surveySummary(surveySummaryList)
                 .weekSummary(summary)
+                .healthyPercentage(healthyPercentage)
                 .startOfWeek(startOfWeek.toLocalDate())
                 .endOfWeek(endOfWeek.toLocalDate())
                 .build();
     }
 
+    @NotNull
+    private static BigDecimal getHealthyPercentage(BigDecimal averageOfPreviousWeek, BigDecimal averageOfWeek) {
+        BigDecimal healthyPercentage;
+        if (averageOfPreviousWeek.compareTo(BigDecimal.ZERO) == 0) {
+            healthyPercentage = BigDecimal.ZERO;
+        } else {
+            healthyPercentage = averageOfWeek.subtract(averageOfPreviousWeek)
+                    .divide(averageOfPreviousWeek, 4, RoundingMode.HALF_EVEN)
+                    .multiply(averageOfWeek.compareTo(averageOfPreviousWeek) >= 0 ? BigDecimal.valueOf(100) : BigDecimal.valueOf(-100))
+                    .setScale(2, RoundingMode.HALF_EVEN);
+        }
+        return healthyPercentage;
+    }
+
+    private BigDecimal calculateAverageHealthy(Map<String, Map<String, Long>> pw) {
+        long totalPW = pw.get(HEALTHY_QUESTION).values().stream().mapToLong(l -> l).sum();
+        long somaPW = pw.get(HEALTHY_QUESTION).entrySet().stream()
+                .mapToInt(e -> {
+                    return Math.toIntExact(EMOJI_MAPPING.getOrDefault(e.getKey(), 0) * e.getValue());
+                })
+                .sum();
+
+        return BigDecimal.valueOf(totalPW > 0 ? (double) somaPW / totalPW : 0).setScale(2, RoundingMode.HALF_EVEN);
+    }
+
     private AdminReportWeekSummaryDTO buildAdminReportSummary(List<SurveySummaryDTO> surveySummaryList, List<Employee> companyEmployees) {
-        var globalQuestionResponseCounts = aggregateGlobalQuestionResponseCounts(surveySummaryList);
+        var globalQuestionResponseCounts = aggregateGlobalQuestions(surveySummaryList);
         var mostVotedResponses = findMostVotedResponses(globalQuestionResponseCounts);
 
         var totalUniqueParticipants = surveySummaryList.stream()
@@ -86,7 +155,6 @@ public class ReportService {
     private Map<String, Long> aggregateParticipantsBySector(List<SurveySummaryDTO> surveySummaryList) {
         Map<String, Long> aggregatedParticipantsBySector = new HashMap<>();
 
-        // Combine participant counts by sector from all surveys
         for (SurveySummaryDTO surveySummary : surveySummaryList) {
             SurveyParticipantsDTO participants = surveySummary.getParticipants();
             if (participants != null && participants.getTotalPerSector() != null) {
@@ -194,7 +262,7 @@ public class ReportService {
         return participantsBySector;
     }
 
-    private Map<String, Map<String, Long>> aggregateGlobalQuestionResponseCounts(List<SurveySummaryDTO> surveySummaryList) {
+    private Map<String, Map<String, Long>> aggregateGlobalQuestions(List<SurveySummaryDTO> surveySummaryList) {
         Map<String, Map<String, Long>> globalCounts = new HashMap<>();
 
         for (SurveySummaryDTO surveySummaryDTO : surveySummaryList) {
@@ -232,8 +300,8 @@ public class ReportService {
                 .setScale(2, RoundingMode.HALF_EVEN);
     }
 
-    private Map<String, String> findMostVotedResponses(Map<String, Map<String, Long>> questionResponseCounts) {
-        Map<String, String> mostVotedResponses = new HashMap<>();
+    private Map<String, Map<String, Long>> findMostVotedResponses(Map<String, Map<String, Long>> questionResponseCounts) {
+        Map<String, Map<String, Long>> mostVotedResponses = new HashMap<>();
 
         for (Map.Entry<String, Map<String, Long>> questionEntry : questionResponseCounts.entrySet()) {
             String questionText = questionEntry.getKey();
@@ -242,10 +310,76 @@ public class ReportService {
             if (!responseCounts.isEmpty()) {
                 responseCounts.entrySet().stream()
                         .max(Map.Entry.comparingByValue())
-                        .map(Map.Entry::getKey).ifPresent(mostVotedResponse -> mostVotedResponses.put(questionText, mostVotedResponse));
+                        .ifPresent(mostVotedResponse -> mostVotedResponses.put(questionText, Map.of(mostVotedResponse.getKey(), mostVotedResponse.getValue())));
             }
         }
 
         return mostVotedResponses;
+    }
+
+    public byte[] generateWeeklySummaryPdf(String companyId, LocalDate date) throws IOException {
+        PdfFont emojiFont = PdfFontFactory.createFont(ResourceUtils.getURL("classpath:DejaVuSans.ttf").toString(), PdfFontFactory.EmbeddingStrategy.PREFER_EMBEDDED);
+
+        var reportDTO = getAdminReport(companyId, date);
+
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            PdfWriter writer = new PdfWriter(baos);
+            PdfDocument pdf = new PdfDocument(writer);
+            Document doc = new Document(pdf);
+
+            Paragraph title = new Paragraph("Resumo, semanal")
+                    .setFontSize(28)
+                    .setBold();
+            doc.add(title);
+
+            doc.add(new Paragraph("Nesta tela temos o resumo semanal da evolução dos sentimentos dos nossos colegas para um melhor controle de atividades.").setFontSize(12));
+            doc.add(new Paragraph(" "));
+
+            Table emometer = new Table(UnitValue.createPercentArray(new float[]{1, 1, 1, 1, 1, 1, 1})).useAllAvailableWidth();
+            emometer.addHeaderCell(new Cell(1, 7).add(new Paragraph("Emocionômetro")).setTextAlignment(TextAlignment.CENTER));
+
+            for (DailyResponseDTO daily : reportDTO.getSurveySummary().getFirst().getQuestionResponses().getFirst().getDailyResponses()) {
+                emometer.addCell(new Cell().add(new Paragraph(daily.getDate().substring(5))).setTextAlignment(TextAlignment.CENTER));
+            }
+
+            for (DailyResponseDTO daily : extractHealthyQuestion(reportDTO)) {
+                String emoji = daily.getRanking().isEmpty() ? "" : EmojiUtils.mapDescriptionToEmoji(daily.getRanking().getFirst().getResponse());
+                emometer.addCell(new Cell().add(new Paragraph(emoji).setFont(emojiFont).setFontSize(20)).setTextAlignment(TextAlignment.CENTER));
+            }
+
+            doc.add(emometer);
+            doc.add(new Paragraph(" "));
+
+            Table dataBlocks = new Table(UnitValue.createPercentArray(new float[]{1, 1})).useAllAvailableWidth();
+            dataBlocks.addCell(new Cell().add(new Paragraph("Dados")).setTextAlignment(TextAlignment.CENTER).setBold().setFontSize(18).setBackgroundColor(ColorConstants.GREEN));
+            dataBlocks.addCell(new Cell().add(new Paragraph("Dados")).setTextAlignment(TextAlignment.CENTER).setBold().setFontSize(18).setBackgroundColor(ColorConstants.YELLOW));
+            dataBlocks.addCell(new Cell().add(new Paragraph(reportDTO.getSurveySummary().getFirst().getEngagement() + "%\nPercentual de engajamento dos nossos colegas")).setTextAlignment(TextAlignment.CENTER).setFontSize(24).setBackgroundColor(ColorConstants.GREEN));
+
+            String destaque = "";
+            destaque = EmojiUtils.mapDescriptionToEmoji(reportDTO.getWeekSummary().getMostVotedResponses().get(HEALTHY_QUESTION).entrySet().stream().findFirst().get().getKey());
+
+            dataBlocks.addCell(new Cell().add(new Paragraph(destaque + "\nSentimento e destaque nesta semana")).setFont(emojiFont).setFontSize(20).setTextAlignment(TextAlignment.CENTER).setFontSize(20).setBackgroundColor(ColorConstants.YELLOW));
+            doc.add(dataBlocks);
+            doc.add(new Paragraph(" "));
+
+            doc.add(new Paragraph("O bem-estar emocional da nossa equipe " + getHealthLabel(reportDTO)).setFontSize(16).setBackgroundColor(ColorConstants.GREEN));
+
+            doc.close();
+            return baos.toByteArray();
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao gerar PDF do resumo semanal", e);
+        }
+    }
+
+    private String getHealthLabel(AdminReportDTO reportDTO) {
+        if (reportDTO.getHealthyPercentage().compareTo(BigDecimal.ZERO) == 0) {
+            return "manteve-se estável.";
+        }
+
+        return reportDTO.getHealthyPercentage().compareTo(BigDecimal.ZERO) > 0 ? "cresceu " + reportDTO.getHealthyPercentage() + "%." : "diminuiu " + reportDTO.getHealthyPercentage().negate() + "%.";
+    }
+
+    private List<DailyResponseDTO> extractHealthyQuestion(AdminReportDTO reportDTO) {
+        return reportDTO.getSurveySummary().getFirst().getQuestionResponses().stream().filter(q -> q.getQuestion().equalsIgnoreCase(HEALTHY_QUESTION)).findFirst().orElse(new QuestionResponseDTO()).getDailyResponses();
     }
 }
