@@ -7,11 +7,12 @@
 .main-content {
   display: flex;
   flex: 1; // ocupa o resto da tela
+  overflow: hidden;
 }
 
 
 .content {
   flex: 1;
   padding: 1.5rem;
-  overflow-y: auto;
+  overflow: auto;
 }
