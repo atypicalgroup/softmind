@@ -6,6 +6,7 @@ import { Painel } from './portal/layout/painel/painel';
 import { Dashboard } from './portal/pages/dashboard/dashboard';
 import { Profile } from './portal/pages/profile/profile';
 import { Reports } from './portal/pages/reports/reports';
+import { Employee } from './portal/pages/employee/employee';
 
 export const routes: Routes = [
   { path: '', component: Login },
@@ -18,6 +19,9 @@ export const routes: Routes = [
     children: [
       { path: 'dashboard', component: Dashboard},
       { path: 'relatorios', component: Reports},
+      { path: 'cadastrar', component: Employee},
+      { path: 'atualizar', component: Employee},
+      { path: 'deletar', component: Employee},
       { path: 'perfil', component: Profile},
       { path: '', redirectTo:'dashboard', pathMatch: 'full'}
     ]
