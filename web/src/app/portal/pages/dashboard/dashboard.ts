@@ -8,5 +8,5 @@ import { Card } from '../../../shared/card/card';
   styleUrl: './dashboard.scss'
 })
 export class Dashboard {
-
+  nameEmployee = 'Misael';
 }
