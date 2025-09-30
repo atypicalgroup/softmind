@@ -2,12 +2,13 @@
 
 .sidebar {
   width: 320px;
-  background: #303030;
+  background: $bg-dark;
   border-right: 1px solid $white;
   padding: 1rem;
   height: 100%;
   color: $white;
   overflow:hidden;
+  border-right: none;
 
   .nav-header {
     height: 80px;
@@ -95,7 +96,8 @@
   }
   .nav-config {
     height: 220px;
-
+    list-style: none;
+    text-decoration: none;
     .config-link {
       padding: 15px 0;
       display: flex;
