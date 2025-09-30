@@ -1,0 +1,18 @@
+<div class="card" [ngClass]="color">
+  <div class="card-header">
+    <h6>{{ title }}</h6>
+    <small>{{ description }}</small>
+  </div>
+
+  <div class="card-body">
+    <h2>{{ value }}</h2>
+    <p *ngIf="subtitle" class="sub">{{ subtitle }}</p>
+  </div>
+
+  <div class="card-footer">
+    <span [ngClass]="{ 'positive': isPositive,'negative': isNegative }">
+      {{ variable }}
+    </span>
+  </div>
+
+</div>

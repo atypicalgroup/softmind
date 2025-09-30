@@ -18,6 +18,14 @@
     }
   }
 
+  .cards-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 1rem;
+  }
+
+
+
   // Cards de KPIs
   .card {
     border-radius: 10px;
