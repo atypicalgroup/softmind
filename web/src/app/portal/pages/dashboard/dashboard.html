@@ -9,36 +9,43 @@
   </div>
 
   <!-- KPIs principais -->
-  <div class="row g-3 mb-4">
-    <div class="col-md-3">
-      <div class="card shadow-sm p-3 text-center">
-        <h6>Participação</h6>
-        <p class="fs-4 fw-bold text-primary">78%</p>
-        <small class="text-muted">colaboradores ativos na pesquisa</small>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card shadow-sm p-3 text-center">
-        <h6>Índice de Bem-Estar</h6>
-        <p class="fs-4 fw-bold text-success">4.1 / 5</p>
-        <small class="text-muted">média geral</small>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card shadow-sm p-3 text-center">
-        <h6>Setores Engajados</h6>
-        <p class="fs-4 fw-bold text-warning">5</p>
-        <small class="text-muted">departamentos acima de 80%</small>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card shadow-sm p-3 text-center">
-        <h6>Alertas Críticos</h6>
-        <p class="fs-4 fw-bold text-danger">2</p>
-        <small class="text-muted">indicadores abaixo do ideal</small>
-      </div>
-    </div>
+  <div class="cards-container row g-3 mb-4">
+    <app-card
+      title="Participação"
+      description="Colaboradores ativos na pesquisa"
+      value="70%"
+      variable="24.6% ↑"
+      color="green"
+    ></app-card>
+
+    <app-card
+      title="Bem-estar - índice"
+      description="Índice de bem-estar dos funcionários"
+      value="4.1"
+      subtitle="Pontuação máxima: 5.0"
+      variable="24.6% ↑"
+      color="blue"
+    ></app-card>
+
+    <app-card
+      title="Setores engajados"
+      description="Colaboradores ativos na pesquisa"
+      value="05"
+      subtitle="Departamentos engajados"
+      variable="24.6% ↑"
+      color="green"
+    ></app-card>
+
+    <app-card
+      title="Alertas Críticos"
+      description="Indicadores direcionados a monitoramento"
+      value="03"
+      subtitle="Indicadores acima do ideal"
+      variable="24.6% ↓"
+      color="red"
+    ></app-card>
   </div>
+
 
   <!-- Gráfico placeholder -->
   <div class="card shadow-sm p-4 mb-4">
