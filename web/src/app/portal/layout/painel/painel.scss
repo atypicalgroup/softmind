@@ -1,13 +1,17 @@
+@use "../../../../variables" as *;
+
 .layout {
   display: flex;
   flex-direction: column;
   height: 100vh;
+
 }
 
 .main-content {
   display: flex;
   flex: 1; // ocupa o resto da tela
   overflow: hidden;
+  background-color: $dark;
 }
 
 
