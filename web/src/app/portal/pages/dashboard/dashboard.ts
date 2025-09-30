@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Card } from '../../../shared/card/card';
+import { AuthService } from '../../../auth/auth-service';
 
 @Component({
   selector: 'app-dashboard',
@@ -8,5 +9,10 @@ import { Card } from '../../../shared/card/card';
   styleUrl: './dashboard.scss'
 })
 export class Dashboard {
-  nameEmployee = 'Misael';
+
+  nameEmployee: string | undefined;
+
+  constructor(private authService: AuthService){
+    this.nameEmployee = this.authService.getUser()?.name;
+  }
 }
