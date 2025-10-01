@@ -10,14 +10,16 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/suggestion/physical-activities")
+@RequestMapping("/api/physical-activities")
 @RequiredArgsConstructor
 public class PhysicalActController {
 
     private final PhysicalActService physicalActService;
 
-    @GetMapping("/atividadesfisicas")
+    @GetMapping//("/videos-fisico")
     public List<PhysicalActDto> getVideosDeAtividades() {
         return physicalActService.buscarVideosAtividadeFisica();
     }
 }
+
+

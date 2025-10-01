@@ -4,6 +4,7 @@ public record PhysicalActDto(
         String videoId,
         String title,
         String description,
-        String thumbnailUrl
+        String thumbnailUrl,
+        String videoLink
 ) {
 }

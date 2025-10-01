@@ -1,7 +1,6 @@
 package br.com.atypical.Softmind.PhysicalActivity.service;
 
 import br.com.atypical.Softmind.PhysicalActivity.dto.PhysicalActDto;
-import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +17,7 @@ public class PhysicalActService {
     private final RestTemplate restTemplate;
 
     private static final String YOUTUBE_API_URL = "https://www.googleapis.com/youtube/v3/search";
-    private static final String API_KEY = "AIzaSyCsjFNSZNxSm4tKfkeUcJeb9-0e6V361-s";
+    private static final String API_KEY = "AIzaSyB8myycL8s2sPJO5XAEOX1Mndeqb4LKuvU";
 
     public PhysicalActService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -31,6 +30,8 @@ public class PhysicalActService {
                 .queryParam("type", "video")
                 .queryParam("maxResults", 5)
                 .queryParam("q", "exercicios alongamento iniciantes")
+                .queryParam("regionCode", "BR")
+                .queryParam("revelanceLanguage", "pt")
                 .queryParam("key", API_KEY)
                 .toUriString();
 
@@ -56,11 +57,16 @@ public class PhysicalActService {
                     Map<String, Object> thumbnails = (Map<String, Object>) snippet.get("thumbnails");
                     Map<String, Object> thumbDefault = (Map<String, Object>) thumbnails.get("default");
 
+                    String videoId = (String) id.get("videoId");
+
+                    String videoLink = "https://www.youtube.com/watch?v=" + videoId;
+
                     return new PhysicalActDto(
                             (String) id.get("videoId"),
                             (String) snippet.get("title"),
                             (String) snippet.get("description"),
-                            (String) thumbDefault.get("url").toString()
+                            (String) thumbDefault.get("url"),
+                            videoLink
                     );
                 })
                 .toList();
