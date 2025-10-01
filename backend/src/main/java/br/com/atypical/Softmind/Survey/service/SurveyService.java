@@ -25,19 +25,6 @@ public class SurveyService {
     public SurveyDto createSurvey(SurveyCreateDto dto) {
         Survey survey = mapper.toEntity(dto);
 
-        Question emoji = new Question();
-        emoji.setText("Qual o seu Emoji do dia?");
-        emoji.setType(QuestionType.EMOJI);
-        emoji.setOptions(new String[] {"😀","😐","😢","😡","😍","😴"});
-
-        Question feeling = new Question();
-        feeling.setText("Qual o seu sentimento de hoje?");
-        emoji.setType(QuestionType.EMOJI);
-        emoji.setOptions(new String[] {"😀","😐","😢","😡","😍","😴"});
-
-        survey.getQuestions().add(0, feeling);
-        survey.getQuestions().add(0, emoji);
-
         survey.setCreatedAt(LocalDateTime.now());
         survey.setUpdatedAt(LocalDateTime.now());
         survey.setActive(true);
@@ -62,22 +49,11 @@ public class SurveyService {
 
         List<Question> finalQuestions = new ArrayList<>();
 
-        Question emoji = new Question();
-        emoji.setText("Qual o seu Emoji do dia?");
-        emoji.setType(QuestionType.EMOJI);
-        emoji.setOptions(new String[]{"😀","😐","😢","😡","😍","😴"});
-        finalQuestions.add(emoji);
-
-        Question feeling = new Question();
-        feeling.setText("Qual o seu sentimento de hoje?");
-        feeling.setType(QuestionType.TEXT);
-        finalQuestions.add(feeling);
-
         if (survey.getQuestions() != null && !survey.getQuestions().isEmpty()) {
             Collections.shuffle(survey.getQuestions());
             finalQuestions.addAll(
                     survey.getQuestions().stream()
-                            .limit(8) // sempre pega 8 quantidade de perguntas aleatorias
+                            .limit(8) // pega sempre 8 questões aleatórias
                             .toList()
             );
         }
@@ -86,5 +62,6 @@ public class SurveyService {
 
         return mapper.toDto(survey);
     }
+
 
 }
