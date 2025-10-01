@@ -1,18 +1,22 @@
-package br.com.atypical.Softmind.Psychologist.entities;
+package br.com.atypical.Softmind.Support.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "gs_tb_psychologists")
-public class Psychologist {
+@Document(collection = "gs_tb_support")
+public class Support {
 
+    @Id
     private String id;
+    private String companyId;
     private String name;
     private String description;
     private String[] contactNumber;
+
 }
