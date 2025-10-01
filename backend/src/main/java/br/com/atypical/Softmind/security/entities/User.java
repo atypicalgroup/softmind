@@ -24,9 +24,7 @@ public class User implements UserDetails {
 
     private String username;
     private String password;
-    private String companyId;
     private String employeeId;
-
     private Permission permission;
 
     private boolean enabled = true;
@@ -37,7 +35,6 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + this.permission.name()));
     }
-
 
     @Override
     public boolean isAccountNonExpired() { return true; }
