@@ -39,16 +39,18 @@ public class EmployeeService {
     }
 
 
-    public EmployeeDto create(EmployeeCreateDto dto) {
-
-        if (dto.companyId() == null || companyRepository.findById(dto.companyId()).isEmpty()) {
-            throw new NotFoundException("Empresa não encontrada para o ID: " + dto.companyId());
-        }
+    public EmployeeDto create(EmployeeCreateDto dto, String currentCompanyId) {
+        // garante que a empresa existe
+        companyRepository.findById(currentCompanyId)
+                .orElseThrow(() -> new NotFoundException("Empresa não encontrada"));
 
         // cria o Employee
         Employee employee = EmployeeMapper.toEntity(dto);
+        employee.setCompanyId(currentCompanyId); // 🔹 agora o vínculo vem do contexto
+
         Employee savedEmployee = employeeRepository.save(employee);
 
+        // cria o User vinculado
         User user = new User();
         user.setUsername(savedEmployee.getEmail());
         user.setPassword(passwordEncoder.encode(dto.password()));
@@ -60,6 +62,8 @@ public class EmployeeService {
 
         return EmployeeMapper.toDto(savedEmployee);
     }
+
+
 
     public List<EmployeeDto> findAll() {
         return employeeRepository.findAll()
@@ -83,30 +87,32 @@ public class EmployeeService {
         return employeeRepository.findByEmail(email).map(EmployeeMapper::toDto);
     }
 
-    public Optional<EmployeeDto> update(String id, EmployeeCreateDto dto) {
+    public Optional<EmployeeDto> update(String id, EmployeeCreateDto dto, String currentCompanyId) {
         return employeeRepository.findById(id).map(existing -> {
 
-            if (dto.companyId() == null || companyRepository.findById(dto.companyId()).isEmpty()) {
-                throw new NotFoundException("Empresa não encontrada para o ID: " + dto.companyId());
+            if (!existing.getCompanyId().equals(currentCompanyId)) {
+                throw new NotFoundException("Funcionário não pertence à empresa do usuário logado");
             }
 
             existing.setName(dto.name());
             existing.setEmail(dto.email());
             existing.setRole(dto.role());
             existing.setSector(dto.sector());
-            existing.setCompanyId(dto.companyId());
             existing.setUpdatedAt(LocalDateTime.now());
 
             Employee updated = employeeRepository.save(existing);
 
+            // 🔥 também atualiza o User vinculado (username/email, permission, etc.)
             userRepository.findByEmployeeId(id).ifPresent(user -> {
                 user.setUsername(updated.getEmail());
+                user.setPermission(Permission.valueOf(dto.permission()));
                 userRepository.save(user);
             });
 
             return EmployeeMapper.toDto(updated);
         });
     }
+
 
 
     public void delete(String id) {

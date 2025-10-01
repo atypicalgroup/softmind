@@ -18,13 +18,14 @@ public class Employee {
 
     @Id
     private String id;
-
     private String companyId;
     private String name;
     private String email;
     private String role;
     private String sector;
     private String permission = Permission.EMPLOYEE.toString();
+
+
 
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();

@@ -2,11 +2,15 @@ package br.com.atypical.Softmind.Employee.controller;
 
 import br.com.atypical.Softmind.Employee.dto.EmployeeCreateDto;
 import br.com.atypical.Softmind.Employee.dto.EmployeeDto;
+import br.com.atypical.Softmind.Employee.entities.Employee;
+import br.com.atypical.Softmind.Employee.repository.EmployeeRepository;
 import br.com.atypical.Softmind.Employee.service.EmployeeService;
 import br.com.atypical.Softmind.Survey.dto.SurveyResponseCreateDto;
 import br.com.atypical.Softmind.Survey.entities.SurveyResponse;
 import br.com.atypical.Softmind.Survey.service.SurveyResponseService;
 import br.com.atypical.Softmind.Survey.service.SurveyService;
+import br.com.atypical.Softmind.security.entities.User;
+import br.com.atypical.Softmind.shared.exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +30,7 @@ public class EmployeeController {
 
     private final EmployeeService employeeService;
     private final SurveyResponseService surveyResponseService;
+    private final EmployeeRepository employeeRepository;
 
     @Operation(
             summary = "Cria um novo funcionário",
@@ -38,9 +44,16 @@ public class EmployeeController {
     )
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<EmployeeDto> create(@RequestBody EmployeeCreateDto dto) {
-        return ResponseEntity.ok(employeeService.create(dto));
+    public ResponseEntity<EmployeeDto> create(@RequestBody EmployeeCreateDto dto,
+                                              @AuthenticationPrincipal User user) {
+
+        Employee creator = employeeRepository.findById(user.getEmployeeId())
+                .orElseThrow(() -> new NotFoundException("Funcionário criador não encontrado"));
+
+        String companyId = creator.getCompanyId();
+        return ResponseEntity.ok(employeeService.create(dto, companyId));
     }
+
 
     @Operation(
             summary = "Lista todos os funcionários",
@@ -107,8 +120,15 @@ public class EmployeeController {
     )
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     @PutMapping("/{id}")
-    public ResponseEntity<EmployeeDto> update(@PathVariable String id, @RequestBody EmployeeCreateDto dto) {
-        return employeeService.update(id, dto)
+    public ResponseEntity<EmployeeDto> update(@PathVariable String id,
+                                              @RequestBody EmployeeCreateDto dto,
+                                              @AuthenticationPrincipal User user) {
+
+        Employee creator = employeeRepository.findById(user.getEmployeeId())
+                .orElseThrow(() -> new NotFoundException("Funcionário criador não encontrado"));
+
+        String companyId = creator.getCompanyId();
+        return employeeService.update(id, dto, companyId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

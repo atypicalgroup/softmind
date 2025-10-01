@@ -17,19 +17,18 @@ public class EmployeeMapper {
 
     public static Employee toEntity(EmployeeCreateDto dto) {
         if (dto == null) return null;
-        return  new Employee(
-                null,
-                dto.companyId(),
-                dto.name(),
-                dto.email(),
-                dto.role(),
-                dto.permission(),
-                dto.sector(),
-                LocalDateTime.now(),
-                LocalDateTime.now(),
-                true
-        );
+        Employee employee = new Employee();
+        employee.setName(dto.name());
+        employee.setEmail(dto.email());
+        employee.setRole(dto.role());
+        employee.setSector(dto.sector());
+        employee.setPermission(dto.permission()); // se for realmente campo do employee
+        employee.setActive(true);
+        employee.setCreatedAt(LocalDateTime.now());
+        employee.setUpdatedAt(LocalDateTime.now());
+        return employee;
     }
+
 
     public static EmployeeDto toDto(Employee entity) {
         if (entity == null) return null;
