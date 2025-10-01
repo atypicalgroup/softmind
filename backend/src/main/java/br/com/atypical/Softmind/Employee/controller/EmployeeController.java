@@ -158,15 +158,12 @@ public class EmployeeController {
             tags = "Funcionários"
     )
     @PreAuthorize("hasRole('EMPLOYEE')")
-    @PostMapping("/{employeeId}/{surveyId}/responses")
+    @PostMapping("/responses/daily")
     public SurveyResponse submitDailySurveyResponse(
-            @Parameter(example = "emp123") @PathVariable String employeeId,
-            @Parameter(example = "surv789") @PathVariable String surveyId,
+            @AuthenticationPrincipal User user,
             @RequestBody SurveyResponseCreateDto dto
     ) {
-        if (!employeeId.equals(dto.employeeId()) || !surveyId.equals(dto.surveyId())) {
-            throw new RuntimeException("Dados inconsistentes na requisição");
-        }
-        return surveyResponseService.saveAnonymousDailyResponse(dto);
+        return surveyResponseService.saveAnonymousDailyResponse(user, dto);
     }
+
 }

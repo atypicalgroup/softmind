@@ -44,13 +44,11 @@ public class EmployeeService {
         companyRepository.findById(currentCompanyId)
                 .orElseThrow(() -> new NotFoundException("Empresa não encontrada"));
 
-        // cria o Employee
         Employee employee = EmployeeMapper.toEntity(dto);
         employee.setCompanyId(currentCompanyId); // 🔹 agora o vínculo vem do contexto
 
         Employee savedEmployee = employeeRepository.save(employee);
 
-        // cria o User vinculado
         User user = new User();
         user.setUsername(savedEmployee.getEmail());
         user.setPassword(passwordEncoder.encode(dto.password()));

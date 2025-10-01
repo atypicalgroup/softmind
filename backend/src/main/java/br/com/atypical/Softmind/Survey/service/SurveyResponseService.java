@@ -1,12 +1,19 @@
 package br.com.atypical.Softmind.Survey.service;
 
+import br.com.atypical.Softmind.Employee.entities.Employee;
+import br.com.atypical.Softmind.Employee.repository.EmployeeRepository;
 import br.com.atypical.Softmind.Survey.dto.SurveyResponseCreateDto;
 import br.com.atypical.Softmind.Survey.entities.Answer;
+import br.com.atypical.Softmind.Survey.entities.Survey;
 import br.com.atypical.Softmind.Survey.entities.SurveyParticipation;
 import br.com.atypical.Softmind.Survey.entities.SurveyResponse;
 import br.com.atypical.Softmind.Survey.repository.SurveyParticipationRepository;
+import br.com.atypical.Softmind.Survey.repository.SurveyRepository;
 import br.com.atypical.Softmind.Survey.repository.SurveyResponseRepository;
+import br.com.atypical.Softmind.security.entities.User;
+import br.com.atypical.Softmind.shared.exceptions.NotFoundException;
 import br.com.atypical.Softmind.shared.utils.EmojiUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,65 +22,82 @@ import java.time.ZoneId;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class SurveyResponseService {
 
     private final SurveyResponseRepository responseRepo;
     private final SurveyParticipationRepository participationRepo;
-    private static final ZoneId ZONE_BR = ZoneId.of("America/Sao_Paulo");
-    private final SurveyService surveyService;
+    private final SurveyRepository surveyRepository;
+    private final EmployeeRepository employeeRepository;
 
-    public SurveyResponseService(SurveyResponseRepository r, SurveyParticipationRepository p, SurveyService surveyService) {
-        this.responseRepo = r;
-        this.participationRepo = p;
-        this.surveyService = surveyService;
-    }
+    private static final ZoneId ZONE_BR = ZoneId.of("America/Sao_Paulo");
 
     @Transactional
-    public SurveyResponse saveAnonymousDailyResponse(SurveyResponseCreateDto dto) {
-        LocalDateTime participationDate = Optional.ofNullable(dto.participationDate()).orElse(LocalDateTime.now(ZONE_BR));
+    public SurveyResponse saveAnonymousDailyResponse(User user, SurveyResponseCreateDto dto) {
+        Employee employee = employeeRepository.findById(user.getEmployeeId())
+                .orElseThrow(() -> new NotFoundException("Funcionário não encontrado"));
+
+        // Busca a survey ativa da empresa
+        Survey activeSurvey = surveyRepository.findByCompanyIdAndActiveTrue(employee.getCompanyId())
+                .orElseThrow(() -> new NotFoundException("Nenhuma pesquisa ativa encontrada"));
+
+        LocalDateTime participationDate = Optional.ofNullable(dto.participationDate())
+                .orElse(LocalDateTime.now(ZONE_BR));
+
         LocalDateTime startDate = participationDate.toLocalDate().atStartOfDay();
         LocalDateTime endDate = participationDate.toLocalDate().atTime(23, 59);
 
         // 1) Garante no máx. 1 resposta por dia
         participationRepo.findByEmployeeIdAndSurveyIdAndParticipationDateBetween(
-                dto.employeeId(), dto.surveyId(), startDate, endDate
+                employee.getId(), activeSurvey.getId(), startDate, endDate
         ).ifPresent(p -> {
             throw new RuntimeException("Já respondeu esta pesquisa hoje.");
         });
 
         // 2) Salva resposta anônima
         SurveyResponse resp = new SurveyResponse();
-        resp.setSurveyId(dto.surveyId());
+        resp.setSurveyId(activeSurvey.getId());
         resp.setAnsweredAt(participationDate);
         resp.setAnswers(dto.answers().stream().map(a -> {
             Answer ans = new Answer();
             ans.setQuestionText(a.questionText());
             ans.setResponse(EmojiUtils.mapEmojiToDescription(a.response()));
-            ans.setResponse(a.response()); // emoji
-            ans.setResponse(EmojiUtils.mapEmojiToDescription(a.response()));  //talvez necessario criar uma setdescription para as entities
             return ans;
         }).toList());
         SurveyResponse saved = responseRepo.save(resp);
 
         // 3) Registra participação
         SurveyParticipation part = new SurveyParticipation();
-        part.setEmployeeId(dto.employeeId());
-        part.setSurveyId(dto.surveyId());
+        part.setEmployeeId(employee.getId());
+        part.setSurveyId(activeSurvey.getId());
         part.setParticipationDate(participationDate);
         part.setCreatedAt(LocalDateTime.now(ZONE_BR));
-        part.setUniqueKey(dto.employeeId() + "|" + dto.surveyId() + "|" + participationDate.toLocalDate());
+        part.setUniqueKey(employee.getId() + "|" + activeSurvey.getId() + "|" + participationDate.toLocalDate());
         participationRepo.save(part);
 
         return saved;
     }
 
-    public long countEmployeeResponses(String employeeId, String surveyId) {
-        return participationRepo.countByEmployeeIdAndSurveyId(employeeId, surveyId);
+
+    public long countEmployeeResponses(User user) {
+        Employee employee = employeeRepository.findById(user.getEmployeeId())
+                .orElseThrow(() -> new NotFoundException("Funcionário não encontrado"));
+
+        Survey activeSurvey = surveyRepository.findByCompanyIdAndActiveTrue(employee.getCompanyId())
+                .orElseThrow(() -> new NotFoundException("Nenhuma pesquisa ativa encontrada"));
+
+        return participationRepo.countByEmployeeIdAndSurveyId(employee.getId(), activeSurvey.getId());
     }
 
-    public String getEmojiResponse(String surveyId, String employeeId) {
+    public String getEmojiResponse(User user) {
+        Employee employee = employeeRepository.findById(user.getEmployeeId())
+                .orElseThrow(() -> new NotFoundException("Funcionário não encontrado"));
+
+        Survey activeSurvey = surveyRepository.findByCompanyIdAndActiveTrue(employee.getCompanyId())
+                .orElseThrow(() -> new NotFoundException("Nenhuma pesquisa ativa encontrada"));
+
         Optional<SurveyResponse> optionalResponse = responseRepo
-                .findTopBySurveyIdAndEmployeeIdOrderByAnsweredAtDesc(surveyId, employeeId);
+                .findTopBySurveyIdAndEmployeeIdOrderByAnsweredAtDesc(activeSurvey.getId(), employee.getId());
 
         SurveyResponse response = optionalResponse
                 .orElseThrow(() -> new RuntimeException("Nenhuma resposta encontrada"));
@@ -82,12 +106,6 @@ public class SurveyResponseService {
             throw new RuntimeException("Nenhuma resposta registrada");
         }
 
-        // já devolve só o emoji
         return response.getAnswers().get(0).getResponse();
     }
-
 }
-
-
-
-
