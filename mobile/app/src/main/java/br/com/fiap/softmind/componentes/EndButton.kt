@@ -56,7 +56,7 @@ fun EndButton(navController: NavController){
             ) {
                 Text(
                     text = stringResource(id = R.string.botao_divirtase),
-                    color = Color.White,
+                    color = Color.Black,
                     fontSize = 18.sp,
                     fontFamily = InterFont,
                     fontWeight = Bold

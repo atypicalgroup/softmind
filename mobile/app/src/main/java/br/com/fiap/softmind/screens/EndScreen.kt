@@ -53,11 +53,11 @@ fun EndScreen(navController: NavController) {
             modifier = Modifier.fillMaxSize()
                 .verticalScroll(scrollState)
         ) {
-            Spacer(modifier = Modifier.height(50.dp))
+            Spacer(modifier = Modifier.height(35.dp))
 
             HeaderEnd()
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             EndTrophy()
 
@@ -82,7 +82,7 @@ fun EndScreen(navController: NavController) {
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             EndButton(navController = navController)
         }

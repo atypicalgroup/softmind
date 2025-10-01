@@ -45,7 +45,7 @@ fun EmojiScreen(navController: NavController) {
     ) {
         EmojiHeader()
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         CardSection(
             foiVerificado = emojiSelecionado1,
