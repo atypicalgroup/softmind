@@ -73,7 +73,6 @@ public class AuthController {
                         "id", user.getId(),
                         "username", user.getUsername(),
                         "role", user.getPermission(),
-                        "companyId", user.getCompanyId(),
                         "employeeId", user.getEmployeeId(),
                         "mustChangePassword", user.isMustChangePassword()
                 )))
@@ -87,11 +86,8 @@ public class AuthController {
     )
     @PostMapping("/register/admin")
     public ResponseEntity<AdminResponseDto> registerAdmin(@RequestBody AdminRegisterDto dto) {
-        User user = userService.register(dto.username(), dto.password(), null, null, Permission.ADMIN);
-
-        return ResponseEntity.ok(
-                new AdminResponseDto(user.getId(), user.getUsername(), user.getPermission())
-        );
+        AdminResponseDto response = userService.registerAdmin(dto);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(

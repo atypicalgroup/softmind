@@ -17,7 +17,6 @@ public class CompanyMapper {
                 dto.cnpj(),
                 dto.email(),
                 dto.phone(),
-                AddressMapper.toEntity(dto.address()),
                 LocalDateTime.now(),
                 LocalDateTime.now(),
                 CompanyStatus.ACTIVE
@@ -32,7 +31,6 @@ public class CompanyMapper {
                 entity.getCnpj(),
                 entity.getEmail(),
                 entity.getPhone(),
-                AddressMapper.toDto(entity.getAddress()),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt(),
                 entity.getStatus()

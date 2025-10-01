@@ -28,6 +28,17 @@ public class EmployeeService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
+    public Employee createAdmin(String companyId, String email) {
+        Employee admin = new Employee();
+        admin.setCompanyId(companyId);
+        admin.setName("Administrador");
+        admin.setEmail(email);
+        admin.setRole("ADMIN");
+        admin.setSector("Coordenação");
+        return employeeRepository.save(admin);
+    }
+
+
     public EmployeeDto create(EmployeeCreateDto dto) {
 
         if (dto.companyId() == null || companyRepository.findById(dto.companyId()).isEmpty()) {
@@ -41,7 +52,6 @@ public class EmployeeService {
         User user = new User();
         user.setUsername(savedEmployee.getEmail());
         user.setPassword(passwordEncoder.encode(dto.password()));
-        user.setCompanyId(savedEmployee.getCompanyId());
         user.setEmployeeId(savedEmployee.getId());
         user.setPermission(Permission.valueOf(dto.permission()));
         user.setEnabled(true);
@@ -86,10 +96,18 @@ public class EmployeeService {
             existing.setSector(dto.sector());
             existing.setCompanyId(dto.companyId());
             existing.setUpdatedAt(LocalDateTime.now());
+
             Employee updated = employeeRepository.save(existing);
+
+            userRepository.findByEmployeeId(id).ifPresent(user -> {
+                user.setUsername(updated.getEmail());
+                userRepository.save(user);
+            });
+
             return EmployeeMapper.toDto(updated);
         });
     }
+
 
     public void delete(String id) {
         employeeRepository.deleteById(id);

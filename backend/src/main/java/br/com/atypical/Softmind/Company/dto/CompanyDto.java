@@ -23,9 +23,6 @@ public record CompanyDto(
         @Schema(description = "Telefone de contato da empresa", example = "+55 (11) 91234-5678")
         String phone,
 
-        @Schema(description = "Endereço completo da empresa")
-        AddressDto address,
-
         @Schema(description = "Data de criação do registro", example = "2025-09-02T10:15:30")
         LocalDateTime createdAt,
 

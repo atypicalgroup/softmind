@@ -1,5 +1,6 @@
 package br.com.atypical.Softmind.security.dto;
 
+import br.com.atypical.Softmind.Company.dto.CompanyCreateDto;
 import br.com.atypical.Softmind.shared.enums.Permission;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -12,5 +13,8 @@ public record AdminResponseDto(
         String username,
 
         @Schema(description = "Perfil do usuário", example = "ADMIN")
-        Permission permission
+        Permission permission,
+
+        String companyId,
+        String employeeId
 ) {}

@@ -15,8 +15,5 @@ public record CompanyCreateDto(
         String phone,
 
         @Schema(description = "E-mail de contato da empresa", example = "contato@softmind.com.br")
-        String email,
-
-        @Schema(description = "Endereço da empresa")
-        AddressDto address
+        String email
 ) { }
