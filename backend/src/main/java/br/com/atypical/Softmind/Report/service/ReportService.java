@@ -16,7 +16,9 @@ import br.com.atypical.Softmind.Survey.entities.SurveyResponse;
 import br.com.atypical.Softmind.Survey.repository.SurveyParticipationRepository;
 import br.com.atypical.Softmind.Survey.repository.SurveyRepository;
 import br.com.atypical.Softmind.Survey.repository.SurveyResponseRepository;
+import br.com.atypical.Softmind.security.entities.User;
 import br.com.atypical.Softmind.shared.enums.QuestionType;
+import br.com.atypical.Softmind.shared.exceptions.NotFoundException;
 import br.com.atypical.Softmind.shared.utils.EmojiUtils;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.font.PdfFont;
@@ -69,7 +71,13 @@ public class ReportService {
     private final EmployeeRepository employeeRepository;
 
 
-    public AdminReportDTO getAdminReport(String companyId, LocalDate date) {
+    public AdminReportDTO getAdminReport(LocalDate date, User user) {
+        // pega o employee pelo user
+        Employee creator = employeeRepository.findById(user.getEmployeeId())
+                .orElseThrow(() -> new NotFoundException("Funcionário não encontrado"));
+
+        String companyId = creator.getCompanyId();
+
         var startOfWeek = Optional.ofNullable(date).orElse(LocalDate.now()).with(DayOfWeek.MONDAY).atStartOfDay();
         var endOfWeek = Optional.ofNullable(date).orElse(LocalDate.now()).with(DayOfWeek.SUNDAY).atTime(23, 59, 59);
 
@@ -105,6 +113,7 @@ public class ReportService {
                 .endOfWeek(endOfWeek.toLocalDate())
                 .build();
     }
+
 
     @NotNull
     private static BigDecimal getHealthyPercentage(BigDecimal averageOfPreviousWeek, BigDecimal averageOfWeek) {
@@ -317,52 +326,89 @@ public class ReportService {
         return mostVotedResponses;
     }
 
-    public byte[] generateWeeklySummaryPdf(String companyId, LocalDate date) throws IOException {
-        PdfFont emojiFont = PdfFontFactory.createFont(ResourceUtils.getURL("classpath:DejaVuSans.ttf").toString(), PdfFontFactory.EmbeddingStrategy.PREFER_EMBEDDED);
+    public byte[] generateWeeklySummaryPdf(LocalDate date, User user) throws IOException {
+        Employee creator = employeeRepository.findById(user.getEmployeeId())
+                .orElseThrow(() -> new NotFoundException("Funcionário não encontrado"));
 
-        var reportDTO = getAdminReport(companyId, date);
+        String companyId = creator.getCompanyId();
+
+        PdfFont emojiFont = PdfFontFactory.createFont(
+                ResourceUtils.getURL("classpath:DejaVuSans.ttf").toString(),
+                PdfFontFactory.EmbeddingStrategy.PREFER_EMBEDDED
+        );
+
+        var reportDTO = getAdminReport(date, user);
 
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             PdfWriter writer = new PdfWriter(baos);
             PdfDocument pdf = new PdfDocument(writer);
             Document doc = new Document(pdf);
 
-            Paragraph title = new Paragraph("Resumo, semanal")
+            // Título
+            doc.add(new Paragraph("Resumo semanal")
                     .setFontSize(28)
-                    .setBold();
-            doc.add(title);
+                    .setBold());
 
-            doc.add(new Paragraph("Nesta tela temos o resumo semanal da evolução dos sentimentos dos nossos colegas para um melhor controle de atividades.").setFontSize(12));
+            doc.add(new Paragraph("Nesta tela temos o resumo semanal da evolução dos sentimentos dos nossos colegas para um melhor controle de atividades.")
+                    .setFontSize(12));
             doc.add(new Paragraph(" "));
 
-            Table emometer = new Table(UnitValue.createPercentArray(new float[]{1, 1, 1, 1, 1, 1, 1})).useAllAvailableWidth();
-            emometer.addHeaderCell(new Cell(1, 7).add(new Paragraph("Emocionômetro")).setTextAlignment(TextAlignment.CENTER));
+            // Emocionômetro
+            Table emometer = new Table(UnitValue.createPercentArray(new float[]{1, 1, 1, 1, 1, 1, 1}))
+                    .useAllAvailableWidth();
+            emometer.addHeaderCell(new Cell(1, 7)
+                    .add(new Paragraph("Emocionômetro"))
+                    .setTextAlignment(TextAlignment.CENTER));
 
-            for (DailyResponseDTO daily : reportDTO.getSurveySummary().getFirst().getQuestionResponses().getFirst().getDailyResponses()) {
-                emometer.addCell(new Cell().add(new Paragraph(daily.getDate().substring(5))).setTextAlignment(TextAlignment.CENTER));
+            // Cabeçalho com datas
+            for (DailyResponseDTO daily : reportDTO.getSurveySummary()
+                    .getFirst().getQuestionResponses().getFirst().getDailyResponses()) {
+                emometer.addCell(new Cell()
+                        .add(new Paragraph(daily.getDate().substring(5)))
+                        .setTextAlignment(TextAlignment.CENTER));
             }
 
+            // Emojis por dia
             for (DailyResponseDTO daily : extractHealthyQuestion(reportDTO)) {
-                String emoji = daily.getRanking().isEmpty() ? "" : EmojiUtils.mapDescriptionToEmoji(daily.getRanking().getFirst().getResponse());
-                emometer.addCell(new Cell().add(new Paragraph(emoji).setFont(emojiFont).setFontSize(20)).setTextAlignment(TextAlignment.CENTER));
+                String emoji = daily.getRanking().isEmpty() ? "" :
+                        EmojiUtils.mapDescriptionToEmoji(daily.getRanking().getFirst().getResponse());
+                emometer.addCell(new Cell()
+                        .add(new Paragraph(emoji).setFont(emojiFont).setFontSize(20))
+                        .setTextAlignment(TextAlignment.CENTER));
             }
 
             doc.add(emometer);
             doc.add(new Paragraph(" "));
 
-            Table dataBlocks = new Table(UnitValue.createPercentArray(new float[]{1, 1})).useAllAvailableWidth();
-            dataBlocks.addCell(new Cell().add(new Paragraph("Dados")).setTextAlignment(TextAlignment.CENTER).setBold().setFontSize(18).setBackgroundColor(ColorConstants.GREEN));
-            dataBlocks.addCell(new Cell().add(new Paragraph("Dados")).setTextAlignment(TextAlignment.CENTER).setBold().setFontSize(18).setBackgroundColor(ColorConstants.YELLOW));
-            dataBlocks.addCell(new Cell().add(new Paragraph(reportDTO.getSurveySummary().getFirst().getEngagement() + "%\nPercentual de engajamento dos nossos colegas")).setTextAlignment(TextAlignment.CENTER).setFontSize(24).setBackgroundColor(ColorConstants.GREEN));
+            // Blocos de dados
+            Table dataBlocks = new Table(UnitValue.createPercentArray(new float[]{1, 1}))
+                    .useAllAvailableWidth();
 
-            String destaque = "";
-            destaque = EmojiUtils.mapDescriptionToEmoji(reportDTO.getWeekSummary().getMostVotedResponses().get(HEALTHY_QUESTION).entrySet().stream().findFirst().get().getKey());
+            dataBlocks.addCell(new Cell().add(new Paragraph("Dados"))
+                    .setTextAlignment(TextAlignment.CENTER).setBold().setFontSize(18).setBackgroundColor(ColorConstants.GREEN));
 
-            dataBlocks.addCell(new Cell().add(new Paragraph(destaque + "\nSentimento e destaque nesta semana")).setFont(emojiFont).setFontSize(20).setTextAlignment(TextAlignment.CENTER).setFontSize(20).setBackgroundColor(ColorConstants.YELLOW));
+            dataBlocks.addCell(new Cell().add(new Paragraph("Dados"))
+                    .setTextAlignment(TextAlignment.CENTER).setBold().setFontSize(18).setBackgroundColor(ColorConstants.YELLOW));
+
+            dataBlocks.addCell(new Cell().add(new Paragraph(reportDTO.getSurveySummary().getFirst().getEngagement()
+                            + "%\nPercentual de engajamento dos nossos colegas"))
+                    .setTextAlignment(TextAlignment.CENTER).setFontSize(24).setBackgroundColor(ColorConstants.GREEN));
+
+            String destaque = EmojiUtils.mapDescriptionToEmoji(
+                    reportDTO.getWeekSummary().getMostVotedResponses().get(HEALTHY_QUESTION)
+                            .entrySet().stream().findFirst().get().getKey()
+            );
+
+            dataBlocks.addCell(new Cell().add(new Paragraph(destaque + "\nSentimento e destaque nesta semana"))
+                    .setFont(emojiFont).setFontSize(20).setTextAlignment(TextAlignment.CENTER).setBackgroundColor(ColorConstants.YELLOW));
+
             doc.add(dataBlocks);
             doc.add(new Paragraph(" "));
 
-            doc.add(new Paragraph("O bem-estar emocional da nossa equipe " + getHealthLabel(reportDTO)).setFontSize(16).setBackgroundColor(ColorConstants.GREEN));
+            // Resumo final
+            doc.add(new Paragraph("O bem-estar emocional da nossa equipe " + getHealthLabel(reportDTO))
+                    .setFontSize(16)
+                    .setBackgroundColor(ColorConstants.GREEN));
 
             doc.close();
             return baos.toByteArray();
@@ -371,15 +417,24 @@ public class ReportService {
         }
     }
 
+
+    private List<DailyResponseDTO> extractHealthyQuestion(AdminReportDTO reportDTO) {
+        return reportDTO.getSurveySummary().getFirst()
+                .getQuestionResponses().stream()
+                .filter(q -> q.getQuestion().equalsIgnoreCase(HEALTHY_QUESTION))
+                .findFirst()
+                .orElse(new QuestionResponseDTO())
+                .getDailyResponses();
+    }
+
     private String getHealthLabel(AdminReportDTO reportDTO) {
         if (reportDTO.getHealthyPercentage().compareTo(BigDecimal.ZERO) == 0) {
             return "manteve-se estável.";
         }
 
-        return reportDTO.getHealthyPercentage().compareTo(BigDecimal.ZERO) > 0 ? "cresceu " + reportDTO.getHealthyPercentage() + "%." : "diminuiu " + reportDTO.getHealthyPercentage().negate() + "%.";
+        return reportDTO.getHealthyPercentage().compareTo(BigDecimal.ZERO) > 0
+                ? "cresceu " + reportDTO.getHealthyPercentage() + "%."
+                : "diminuiu " + reportDTO.getHealthyPercentage().negate() + "%.";
     }
 
-    private List<DailyResponseDTO> extractHealthyQuestion(AdminReportDTO reportDTO) {
-        return reportDTO.getSurveySummary().getFirst().getQuestionResponses().stream().filter(q -> q.getQuestion().equalsIgnoreCase(HEALTHY_QUESTION)).findFirst().orElse(new QuestionResponseDTO()).getDailyResponses();
-    }
 }

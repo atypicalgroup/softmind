@@ -2,11 +2,13 @@ package br.com.atypical.Softmind.Report.controller;
 
 import br.com.atypical.Softmind.Report.dto.AdminReportDTO;
 import br.com.atypical.Softmind.Report.service.ReportService;
+import br.com.atypical.Softmind.security.entities.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,25 +25,30 @@ import java.util.Map;
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminReportController {
 
-    private final ReportService service;
+    private final ReportService reportService;
 
     @Operation(
-            summary = "Lista todas as empresas",
-            description = "Retorna a lista completa de empresas cadastradas."
+            summary = "Resumo semanal de bem-estar",
+            description = "Retorna o relatório agregado semanal da empresa do admin autenticado"
     )
     @GetMapping
-    public ResponseEntity<AdminReportDTO> report(@RequestParam String companyId,
-                                                 @RequestParam(required = false) LocalDate date) {
-        return ResponseEntity.ok(service.getAdminReport(companyId, date));
+    public ResponseEntity<AdminReportDTO> getReport(@RequestParam(required = false) LocalDate date,
+                                                    @AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(reportService.getAdminReport(date, user));
     }
 
     @Operation(
-            summary = "Lista todas as empresas",
-            description = "Retorna a lista completa de empresas cadastradas."
+            summary = "Exportar relatório semanal em PDF",
+            description = "Gera e retorna o relatório semanal em PDF para a empresa do admin autenticado"
     )
     @GetMapping("/pdf")
-    public ResponseEntity<byte[]> reportPDF(@RequestParam String companyId,
-                                            @RequestParam(required = false) LocalDate date) throws IOException {
-        return ResponseEntity.ok(service.generateWeeklySummaryPdf(companyId, date));
+    public ResponseEntity<byte[]> reportPDF(@RequestParam(required = false) LocalDate date,
+                                            @AuthenticationPrincipal User user) throws IOException {
+        byte[] pdfBytes = reportService.generateWeeklySummaryPdf(date, user);
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=relatorio-semanal.pdf")
+                .body(pdfBytes);
     }
 }
+
