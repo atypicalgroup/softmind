@@ -74,6 +74,4 @@ public class PsychologistController {
     public ResponseEntity<PsychologistDto> atualizarPsicologo(@PathVariable String name, @RequestBody @Valid PsychologistDto psychologistDto){
         return ResponseEntity.ok(psychologistService.updatePsychologist(name, psychologistDto));
     }
-
-
 }

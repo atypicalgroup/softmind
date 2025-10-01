@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 public class SurveyMapper {
     public Survey toEntity(SurveyCreateDto dto) {
         Survey survey = new Survey();
-        survey.setCompanyId(dto.companyId());
         survey.setTitle(dto.title());
         survey.setDescription(dto.description());
         survey.setQuestions(

@@ -1,13 +1,17 @@
 package br.com.atypical.Softmind.Survey.dto;
 
-import br.com.atypical.Softmind.Survey.entities.Question;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
 
+@Schema(description = "Dados para criação de uma nova pesquisa")
 public record SurveyCreateDto(
-        String companyId,
+        @Schema(description = "Título da pesquisa", example = "Pesquisa de Clima Organizacional")
         String title,
+
+        @Schema(description = "Descrição da pesquisa", example = "Pesquisa sobre satisfação dos colaboradores")
         String description,
+
+        @Schema(description = "Questões da pesquisa")
         List<QuestionDto> questions
-) {
-}
+) {}

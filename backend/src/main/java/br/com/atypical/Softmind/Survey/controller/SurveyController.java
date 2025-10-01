@@ -3,6 +3,7 @@ package br.com.atypical.Softmind.Survey.controller;
 import br.com.atypical.Softmind.Survey.dto.SurveyCreateDto;
 import br.com.atypical.Softmind.Survey.dto.SurveyDto;
 import br.com.atypical.Softmind.Survey.service.SurveyService;
+import br.com.atypical.Softmind.security.entities.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -10,7 +11,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,8 +37,16 @@ public class SurveyController {
     )
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public SurveyDto create(@RequestBody SurveyCreateDto dto) {
-        return service.createSurvey(dto);
+    public ResponseEntity<SurveyDto> createSurvey(@RequestBody SurveyCreateDto dto,
+                                                  @AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(service.createSurvey(dto, user));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/{id}/activate")
+    @Operation(summary = "Ativa uma pesquisa já criada")
+    public ResponseEntity<SurveyDto> activateSurvey(@PathVariable String id) {
+        return ResponseEntity.ok(service.activateSurvey(id));
     }
 
     @Operation(
@@ -82,11 +93,9 @@ public class SurveyController {
             tags = "Funcionários"
     )
     @PreAuthorize("hasRole('EMPLOYEE')")
-    @GetMapping("/{employeeId}/{surveyId}")
-    public SurveyDto getDailySurvey(
-            @PathVariable String employeeId,
-            @PathVariable String surveyId
-    ) {
-        return service.getSurveyForEmployee(surveyId);
+    @GetMapping("/daily")
+    public SurveyDto getDailySurvey(@AuthenticationPrincipal User user) {
+        return service.getActiveSurveyForEmployee(user);
     }
+
 }
