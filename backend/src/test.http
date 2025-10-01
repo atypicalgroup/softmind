@@ -1,0 +1,5 @@
+### Buscar filmes por sentimento
+GET http://localhost:8080/api/movies/Neutro
+
+### Buscar vídeos do YouTube
+GET http://localhost:8080/suggestion/physical-activities

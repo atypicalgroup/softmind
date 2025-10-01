@@ -64,19 +64,15 @@ public class MovieService {
                 .toList();
     }
 
-
     private String mapFeelingToGenreId(String sentimento) {
         return switch (sentimento.toLowerCase()) {
-            case "Feliz" -> String.valueOf(List.of("10752"));
-            case "Neutro" -> String.valueOf(List.of("18", "10749", "99"));
-            case "Triste" -> "12";
-            case "Raiva" -> "28";
-            case "Apaixonado" -> "10749";
-            case "Cansado" -> "16";
-            default -> "14";
+            case "feliz" -> "35,12,16,10751";
+            case "neutro" -> "18,99,36,14";
+            case "triste" -> "35,10749,16,18";
+            case "raiva" -> "28,878,12,35";
+            case "apaixonado" -> "10749,10402,18";
+            case "cansado" -> "16,10751,35";
+            default -> "14,12,35";
         };
     }
-
-
-
 }

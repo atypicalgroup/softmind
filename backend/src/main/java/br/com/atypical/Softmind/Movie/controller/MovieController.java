@@ -18,11 +18,6 @@ public class MovieController {
 
     private final MovieService movieService;
 
-    /**
-     * Testa busca de filmes por sentimento
-     * Exemplo de chamada:
-     *   GET /api/movies/suggestions?sentimento=feliz
-     */
     @GetMapping("/suggestions")
     public ResponseEntity<List<MovieDto>> getSuggestions(@RequestParam String sentimento) {
         List<MovieDto> movies = movieService.getMoviesByFeeling(sentimento);
