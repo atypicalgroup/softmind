@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { NgOptimizedImage } from "@angular/common";
+import { AuthService } from '../../../auth/auth-service';
 
 @Component({
   selector: 'app-sidebar',
@@ -10,4 +11,10 @@ import { NgOptimizedImage } from "@angular/common";
 })
 export class Sidebar {
 
+  constructor(private authService: AuthService, private router: Router ){}
+
+  onLogout():void{
+    this.authService.logout();
+    this.router.navigate(['login'])
+  }
 }

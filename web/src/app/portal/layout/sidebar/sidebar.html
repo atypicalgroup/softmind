@@ -47,6 +47,43 @@
           </li>
         </ul>
       </li>
+
+      <li class="nav-item dropdown">
+        <a routerLink="/portal/suporte" class="nav-link dropdown-toggle" id="dropDownLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="fa-solid fa-users"></i>
+          Ponto de Suporte</a>
+        <ul class="dropdown-menu" aria-labelledby="dropDownLink">
+          <li>
+            <a href="#" class="dropdown-item" routerLink="/portal/suporte/cadastrar">
+              <i class="fa-solid fa-user-plus"></i>
+              Cadastrar
+            </a>
+          </li>
+          <li><a href="#" class="dropdown-item" routerLink="/portal/suporte/atualizar"><i class="fa-solid fa-users-gear"></i> Atualizar</a></li>
+          <li>
+            <a href="#" class="dropdown-item" routerLink="/portal/suporte/delete">
+              <i class="fa-solid fa-user-minus"></i>
+              Deletar
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <li class="nav-item dropdown">
+        <a routerLink="/portal/pesquisa" class="nav-link dropdown-toggle" id="dropDownLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="fa-solid fa-users"></i>
+          Pesquisa</a>
+        <ul class="dropdown-menu" aria-labelledby="dropDownLink">
+          <li>
+            <a class="dropdown-item" routerLink="/portal/pesquisa/cadastrar">
+              <i class="fa-solid fa-user-plus"></i>
+              Criar nova pesquisa
+            </a>
+          </li>
+          <li><a class="dropdown-item" routerLink="/portal/pesquisa/gerenciar-pesquisas"><i class="fa-solid fa-users-gear"></i>Gerenciar Pesquisa</a></li>
+
+        </ul>
+      </li>
     </ul>
   </nav>
   <hr>
@@ -69,7 +106,7 @@
   </div>
 
   <footer class="nav-footer">
-      <button class="btn btn-degrade"> Desconectar
+      <button class="btn btn-degrade" (click)="onLogout()"> Desconectar
         <i class="fa-solid fa-arrow-right"></i>
       </button>
   </footer>
