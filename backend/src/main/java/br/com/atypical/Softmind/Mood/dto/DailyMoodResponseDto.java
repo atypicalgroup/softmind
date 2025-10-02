@@ -12,4 +12,4 @@ public record DailyMoodResponseDto(
 
         @Schema(description = "Sentimento textual", example = "Feliz e animado")
         String feeling
-) {}
+){}

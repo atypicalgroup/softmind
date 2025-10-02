@@ -7,12 +7,12 @@ import br.com.atypical.Softmind.security.dto.LoginResponseDto;
 import br.com.atypical.Softmind.security.entities.User;
 import br.com.atypical.Softmind.security.helpers.jwt.JwtService;
 import br.com.atypical.Softmind.security.service.UserService;
-import br.com.atypical.Softmind.shared.enums.Permission;
 import br.com.atypical.Softmind.shared.exceptions.BadRequestException;
 import br.com.atypical.Softmind.shared.exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,9 +35,18 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
 
     @Operation(
-            summary = "Realiza login do usuário",
-            description = "Autentica o usuário e retorna um JWT para uso nas próximas requisições",
-            tags = "Login"
+            summary = "Login do usuário",
+            description = "Autentica o usuário com e-mail e senha e retorna um JWT. O token contém também o nome do funcionário vinculado.",
+            tags = {"Login"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Credenciais de acesso",
+                    required = true
+            ),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Login realizado com sucesso. Retorna o JWT e dados do usuário"),
+                    @ApiResponse(responseCode = "401", description = "Credenciais inválidas", content = @Content),
+                    @ApiResponse(responseCode = "404", description = "Usuário não encontrado", content = @Content)
+            }
     )
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequest) {
@@ -48,36 +57,32 @@ public class AuthController {
                             loginRequest.password()
                     )
             );
-            String token = jwtService.generateToken(loginRequest.username());
-            return ResponseEntity.ok(
-                    new LoginResponseDto(token, loginRequest.username())
+
+            // Busca usuário e employee vinculado
+            User user = userService.findByUsername(loginRequest.username())
+                    .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
+
+            String employeeName = "N/A";
+            if (user.getEmployeeId() != null) {
+                employeeName = userService.findEmployeeNameById(user.getEmployeeId())
+                        .orElse("N/A"); // você cria esse método no service para buscar o nome
+            }
+
+            // Cria token com claims extras
+            String token = jwtService.generateTokenWithClaims(
+                    loginRequest.username(),
+                    Map.of("name", employeeName)
             );
+
+            return ResponseEntity.ok(
+                    new LoginResponseDto(token, loginRequest.username(), employeeName)
+            );
+
         } catch (AuthenticationException e) {
             return ResponseEntity.status(401).build();
         }
     }
 
-    @Operation(
-            summary = "Obtém dados do usuário autenticado",
-            description = "Retorna informações básicas do usuário atual (via token JWT).",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Dados do usuário retornados"),
-                    @ApiResponse(responseCode = "404", description = "Usuário não encontrado", content = @Content)
-            },
-            tags = "Funcionários"
-    )
-    @GetMapping("/me")
-    public ResponseEntity<?> me(@AuthenticationPrincipal User userDetails) {
-        return userService.findByUsername(userDetails.getUsername())
-                .map(user -> ResponseEntity.ok(Map.of(
-                        "id", user.getId(),
-                        "username", user.getUsername(),
-                        "role", user.getPermission(),
-                        "employeeId", user.getEmployeeId(),
-                        "mustChangePassword", user.isMustChangePassword()
-                )))
-                .orElse(ResponseEntity.status(404).body(Map.of("error", "Usuário não encontrado")));
-    }
 
     @Operation(
             summary = "Registra um novo administrador",
