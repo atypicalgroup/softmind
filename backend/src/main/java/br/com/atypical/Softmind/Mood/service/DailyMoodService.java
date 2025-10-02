@@ -5,6 +5,7 @@ import br.com.atypical.Softmind.Mood.entities.DailyMood;
 import br.com.atypical.Softmind.Mood.repository.DailyMoodRepository;
 import br.com.atypical.Softmind.Movie.service.MovieService;
 import br.com.atypical.Softmind.Movie.dto.MovieDto;
+import br.com.atypical.Softmind.Suggestion.service.SuggestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +17,7 @@ import java.util.Map;
 public class DailyMoodService {
 
     private final DailyMoodRepository repository;
-    private final MovieService movieService;
+    private final SuggestionService suggestionService;
 
     public Map<String, Object> saveAndRecommend(String companyId, String employeeId, DailyMoodRequestDto dto) {
         DailyMood mood = new DailyMood();
@@ -26,12 +27,12 @@ public class DailyMoodService {
         mood.setFeeling(dto.feeling());
         repository.save(mood);
 
-        var movies = movieService.getMoviesByFeeling(dto.feeling());
+        var suggestions = suggestionService.getSuggestionsByMood(dto.feeling());
 
         return Map.of(
                 "emoji", dto.emoji(),
                 "feeling", dto.feeling(),
-                "recommendations", movies
+                "recommendations", suggestions
         );
     }
 

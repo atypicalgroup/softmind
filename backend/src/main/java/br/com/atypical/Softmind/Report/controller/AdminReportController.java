@@ -21,7 +21,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/reports")
 @RequiredArgsConstructor
-@Tag(name = "Report", description = "Relatórios e Análises")
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminReportController {
 
@@ -29,7 +28,8 @@ public class AdminReportController {
 
     @Operation(
             summary = "Resumo semanal de bem-estar",
-            description = "Retorna o relatório agregado semanal da empresa do admin autenticado"
+            description = "Retorna o relatório agregado semanal da empresa do admin autenticado",
+            tags = "Administração"
     )
     @GetMapping
     public ResponseEntity<AdminReportDTO> getReport(@RequestParam(required = false) LocalDate date,
@@ -39,7 +39,9 @@ public class AdminReportController {
 
     @Operation(
             summary = "Exportar relatório semanal em PDF",
-            description = "Gera e retorna o relatório semanal em PDF para a empresa do admin autenticado"
+            description = "Gera e retorna o relatório semanal em PDF para a empresa do admin autenticado",
+            tags = "Administração"
+
     )
     @GetMapping("/pdf")
     public ResponseEntity<byte[]> reportPDF(@RequestParam(required = false) LocalDate date,

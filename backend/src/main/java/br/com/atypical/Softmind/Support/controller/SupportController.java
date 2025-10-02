@@ -48,7 +48,7 @@ public class SupportController {
             tags = "Funcionários"
     )
     @PreAuthorize("hasAnyRole('EMPLOYEE')")
-    @GetMapping("/support-point")
+    @GetMapping("/support-list")
     public ResponseEntity<List<Support>> listSupportAll() {
         return ResponseEntity.ok(service.listSupportAll());
     }

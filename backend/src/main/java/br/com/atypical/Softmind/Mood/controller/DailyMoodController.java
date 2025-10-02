@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/mood")
-@Tag(name = "Daily Mood", description = "Endpoints para humor diário")
 public class DailyMoodController {
 
     private final DailyMoodService dailyMoodService;
@@ -28,7 +27,8 @@ public class DailyMoodController {
 
     @Operation(
             summary = "Registra humor diário e retorna recomendações de filmes",
-            description = "O companyId e employeeId são preenchidos automaticamente do usuário autenticado"
+            description = "O companyId e employeeId são preenchidos automaticamente do usuário autenticado",
+            tags = "Funcionários"
     )
     @PostMapping("/daily/recommendations")
     public ResponseEntity<?> saveMoodAndGetRecommendations(

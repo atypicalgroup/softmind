@@ -75,21 +75,12 @@ public class EmployeeController {
             },
             tags = "Administração"
     )
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<EmployeeDto> getById(@PathVariable String id) {
         return employeeService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
-    }
-
-    @Operation(
-            summary = "Lista funcionários por empresa",
-            description = "Retorna todos os funcionários vinculados a uma empresa específica.",
-            tags = "Administração"
-    )
-    @GetMapping("/company/{companyId}")
-    public ResponseEntity<List<EmployeeDto>> getByCompany(@PathVariable String companyId) {
-        return ResponseEntity.ok(employeeService.findByCompanyId(companyId));
     }
 
     @Operation(
@@ -101,7 +92,7 @@ public class EmployeeController {
             },
             tags = "Administração"
     )
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/{email}")
     public ResponseEntity<EmployeeDto> getByEmail(@PathVariable String email) {
         return employeeService.findByEmail(email)
