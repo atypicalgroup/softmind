@@ -26,6 +26,10 @@ public class SupportService {
         return repository.findAll();
     }
 
+    public List<Support> listSupportAll() {
+        return repository.findAll();
+    }
+
     public Support update(String id, SupportCreateDto dto) {
         Support existing = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Ponto de apoio não encontrado"));
