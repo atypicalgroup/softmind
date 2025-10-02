@@ -3,7 +3,7 @@
     <div class="card-body">
       <h3 class="card-title text-center mb-4">Softmind Admin</h3>
 
-      <form>
+      <form (ngSubmit)="onSubmit()">
         <div class="mb-3">
           <label for="email" class="form-label">E-mail</label>
           <input
@@ -11,6 +11,8 @@
             id="email"
             class="form-control"
             placeholder="Digite seu e-mail"
+            [(ngModel)]="username"
+            name="email"
             required
           />
         </div>
@@ -22,11 +24,13 @@
             id="password"
             class="form-control"
             placeholder="Digite sua senha"
+            [(ngModel)]="password"
+            name="password"
             required
           />
         </div>
 
-        <button class="btn btn-primary" type="button">
+        <button class="btn btn-primary w-100" type="submit">
                 Entrar
         </button>
       </form>

@@ -18,9 +18,9 @@
     }
   }
 
-  .cards-container {
+  .kpi-cards {
     display: grid;
-    grid-template-columns: repeat(4, 1fr); 
+    grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
   }
 
@@ -30,6 +30,8 @@
   .card {
     border-radius: 10px;
     transition: transform 0.2s ease-in-out;
+    color: $white;
+    background: $bg-dark;
 
     &:hover {
       transform: translateY(-3px);
@@ -76,12 +78,15 @@
   // Tabela de setores
   table {
     th {
+      color: #ddd;
       font-weight: 600;
-      background-color: #f8f9fa;
+      background-color: $dark;
     }
 
     td {
       vertical-align: middle;
+      background-color: #495057;
+      color: #ddd;
     }
   }
 }

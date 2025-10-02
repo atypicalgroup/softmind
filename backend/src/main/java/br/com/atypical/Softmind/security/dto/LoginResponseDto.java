@@ -5,9 +5,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "Resposta da autenticação")
 public record LoginResponseDto(
 
-        @Schema(description = "JWT para uso nas próximas requisições")
+        @Schema(description = "Token JWT gerado", example = "eyJhbGciOiJIUzI1NiJ9...")
         String token,
 
-        @Schema(description = "Usuário autenticado", example = "admin@softmind.com")
-        String username
+        @Schema(description = "Usuário autenticado (e-mail)", example = "maria.silva@empresa.com.br")
+        String username,
+
+        @Schema(description = "Nome do funcionário", example = "Maria da Silva")
+        String name
 ) {}

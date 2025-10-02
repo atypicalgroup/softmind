@@ -6,7 +6,7 @@ import { tap } from 'rxjs/operators';
 interface User {
   id: string;
   name: string;
-  email: string;
+  username: string;
   token: string;
 }
 
@@ -14,15 +14,15 @@ interface User {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8000/api/auth';
+  private apiUrl = 'http://localhost:8000/auth';
 
   private userSubject = new BehaviorSubject<User | null>(null);
   user$ = this.userSubject.asObservable();
 
   constructor(private http: HttpClient) {}
 
-  login(email: string, password: string): Observable<User>{
-      return this.http.post<User>(`${this.apiUrl}/login`, { email, password}).pipe(
+  login(username: string, password: string): Observable<User>{
+      return this.http.post<User>(`${this.apiUrl}/login`, { username, password}).pipe(
           tap(user =>{
             this.userSubject.next(user);
             localStorage.setItem('usuario', JSON.stringify(user));
