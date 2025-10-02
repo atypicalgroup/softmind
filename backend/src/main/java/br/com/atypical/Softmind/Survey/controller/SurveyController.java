@@ -21,7 +21,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/surveys")
 @RequiredArgsConstructor
-@Tag(name = "Pesquisa", description = "Gerenciamento de Pesquisas (Surveys)")
 public class SurveyController {
 
     private final SurveyService service;
@@ -33,7 +32,8 @@ public class SurveyController {
                     @ApiResponse(responseCode = "200", description = "Pesquisa criada com sucesso",
                             content = @Content(schema = @Schema(implementation = SurveyDto.class))),
                     @ApiResponse(responseCode = "400", description = "Dados inválidos", content = @Content)
-            }
+            },
+            tags = "Administração"
     )
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
@@ -44,7 +44,7 @@ public class SurveyController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{id}/activate")
-    @Operation(summary = "Ativa uma pesquisa já criada")
+    @Operation(summary = "Ativa uma pesquisa já criada", tags = "Administração")
     public ResponseEntity<SurveyDto> activateSurvey(@PathVariable String id) {
         return ResponseEntity.ok(service.activateSurvey(id));
     }
@@ -56,7 +56,8 @@ public class SurveyController {
                     @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso",
                             content = @Content(schema = @Schema(implementation = SurveyDto.class))),
                     @ApiResponse(responseCode = "404", description = "Empresa não encontrada", content = @Content)
-            }
+            },
+            tags = "Administração"
     )
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{companyId}")
@@ -73,7 +74,8 @@ public class SurveyController {
                     @ApiResponse(responseCode = "200", description = "Pesquisa encontrada",
                             content = @Content(schema = @Schema(implementation = SurveyDto.class))),
                     @ApiResponse(responseCode = "404", description = "Pesquisa não encontrada", content = @Content)
-            }
+            },
+            tags = "Administração"
     )
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")

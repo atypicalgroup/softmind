@@ -1,7 +1,7 @@
 package br.com.atypical.Softmind.Suggestion.entities;
 
 import br.com.atypical.Softmind.Movie.entities.Movie;
-import br.com.atypical.Softmind.Psychologist.entities.Psychologist;
+import br.com.atypical.Softmind.Support.entities.Support;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,12 +13,12 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "tb_suggestion")
+@Document(collection = "gs_tb_suggestion")
 public class Suggestion {
 
     @Id
-    private String idSuggestion;
-    private List<Psychologist> psychologist;
+    private String id;
+    private List<Support> supports;
     private List<Movie> movie;
     private List<PhysicalActivity> physicalActivity;
 
