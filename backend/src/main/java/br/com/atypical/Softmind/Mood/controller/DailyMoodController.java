@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/mood")
+@RequestMapping("/mood")
 @Tag(name = "Daily Mood", description = "Endpoints para humor diário")
 public class DailyMoodController {
 
