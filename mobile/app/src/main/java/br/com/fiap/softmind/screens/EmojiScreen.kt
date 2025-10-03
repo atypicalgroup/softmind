@@ -106,7 +106,11 @@ fun EmojiScreen(
 
         EmojiCardDoctor(
             onClick = {
+
                 if (primaryFeeling != null && secondaryFeeling != null) {
+
+                 {
+
                     viewModel.loadRecommendations(
                         emoji = primaryEmoji!!,
                         feeling = primaryFeeling!!
