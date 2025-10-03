@@ -33,13 +33,13 @@ public class AdminReportDTO {
 
     @Schema(
             description = "Data de início da semana analisada",
-            example = "2025-09-22"
+            example = "2025-09-20"
     )
     private LocalDate startOfWeek;
 
     @Schema(
             description = "Data de término da semana analisada",
-            example = "2025-09-28"
+            example = "2025-10-03"
     )
     private LocalDate endOfWeek;
 }
