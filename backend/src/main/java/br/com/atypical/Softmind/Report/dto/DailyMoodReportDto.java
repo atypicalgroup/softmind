@@ -9,10 +9,10 @@ import java.util.Map;
 @Schema(description = "Relatório diário de humor e engajamento dos colaboradores")
 public record DailyMoodReportDto(
 
-        @Schema(description = "Data de início do período analisado", example = "2025-09-22")
+        @Schema(description = "Data de início do período analisado", example = "2025-09-20")
         LocalDate startDate,
 
-        @Schema(description = "Data de fim do período analisado", example = "2025-09-28")
+        @Schema(description = "Data de fim do período analisado", example = "2025-10-02")
         LocalDate endDate,
 
         @Schema(description = "Percentual de engajamento dos colaboradores no período", example = "75.50")
