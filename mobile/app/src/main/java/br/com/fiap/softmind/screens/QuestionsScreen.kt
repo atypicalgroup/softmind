@@ -26,7 +26,7 @@ import br.com.fiap.softmind.viewmodel.MoodViewModel
 
 @Composable
 
-fun QuestionsScreen(navController: NavController, viewModel: MoodViewModel = viewModel()){
+fun QuestionsScreen(navController: NavController, viewModel: MoodViewModel){
     data class Question(
         val text: String,
         val options: List<String>
@@ -125,8 +125,6 @@ fun QuestionsScreen(navController: NavController, viewModel: MoodViewModel = vie
 
         if (allQuestionsAnswered){
             QuestionsSendButton(onSendClick = {
-
-
                 navController.navigate("EndScreen")
             })
         }
@@ -138,5 +136,5 @@ fun QuestionsScreen(navController: NavController, viewModel: MoodViewModel = vie
 @Composable
 
 fun QuestionsScreenPreview(){
-    QuestionsScreen(navController = NavHostController(LocalContext.current))
+    QuestionsScreen(navController = NavHostController(LocalContext.current), viewModel())
 }

@@ -43,13 +43,13 @@ import br.com.fiap.softmind.viewmodel.MoodViewModel
 import coil.compose.AsyncImage
 
 @Composable
-fun EndScreen(navController: NavController, viewModel: EndViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+fun EndScreen(navController: NavController, viewModel: MoodViewModel) {
     val movies by viewModel.movies.collectAsState()
 
     // carrega recomendações ao abrir
-    LaunchedEffect(Unit) {
-        viewModel.loadRecommendations("😀", "feliz")
-    }
+//    LaunchedEffect(Unit) {
+//        viewModel.loadRecommendations("😀", "feliz")
+//    }
 
     Box(
         modifier = Modifier
