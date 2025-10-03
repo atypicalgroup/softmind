@@ -73,8 +73,8 @@
     <string name="motivado">Motivated</string>
     <string name="preocupado">Worried</string>
     <string name="estressado">Stressed</string>
-    <string name="Animado">Excited</string>
-    <string name="Feliz">Joyful</string>
+    <string name="animado">Excited</string>
+    <string name="feliz">Joyful</string>
     <string name="muito_leve">Very Light</string>
     <string name="leve">Light</string>
     <string name="media">Medium</string>
