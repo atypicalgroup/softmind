@@ -97,13 +97,11 @@ fun EmojiScreen(
         EmojiCardDoctor(
             onClick = {
                 if (selectedEmoji != null && selectedFeeling != null) {
-                    // Faz o POST para o backend
                     viewModel.loadRecommendations(
                         emoji = selectedEmoji!!,
                         feeling = selectedFeeling!!
                     )
-                    // Depois navega para tela de recomendações
-                    navController.navigate("EndScreen")
+                    navController.navigate("QuestionScreen")
                 }
             }
         )
