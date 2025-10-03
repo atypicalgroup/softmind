@@ -22,7 +22,7 @@ public class MovieService {
 
     private final RestTemplate restTemplate;
 
-
+    //Será implementado melhoria de segurança para ocultar token abaixo
     private static final String API_KEY = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhOWYyY2E4YjZlZTBhNWUzOTI4YjhhZDM5ODc3ZGVjMCIsIm5iZiI6MTc1ODA2Mjg5Ny45MzYsInN1YiI6IjY4YzllOTMxZDA2ZGM0MjE2MGRlODBmZiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.EFBQ5RJCX_AaDACxgMzWNgmzFf3Syc0DNvWNhOiMlB0";
     private static final String TMDB_URL = "https://api.themoviedb.org/3/discover/movie";
 
@@ -66,12 +66,12 @@ public class MovieService {
 
     private String mapFeelingToGenreId(String sentimento) {
         return switch (sentimento.toLowerCase()) {
-            case "feliz" -> "35,12,16,10751";
-            case "neutro" -> "18,99,36,14";
-            case "triste" -> "35,10749,16,18";
-            case "raiva" -> "28,878,12,35";
-            case "apaixonado" -> "10749,10402,18";
-            case "cansado" -> "16,10751,35";
+            case "triste" -> "35,10749,10751,14,16";
+            case "ansioso" -> "35,16,10751,10402,14";
+            case "raiva" -> "35,14,16";
+            case "animado" -> "28,35,12,16";
+            case "medo" -> "10751,16,14";
+            case "cansado" -> "14,16,10751";
             default -> "14,12,35";
         };
     }
