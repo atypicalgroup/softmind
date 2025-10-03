@@ -1,6 +1,5 @@
 package br.com.fiap.softmind.screens
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,8 +32,19 @@ import br.com.fiap.softmind.viewmodel.MoodViewModel
 @Composable
 fun EmojiScreen(
     navController: NavController,
-    viewModel: MoodViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    viewModel: MoodViewModel
 ) {
+
+    LaunchedEffect(Unit) {
+        viewModel.clearPreviousRecommendation()
+    }
+
+    var primaryEmoji by remember { mutableStateOf<String?>(null) }
+    var primaryFeeling by remember { mutableStateOf<String?>(null) }
+
+    var secondaryEmoji by remember { mutableStateOf<String?>(null) }
+    var secondaryFeeling by remember { mutableStateOf<String?>(null) }
+
     var selectedEmoji by remember { mutableStateOf<String?>(null) }
     var selectedFeeling by remember { mutableStateOf<String?>(null) }
 
@@ -48,10 +59,11 @@ fun EmojiScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // PRIMEIRO CARD: estado emocional
         CardSection(
-            foiVerificado = selectedEmoji != null,
-            onClick = { emoji, _ -> selectedEmoji = emoji }, // <-- capturar o emoji
+            foiVerificado = primaryEmoji != null,
+            onClick = { emoji, feeling -> primaryEmoji = emoji
+                        primaryFeeling = feeling
+                      },
             perguntaText = stringResource(R.string.emoji_hoje),
             perguntaFontSize = 22.sp,
             cardModifier = Modifier
@@ -69,11 +81,10 @@ fun EmojiScreen(
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        // SEGUNDO CARD: sentimento
+        
         CardSection(
-            foiVerificado = selectedFeeling != null,
-            onClick = { _,feelling -> selectedFeeling = feelling
+            foiVerificado = secondaryFeeling != null,
+            onClick = { _, feelling -> secondaryFeeling = feelling
              },
             perguntaText = stringResource(R.string.emoji_sentir),
             perguntaFontSize = 22.sp,
@@ -93,13 +104,16 @@ fun EmojiScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // BOTÃO DO MÉDICO
         EmojiCardDoctor(
             onClick = {
-                if (selectedEmoji != null && selectedFeeling != null) {
+
+                if (primaryFeeling != null && secondaryFeeling != null) {
+
+                 {
+
                     viewModel.loadRecommendations(
-                        emoji = selectedEmoji!!,
-                        feeling = selectedFeeling!!
+                        emoji = primaryEmoji!!,
+                        feeling = primaryFeeling!!
                     )
                     navController.navigate("QuestionScreen")
                 }
@@ -123,5 +137,5 @@ fun EmojiScreen(
 @Composable
 fun EmojiScreenPreview() {
     val navController = rememberNavController()
-    EmojiScreen(navController = navController)
+    EmojiScreen(navController = navController, viewModel())
 }
