@@ -7,11 +7,13 @@ import br.com.fiap.softmind.data.remote.ApiClient
 import br.com.fiap.softmind.data.remote.dtos.MovieDto
 import br.com.fiap.softmind.data.remote.model.MoodRequest
 import br.com.fiap.softmind.data.remote.model.MoodResponse
+import br.com.fiap.softmind.data.utils.MoodStatusManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
-class MoodViewModel : ViewModel() {
+class MoodViewModel(private val statusManager: MoodStatusManager) : ViewModel() {
     private val _moodResponse = MutableStateFlow<MoodResponse?>(null)
     val moodResponse: StateFlow<MoodResponse?> = _moodResponse
 
@@ -31,6 +33,11 @@ class MoodViewModel : ViewModel() {
             }
 
         }
+    }
+
+    fun hasSubmittedToday(): Boolean {
+        val lastSubmissionDate = statusManager.getLastSubmissionDate()
+        return lastSubmissionDate != null && lastSubmissionDate.isEqual(LocalDate.now())
     }
 
     fun clearPreviousRecommendation(){

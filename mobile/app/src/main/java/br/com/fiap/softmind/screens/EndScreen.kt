@@ -46,11 +46,6 @@ import coil.compose.AsyncImage
 fun EndScreen(navController: NavController, viewModel: MoodViewModel) {
     val movies by viewModel.movies.collectAsState()
 
-    // carrega recomendações ao abrir
-//    LaunchedEffect(Unit) {
-//        viewModel.loadRecommendations("😀", "feliz")
-//    }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -86,6 +81,7 @@ fun EndScreen(navController: NavController, viewModel: MoodViewModel) {
             }
 
             Spacer(modifier = Modifier.height(16.dp))
+
             EndButton(navController = navController)
         }
     }

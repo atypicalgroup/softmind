@@ -42,11 +42,7 @@ fun EmojiScreen(
     var primaryEmoji by remember { mutableStateOf<String?>(null) }
     var primaryFeeling by remember { mutableStateOf<String?>(null) }
 
-    var secondaryEmoji by remember { mutableStateOf<String?>(null) }
     var secondaryFeeling by remember { mutableStateOf<String?>(null) }
-
-    var selectedEmoji by remember { mutableStateOf<String?>(null) }
-    var selectedFeeling by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
@@ -59,11 +55,13 @@ fun EmojiScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // CARD 1: Humo Principal (Envia o Emoji e o Feeling)
         CardSection(
             foiVerificado = primaryEmoji != null,
-            onClick = { emoji, feeling -> primaryEmoji = emoji
-                        primaryFeeling = feeling
-                      },
+            onClick = { emoji, feeling ->
+                primaryEmoji = emoji
+                primaryFeeling = feeling
+            },
             perguntaText = stringResource(R.string.emoji_hoje),
             perguntaFontSize = 22.sp,
             cardModifier = Modifier
@@ -81,11 +79,12 @@ fun EmojiScreen(
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-        
+
+        // CARD 2: Sentimento Secundário (Apenas para controle do fluxo)
         CardSection(
             foiVerificado = secondaryFeeling != null,
             onClick = { _, feelling -> secondaryFeeling = feelling
-             },
+            },
             perguntaText = stringResource(R.string.emoji_sentir),
             perguntaFontSize = 22.sp,
             cardModifier = Modifier
@@ -105,12 +104,11 @@ fun EmojiScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         EmojiCardDoctor(
+            // 🛑 CORREÇÃO AQUI: Removemos o bloco de chaves aninhado incorretamente.
             onClick = {
-
                 if (primaryFeeling != null && secondaryFeeling != null) {
 
-                 {
-
+                    // Dispara a API com os dados do Card 1
                     viewModel.loadRecommendations(
                         emoji = primaryEmoji!!,
                         feeling = primaryFeeling!!
@@ -130,12 +128,10 @@ fun EmojiScreen(
     }
 }
 
-@androidx.compose.ui.tooling.preview.Preview(
-    showBackground = true,
-    showSystemUi = false, locale = "pt-rBR"
-)
+
 @Composable
 fun EmojiScreenPreview() {
     val navController = rememberNavController()
-    EmojiScreen(navController = navController, viewModel())
+    // 🛑 CORREÇÃO AQUI: viewModel() precisa ser chamado para criar a instância no Preview
+    EmojiScreen(navController = navController, viewModel = viewModel())
 }
