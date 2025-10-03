@@ -61,9 +61,10 @@ fun EmojiScreen(
 
         CardSection(
             foiVerificado = primaryEmoji != null,
-            onClick = { emoji, feeling -> primaryEmoji = emoji
-                        primaryFeeling = feeling
-                      },
+            onClick = { emoji, feeling ->
+                primaryEmoji = emoji
+                primaryFeeling = feeling
+            },
             perguntaText = stringResource(R.string.emoji_hoje),
             perguntaFontSize = 22.sp,
             cardModifier = Modifier
@@ -81,11 +82,12 @@ fun EmojiScreen(
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         CardSection(
             foiVerificado = secondaryFeeling != null,
-            onClick = { _, feelling -> secondaryFeeling = feelling
-             },
+            onClick = { _, feelling ->
+                secondaryFeeling = feelling
+            },
             perguntaText = stringResource(R.string.emoji_sentir),
             perguntaFontSize = 22.sp,
             cardModifier = Modifier
@@ -109,16 +111,17 @@ fun EmojiScreen(
 
                 if (primaryFeeling != null && secondaryFeeling != null) {
 
-                 {
+                    {
 
-                    viewModel.loadRecommendations(
-                        emoji = primaryEmoji!!,
-                        feeling = primaryFeeling!!
-                    )
-                    navController.navigate("QuestionScreen")
+                        viewModel.loadRecommendations(
+                            emoji = primaryEmoji!!,
+                            feeling = primaryFeeling!!
+                        )
+                        navController.navigate("QuestionScreen")
+                    }
                 }
-            }
-        )
+            })
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -128,7 +131,7 @@ fun EmojiScreen(
             telefoneResponsavel = "0800 123 456"
         )
     }
-}
+
 
 @androidx.compose.ui.tooling.preview.Preview(
     showBackground = true,
