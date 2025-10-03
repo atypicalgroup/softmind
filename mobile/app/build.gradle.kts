@@ -63,6 +63,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
+    implementation("io.coil-kt:coil-compose:2.6.0")
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.7")
     kapt(libs.androidx.room.compiler)
 
     implementation("androidx.compose.material:material-icons-extended:1.6.7") // Verifique e use a sua versão do Compose

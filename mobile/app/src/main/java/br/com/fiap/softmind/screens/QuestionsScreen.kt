@@ -15,16 +15,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import br.com.fiap.softmind.R
 import br.com.fiap.softmind.componentes.questions.BoxQuestions
 import br.com.fiap.softmind.componentes.MindHeader
 import br.com.fiap.softmind.componentes.questions.QuestionsSendButton
+import br.com.fiap.softmind.viewmodel.MoodViewModel
 
 @Composable
 
-fun QuestionsScreen(navController: NavController){
+fun QuestionsScreen(navController: NavController, viewModel: MoodViewModel = viewModel()){
     data class Question(
         val text: String,
         val options: List<String>
@@ -122,7 +124,11 @@ fun QuestionsScreen(navController: NavController){
         }
 
         if (allQuestionsAnswered){
-            QuestionsSendButton(navController = navController)
+            QuestionsSendButton(onSendClick = {
+
+
+                navController.navigate("EndScreen")
+            })
         }
 
     }
