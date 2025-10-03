@@ -21,16 +21,14 @@ import br.com.fiap.softmind.R
 
 @Composable
 fun QuestionsSendButton(
-    navController: NavController
+    onSendClick: () -> Unit
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ){
         Button(
-            onClick = {
-                navController.navigate("EndScreen")
-            },
+            onClick = onSendClick,
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFF82A766)
             ),

@@ -41,6 +41,9 @@ fun EndTrophy(){
 
             Spacer(modifier = Modifier.width(12.dp))
 
+            //o percentual deve vir do backend
+            //pegar o total de funcionarios cadastrados e dividir pelo numero de respostas
+            //e multiplicar por 100
             Text(
                 text = stringResource(id = R.string.parabens3)
                         + " 21% com relação aos seus colegas.",

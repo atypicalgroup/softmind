@@ -1,5 +1,6 @@
 package br.com.fiap.softmind.screens
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import br.com.fiap.softmind.R
@@ -25,16 +27,15 @@ import br.com.fiap.softmind.componentes.emojiScreen.EmojiCardDoctor
 import br.com.fiap.softmind.componentes.emojiScreen.EmojiHeader
 import br.com.fiap.softmind.componentes.emojiScreen.SupportPointsSection
 import br.com.fiap.softmind.ui.theme.BackgroundColor
+import br.com.fiap.softmind.viewmodel.MoodViewModel
 
 @Composable
-fun EmojiScreen(navController: NavController) {
-    var emojiSelecionado1 by remember { mutableStateOf(false) }
-    var emojiSelecionado2 by remember { mutableStateOf(false) }
-
-    // Para fins de exemplo, vamos usar valores fixos:
-    val horarioDoBackend = "Atendimento online 24h"
-    val nomeDoBackend = "Equipe de Apoio SoftMind"
-    val telefoneDoBackend = "0800 123 456"
+fun EmojiScreen(
+    navController: NavController,
+    viewModel: MoodViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+) {
+    var selectedEmoji by remember { mutableStateOf<String?>(null) }
+    var selectedFeeling by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
@@ -47,9 +48,10 @@ fun EmojiScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // PRIMEIRO CARD: estado emocional
         CardSection(
-            foiVerificado = emojiSelecionado1,
-            onClick = { emojiSelecionado1 = true },
+            foiVerificado = selectedEmoji != null,
+            onClick = { emoji, _ -> selectedEmoji = emoji }, // <-- capturar o emoji
             perguntaText = stringResource(R.string.emoji_hoje),
             perguntaFontSize = 22.sp,
             cardModifier = Modifier
@@ -68,9 +70,11 @@ fun EmojiScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // SEGUNDO CARD: sentimento
         CardSection(
-            foiVerificado = emojiSelecionado2,
-            onClick = { emojiSelecionado2 = true },
+            foiVerificado = selectedFeeling != null,
+            onClick = { _,feelling -> selectedFeeling = feelling
+             },
             perguntaText = stringResource(R.string.emoji_sentir),
             perguntaFontSize = 22.sp,
             cardModifier = Modifier
@@ -89,19 +93,28 @@ fun EmojiScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // BOTÃO DO MÉDICO
         EmojiCardDoctor(
             onClick = {
-                navController.navigate("QuestionScreen")
+                if (selectedEmoji != null && selectedFeeling != null) {
+                    // Faz o POST para o backend
+                    viewModel.loadRecommendations(
+                        emoji = selectedEmoji!!,
+                        feeling = selectedFeeling!!
+                    )
+                    // Depois navega para tela de recomendações
+                    navController.navigate("EndScreen")
+                }
             }
         )
+
         Spacer(modifier = Modifier.height(16.dp))
 
         SupportPointsSection(
-            horarioFuncionamento = horarioDoBackend,
-            nomeResponsavel = nomeDoBackend,
-            telefoneResponsavel = telefoneDoBackend
+            horarioFuncionamento = "Atendimento online 24h",
+            nomeResponsavel = "Equipe de Apoio SoftMind",
+            telefoneResponsavel = "0800 123 456"
         )
-
     }
 }
 

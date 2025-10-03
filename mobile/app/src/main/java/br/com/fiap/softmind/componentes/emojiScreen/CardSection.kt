@@ -30,7 +30,7 @@ import br.com.fiap.softmind.R
 @Composable
 fun CardSection(
     foiVerificado: Boolean,
-    onClick: () -> Unit,
+    onClick: (emoji: String, label: String) -> Unit, // devolve emoji + label já pronto
     perguntaText: String,
     perguntaFontSize: TextUnit = 18.sp,
     emojis: List<String>,
@@ -102,15 +102,16 @@ fun CardSection(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     emojis.forEachIndexed { index, emoji ->
+                        val labelText = stringResource(id = labels[index])
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier
-                                .clickable { onClick() }
+                                .clickable { onClick(emoji, labelText) } // devolve direto
                                 .padding(horizontal = 1.dp)
                         ) {
                             Text(text = emoji, fontSize = 28.sp)
                             Text(
-                                text = stringResource(id = labels[index]),
+                                text = labelText,
                                 fontSize = 11.sp,
                                 color = Color.DarkGray
                             )
@@ -127,7 +128,7 @@ fun CardSection(
 fun CardSectionPreview() {
     CardSection(
         foiVerificado = false,
-        onClick = {},
+        onClick = {emoji: String, label: String -> Unit},
         perguntaText = stringResource(R.string.emoji_hoje),
         emojis = listOf("😔", "😟", "😠", "😄", "😱", "🥱"),
         labels = listOf(

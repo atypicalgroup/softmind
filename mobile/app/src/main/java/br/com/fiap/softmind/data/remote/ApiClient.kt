@@ -1,10 +1,12 @@
 package br.com.fiap.softmind.data.remote
 
 import br.com.fiap.softmind.data.remote.api.AuthService
+import br.com.fiap.softmind.data.remote.api.MoodService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 
 object ApiClient {
     private const val BASE_URL = "http://10.0.2.2:8000/"
@@ -28,4 +30,6 @@ object ApiClient {
         .build()
 
     val authService: AuthService = retrofit.create(AuthService::class.java)
+
+    val moodService: MoodService = retrofit.create(MoodService::class.java)
 }

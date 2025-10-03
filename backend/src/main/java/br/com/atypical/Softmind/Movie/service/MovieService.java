@@ -69,7 +69,7 @@ public class MovieService {
             case "triste" -> "35,10749,10751,14,16";
             case "ansioso" -> "35,16,10751,10402,14";
             case "raiva" -> "35,14,16";
-            case "animado" -> "28,35,12,16";
+            case "feliz" -> "28,35,12,16";
             case "medo" -> "10751,16,14";
             case "cansado" -> "14,16,10751";
             default -> "14,12,35";
