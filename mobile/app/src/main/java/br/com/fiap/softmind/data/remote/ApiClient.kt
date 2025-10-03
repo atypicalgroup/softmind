@@ -8,13 +8,18 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiClient {
     private const val BASE_URL = "http://10.0.2.2:8000/"
+    var authToken: String? = null
+    var loggedUserName: String? = null
+    var loggedUsername: String? = null
 
     private val logging = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
     }
 
     private val client = OkHttpClient.Builder()
-        .addInterceptor(logging).build()
+        .addInterceptor(logging)
+        .addInterceptor(AuthInterceptor { authToken })
+        .build()
 
     private val retrofit: Retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
@@ -23,5 +28,4 @@ object ApiClient {
         .build()
 
     val authService: AuthService = retrofit.create(AuthService::class.java)
-
 }

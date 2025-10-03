@@ -12,11 +12,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import br.com.fiap.softmind.R
+import br.com.fiap.softmind.data.remote.ApiClient
 import br.com.fiap.softmind.ui.theme.BackgroundColor
 import br.com.fiap.softmind.ui.theme.WelcomeColor
 
 @Composable
 fun EmojiHeader() {
+
+    val name = ApiClient.loggedUserName ?: "Colega"
+
     Column(
         modifier = Modifier
             .background(BackgroundColor)
@@ -29,7 +33,7 @@ fun EmojiHeader() {
         )
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = stringResource(R.string.saudacao2),
+                text = name,
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Bold
             )

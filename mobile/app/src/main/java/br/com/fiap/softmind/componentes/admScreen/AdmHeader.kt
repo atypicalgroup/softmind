@@ -10,12 +10,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import br.com.fiap.softmind.R
 import br.com.fiap.softmind.componentes.InterFont
+import br.com.fiap.softmind.data.remote.ApiClient
 
 @Composable
 fun AdmHeader(modifier: Modifier){
+    val name = ApiClient.loggedUserName
     Column(){
         Text(
-            text = stringResource(id = R.string.resumo_semanal),
+            text = stringResource(id =  R.string.resumo_semanal),
             color = (Color(0xFF9E9E9E)),
             fontFamily = InterFont,
             fontSize = 28.sp
