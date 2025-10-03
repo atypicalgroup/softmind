@@ -36,6 +36,7 @@ import br.com.fiap.softmind.componentes.loginScreen.LoginTitle
 import br.com.fiap.softmind.componentes.loginScreen.PasswordInputField
 import br.com.fiap.softmind.data.remote.ApiClient
 import br.com.fiap.softmind.data.remote.model.LoginRequest
+import br.com.fiap.softmind.utils.JwtUtils
 import kotlinx.coroutines.launch
 
 @SuppressLint("StringFormatInvalid")
@@ -129,17 +130,21 @@ fun LoginScreen(navController: NavController) {
                                 Log.d("LOGIN", "Token recebido: $token")
                                 Toast.makeText(context, "Login realizado com sucesso", Toast.LENGTH_SHORT).show()
 
-                                // 👉 Aqui você pode salvar o token em DataStore/SharedPreferences
+                                val payload = JwtUtils.decodePayload(token)
+                                ApiClient.authToken = token
+                                ApiClient.loggedUserName = payload?.optString("name")
+                                ApiClient.loggedUsername = payload?.optString("username")
 
-                                // Navegação de acordo com a role
+                                Log.d("LOGIN", "Nome: ${ApiClient.loggedUserName}")
+                                Log.d("LOGIN", "Username: ${ApiClient.loggedUsername}")
+
                                 if (email.contains("admin")) {
                                     navController.navigate("AdminScreen")
                                 } else {
                                     navController.navigate("EmojiScreen")
                                 }
-                            } else {
-                                Toast.makeText(context, "Erro: resposta inválida", Toast.LENGTH_SHORT).show()
                             }
+
                         } else {
                             Toast.makeText(context, "Usuário ou senha incorretos", Toast.LENGTH_SHORT).show()
                         }
