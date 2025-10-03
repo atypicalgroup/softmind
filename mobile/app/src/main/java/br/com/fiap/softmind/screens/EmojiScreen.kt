@@ -57,14 +57,14 @@ fun EmojiScreen(
             cardModifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp),
-            emojis = listOf("😔", "😟", "😠", "😄", "😱", "🥱"),
+            emojis = listOf("😌", "🥱", "😣", "😊", "😰", "😌"),
             labels = listOf(
-                R.string.triste,
-                R.string.ansioso,
-                R.string.raiva,
-                R.string.alegre,
-                R.string.medo,
-                R.string.cansado
+                R.string.motivado,
+                R.string.cansado,
+                R.string.estressado,
+                R.string.animado,
+                R.string.preocupado,
+                R.string.feliz
             )
         )
 
@@ -80,24 +80,27 @@ fun EmojiScreen(
             cardModifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp),
-            emojis = listOf("😌", "🥱", "😣", "😊", "😰", "😌"),
+            emojis = listOf("😔", "😟", "😠", "😄", "😱", "🥱"),
             labels = listOf(
-                R.string.motivado,
-                R.string.cansado,
-                R.string.estressado,
-                R.string.Animado,
-                R.string.preocupado,
-                R.string.Feliz
+                R.string.triste,
+                R.string.ansioso,
+                R.string.raiva,
+                R.string.alegre,
+                R.string.medo,
+                R.string.cansado
             )
+
+
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // BOTÃO DO MÉDICO
         EmojiCardDoctor(
             onClick = {
                 if (selectedEmoji != null && selectedFeeling != null) {
+                    Log.d("EMOJI_SCREEN", "Enviando -> emoji: $selectedEmoji | feeling: $selectedFeeling")
                     viewModel.loadRecommendations(
+
                         emoji = selectedEmoji!!,
                         feeling = selectedFeeling!!
                     )
