@@ -5,6 +5,7 @@ import br.com.atypical.Softmind.Movie.dto.TmdbResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -64,15 +65,31 @@ public class MovieService {
                 .toList();
     }
 
+//    private String mapFeelingToGenreId(String sentimento) {
+//        return switch (sentimento.toLowerCase()) {
+//            case "sad" -> "35,10749,10751,14,16";
+//            case "anxious" -> "35,16,10751,10402,14";
+//            case "anger" -> "28,53,80,18";
+//            case "happy" -> "35,10751,10402,12";
+//            case "fear" -> "27,9648";
+//            case "tired" -> "99,35,10751";
+//            default -> "14,12,35";
+//        };
+//    }
+
+    // MovieService.java
+
     private String mapFeelingToGenreId(String sentimento) {
         return switch (sentimento.toLowerCase()) {
             case "triste" -> "35,10749,10751,14,16";
             case "ansioso" -> "35,16,10751,10402,14";
-            case "raiva" -> "35,14,16";
-            case "feliz" -> "28,35,12,16";
-            case "medo" -> "10751,16,14";
-            case "cansado" -> "14,16,10751";
-            default -> "14,12,35";
+            case "raiva" -> "28,53,80,18"; // Ação/Crime
+            case "alegre" -> "35,10751,10402,12"; // Comédia, Família
+            case "medo" -> "27,9648"; // Terror, Mistério
+            case "cansado" -> "99,35,10751"; // Documentário, Comédia (para relaxar)
+            default -> "14,12,35"; // Default (Fantasia, Aventura, Comédia)
         };
     }
+
+
 }
