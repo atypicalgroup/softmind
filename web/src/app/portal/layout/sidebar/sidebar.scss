@@ -1,4 +1,4 @@
-@use "../../../../variables" as *;
+@use "../../../../style/index" as *;
 
 .sidebar {
   width: 320px;
@@ -132,17 +132,6 @@
         }
       }
 
-    }
-  }
-  .nav-footer {
-    .btn-degrade {
-      width: 100%;
-      background: linear-gradient(135deg, #95d566, #63bfc1);
-      border-radius: 5px;
-      padding: 10px;
-      font-size: 1.2rem;
-      font-weight: 600;
-      color: $bg-dark;
     }
   }
 

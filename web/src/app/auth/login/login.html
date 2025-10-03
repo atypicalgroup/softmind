@@ -1,7 +1,11 @@
 <div class="login-container d-flex justify-content-center align-items-center vh-100">
   <div class="card shadow p-4 login-card">
     <div class="card-body">
-      <h3 class="card-title text-center mb-4">Softmind Admin</h3>
+      <h3 class="card-title text-center mb-4">
+      <img src="" ngSrc="images/logo_portal.png" width="200" height="53" alt="Logo Portal" />
+      </h3>
+
+      <h5 class="card-subtitle text-center p-2">Acesse o portal com seus dados gerenciais</h5>
 
       <form (ngSubmit)="onSubmit()">
         <div class="mb-3">
@@ -30,7 +34,7 @@
           />
         </div>
 
-        <button class="btn btn-primary w-100" type="submit">
+        <button class="btn btn-degrade w-100" type="submit">
                 Entrar
         </button>
       </form>
