@@ -128,7 +128,7 @@ fun CardSection(
 fun CardSectionPreview() {
     CardSection(
         foiVerificado = false,
-        onClick = {emoji: String, label: String -> Unit},
+        onClick = { _, _ -> },
         perguntaText = stringResource(R.string.emoji_hoje),
         emojis = listOf("😔", "😟", "😠", "😄", "😱", "🥱"),
         labels = listOf(
@@ -139,6 +139,5 @@ fun CardSectionPreview() {
             R.string.medo,
             R.string.cansado
         )
-
     )
 }
