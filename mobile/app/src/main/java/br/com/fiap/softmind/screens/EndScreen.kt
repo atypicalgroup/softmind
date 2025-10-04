@@ -59,7 +59,7 @@ fun EndScreen(
 
             HeaderEnd()
             Spacer(modifier = Modifier.height(16.dp))
-            EndTrophy()
+//            EndTrophy()
             Spacer(modifier = Modifier.height(16.dp))
             EndRecommendation()
 

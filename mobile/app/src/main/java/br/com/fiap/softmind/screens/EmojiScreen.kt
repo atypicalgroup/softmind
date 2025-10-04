@@ -97,6 +97,7 @@ fun EmojiScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         // BOTÃO FINAL
+        // BOTÃO FINAL
         EmojiCardDoctor(
             onClick = {
                 if (!alreadyAnswered && selectedEmoji != null && selectedFeeling != null) {
@@ -108,14 +109,16 @@ fun EmojiScreen(
                         emoji = selectedEmoji!!,
                         feeling = selectedFeeling!!
                     )
-                    // ✅ marca como respondido
+                    // ✅ salva no cache
+                    cache.saveMood(surveyId, selectedEmoji!!, selectedFeeling!!)
                     cache.setSurveyAnswered(surveyId)
                     alreadyAnswered = true
                     navController.navigate("QuestionScreen")
                 }
             },
-            enabled = !alreadyAnswered // 🔒 bloqueia botão também
+            enabled = !alreadyAnswered
         )
+
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -128,24 +131,38 @@ fun EmojiScreen(
         Button(
             onClick = {
                 if (selectedEmoji != null && selectedFeeling != null) {
-                    // 🚀 log para debug
                     Log.d("EMOJI_SCREEN", "Enviando para sugestões -> emoji: $selectedEmoji | feeling: $selectedFeeling")
 
-                    // ✅ reenvia para o backend usando seu viewModel
                     viewModel.loadRecommendations(
                         emoji = selectedEmoji!!,
                         feeling = selectedFeeling!!
                     )
 
-                    // ✅ marca como respondido no cache
+                    // ✅ salva no cache
+                    cache.saveMood(surveyId, selectedEmoji!!, selectedFeeling!!)
                     cache.setSurveyAnswered(surveyId)
                     alreadyAnswered = true
 
-                    // 🚀 navega para a tela de sugestões
-                    navController.navigate("SuggestionsScreen")
+                    // 🚀 agora sempre navega para EndScreen
+                    navController.navigate("EndScreen")
                 } else {
-                    // caso não tenha escolhido ainda
-                    Log.w("EMOJI_SCREEN", "Nenhum emoji/feeling selecionado!")
+                    // tenta recuperar do cache caso ainda não tenha nada em memória
+                    val emoji = cache.getEmoji(surveyId)
+                    val feeling = cache.getFeeling(surveyId)
+
+                    if (emoji != null && feeling != null) {
+                        Log.d("EMOJI_SCREEN", "Recuperado do cache -> emoji: $emoji | feeling: $feeling")
+
+                        viewModel.loadRecommendations(
+                            emoji = emoji,
+                            feeling = feeling
+                        )
+
+                        // 🚀 também navega para EndScreen
+                        navController.navigate("EndScreen")
+                    } else {
+                        Log.w("EMOJI_SCREEN", "Nenhum emoji/feeling selecionado!")
+                    }
                 }
             },
             colors = ButtonDefaults.buttonColors(
@@ -158,6 +175,8 @@ fun EmojiScreen(
         ) {
             Text(text = "Ver Sugestões", fontSize = 18.sp)
         }
+
+
 
 
     }

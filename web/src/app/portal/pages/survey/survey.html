@@ -1,1 +1,33 @@
-<p>survey works!</p>
+<div class="card shadow p-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Gerenciador de Pesquisas</h2>
+    <button class="btn btn-primary" routerLink="/portal/suporte/cadastrar">+ Nova Pesquisa</button>
+  </div>
+
+  <table class="table table-striped table-hover align-middle">
+    <thead>
+      <tr>
+        <th>Título</th>
+        <th>Descrição</th>
+        <th>Perguntas</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let survey of surveys">
+        <td>{{ survey.title }}</td>
+        <td>{{ survey.description }}</td>
+        <td>{{ survey.questions.length }}</td>
+        <td>
+          <button class="btn btn-sm btn-info me-2" (click)="viewSurvey(survey)">Visualizar</button>
+          <button class="btn btn-sm btn-warning me-2" (click)="editSurvey(survey)">Editar</button>
+          <button class="btn btn-sm btn-danger" (click)="deleteSurvey(survey)">Excluir</button>
+        </td>
+      </tr>
+
+      <tr *ngIf="surveys.length === 0">
+        <td colspan="4" class="text-center text-muted">Nenhuma pesquisa cadastrada</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,58 @@
+<div class="card shadow p-4">
+  <h2 class="mb-4">Criar Nova Pesquisa</h2>
+
+  <form [formGroup]="surveyForm" (ngSubmit)="onSubmit()">
+
+    <!-- Título -->
+    <div class="mb-3">
+      <label class="form-label">Título</label>
+      <input type="text" formControlName="title" class="form-control" placeholder="Pesquisa de Clima Organizacional">
+    </div>
+
+    <!-- Descrição -->
+    <div class="mb-3">
+      <label class="form-label">Descrição</label>
+      <textarea rows="3" formControlName="description" class="form-control" placeholder="Descrição da pesquisa"></textarea>
+    </div>
+
+    <!-- Perguntas -->
+    <div formArrayName="questions" class="mb-3">
+      <label class="form-label">Perguntas</label>
+
+      <div *ngFor="let question of questions.controls; let i = index" [formGroupName]="i" class="border p-3 mb-3 rounded">
+
+        <div class="mb-2">
+          <label class="form-label">Texto da Pergunta</label>
+          <input type="text" formControlName="text" class="form-control" placeholder="Digite a pergunta">
+        </div>
+
+        <div class="mb-2">
+          <label for="type-{{i}}" class="form-label">Tipo</label>
+          <select id="type-{{i}}" formControlName="type" class="form-select">
+            <option value="TEXT">Texto Aberto</option>
+            <option value="SINGLE_CHOICE">Múltipla Escolha (única)</option>
+            <option value="MULTIPLE_CHOICE">Múltipla Escolha (múltiplas)</option>
+          </select>
+        </div>
+
+        <!-- Opções -->
+        <div formArrayName="options" *ngIf="question.get('type')?.value !== 'TEXT'" class="mb-2">
+          <label class="form-label">Opções</label>
+          <div *ngFor="let option of getOptions(i).controls; let j = index" class="d-flex mb-1">
+            <input type="text" [formControlName]="j" class="form-control me-2" placeholder="Digite uma opção">
+            <button type="button" class="btn btn-danger btn-sm" (click)="removeOption(i, j)">X</button>
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm mt-2" (click)="addOption(i)">+ Adicionar Opção</button>
+        </div>
+
+        <!-- Botão remover pergunta -->
+        <button type="button" class="btn btn-outline-danger btn-sm mt-2" (click)="removeQuestion(i)">Remover Pergunta</button>
+      </div>
+
+      <button type="button" class="btn btn-outline-primary btn-sm mt-2" (click)="addQuestion()">+ Nova Pergunta</button>
+    </div>
+
+    <!-- Botão salvar -->
+    <button type="submit" class="btn btn-success w-100">Salvar Pesquisa</button>
+  </form>
+</div>
