@@ -120,9 +120,8 @@ public class ReportService {
         }
         long total = moods.size();
         long soma = moods.stream()
-                .mapToInt(m -> {
-                    return EMOJI_MAPPING.getOrDefault(m.getFeeling().toLowerCase(), 0);
-                })
+                .filter(m -> m.getFeeling() != null)
+                .mapToInt(m -> EMOJI_MAPPING.getOrDefault(m.getFeeling().toLowerCase(), 0))
                 .sum();
         return BigDecimal.valueOf((double) soma / total)
                 .setScale(2, RoundingMode.HALF_EVEN);
