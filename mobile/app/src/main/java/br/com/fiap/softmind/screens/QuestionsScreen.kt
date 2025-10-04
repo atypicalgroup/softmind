@@ -27,13 +27,15 @@ import br.com.fiap.softmind.viewmodel.MoodViewModel
 @Composable
 
 fun QuestionsScreen(navController: NavController, viewModel: MoodViewModel){
+
+
     data class Question(
         val text: String,
         val options: List<String>
     )
 
     val numericAnsewrs = listOf("5", "4", "3", "2", "1")
-    
+
     val frequenceAnswers = listOf(
         stringResource(id = R.string.nunca),
         stringResource(id = R.string.raramente),
