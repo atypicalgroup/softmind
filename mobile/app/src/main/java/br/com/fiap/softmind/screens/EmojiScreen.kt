@@ -51,7 +51,7 @@ fun EmojiScreen(
         // PRIMEIRO CARD: estado emocional
         CardSection(
             foiVerificado = selectedEmoji != null,
-            onClick = { emoji, _ -> selectedEmoji = emoji }, // <-- capturar o emoji
+            onClick = { labels -> selectedEmoji = labels }, // <-- capturar o emoji
             perguntaText = stringResource(R.string.emoji_hoje),
             perguntaFontSize = 22.sp,
             cardModifier = Modifier
@@ -73,7 +73,7 @@ fun EmojiScreen(
         // SEGUNDO CARD: sentimento
         CardSection(
             foiVerificado = selectedFeeling != null,
-            onClick = { _,feelling -> selectedFeeling = feelling
+            onClick = {feelling -> selectedFeeling = feelling
             },
             perguntaText = stringResource(R.string.emoji_sentir),
             perguntaFontSize = 22.sp,
