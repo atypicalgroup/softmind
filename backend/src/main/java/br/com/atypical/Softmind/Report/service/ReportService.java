@@ -4,7 +4,13 @@ import br.com.atypical.Softmind.Employee.entities.Employee;
 import br.com.atypical.Softmind.Employee.repository.EmployeeRepository;
 import br.com.atypical.Softmind.Mood.entities.DailyMood;
 import br.com.atypical.Softmind.Mood.repository.DailyMoodRepository;
-import br.com.atypical.Softmind.Report.dto.*;
+import br.com.atypical.Softmind.Report.dto.AdminReportDTO;
+import br.com.atypical.Softmind.Report.dto.AdminReportWeekSummaryDTO;
+import br.com.atypical.Softmind.Report.dto.DailyResponseDTO;
+import br.com.atypical.Softmind.Report.dto.QuestionResponseDTO;
+import br.com.atypical.Softmind.Report.dto.ResponseDTO;
+import br.com.atypical.Softmind.Report.dto.SurveyParticipantsDTO;
+import br.com.atypical.Softmind.Report.dto.SurveySummaryDTO;
 import br.com.atypical.Softmind.Survey.entities.Question;
 import br.com.atypical.Softmind.Survey.entities.Survey;
 import br.com.atypical.Softmind.Survey.entities.SurveyResponse;
@@ -37,7 +43,12 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,12 +61,11 @@ public class ReportService {
     private final DailyMoodRepository dailyMoodRepository;
 
     private final Map<String, Integer> EMOJI_MAPPING = Map.of(
-            "Apaixonado", 100,
-            "Feliz", 50,
-            "Neutro", 0,
-            "Cansado", -25,
-            "Triste", -50,
-            "Raiva", -100
+            "happy", 100,
+            "sad", 50,
+            "tired", 0,
+            "anxious", -25,
+            "fear", -50
     );
 
     public AdminReportDTO getAdminReport(LocalDate date, User user) {
@@ -110,7 +120,9 @@ public class ReportService {
         }
         long total = moods.size();
         long soma = moods.stream()
-                .mapToInt(m -> EMOJI_MAPPING.getOrDefault(m.getEmoji(), 0))
+                .mapToInt(m -> {
+                    return EMOJI_MAPPING.getOrDefault(m.getFeeling().toLowerCase(), 0);
+                })
                 .sum();
         return BigDecimal.valueOf((double) soma / total)
                 .setScale(2, RoundingMode.HALF_EVEN);
