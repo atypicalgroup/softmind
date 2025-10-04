@@ -33,7 +33,7 @@ fun EndButton(navController: NavController){
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(
-            onClick = { navController.navigate("EmojiScreen") },
+            onClick = { navController.navigate("LoginScreen") },
             modifier = Modifier
                 .width(200.dp)
                 .height(50.dp),
