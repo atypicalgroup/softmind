@@ -1,4 +1,5 @@
 package br.com.atypical.Softmind.Mood.entities;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.EqualsAndHashCode;
