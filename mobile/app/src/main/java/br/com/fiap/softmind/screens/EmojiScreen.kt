@@ -2,19 +2,15 @@ package br.com.fiap.softmind.screens
 
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,6 +22,8 @@ import br.com.fiap.softmind.componentes.emojiScreen.EmojiCardDoctor
 import br.com.fiap.softmind.componentes.emojiScreen.EmojiHeader
 import br.com.fiap.softmind.componentes.emojiScreen.SupportPointsSection
 import br.com.fiap.softmind.ui.theme.BackgroundColor
+import br.com.fiap.softmind.ui.theme.CardColor2
+import br.com.fiap.softmind.utils.SurveyCache
 import br.com.fiap.softmind.viewmodel.MoodViewModel
 
 @Composable
@@ -33,6 +31,12 @@ fun EmojiScreen(
     navController: NavController,
     viewModel: MoodViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
+    val context = LocalContext.current
+    val cache = remember { SurveyCache(context) }
+    val surveyId = "dailySurvey"
+
+    var alreadyAnswered by remember { mutableStateOf(cache.isSurveyAnswered(surveyId)) }
+
     var selectedEmoji by remember { mutableStateOf<String?>(null) }
     var selectedFeeling by remember { mutableStateOf<String?>(null) }
 
@@ -44,13 +48,12 @@ fun EmojiScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         EmojiHeader()
-
         Spacer(modifier = Modifier.height(16.dp))
 
         // PRIMEIRO CARD: estado emocional
         CardSection(
             foiVerificado = selectedEmoji != null,
-            onClick = { labels -> selectedEmoji = labels }, // <-- capturar o emoji
+            onClick = { labels -> if (!alreadyAnswered) selectedEmoji = labels },
             perguntaText = stringResource(R.string.emoji_hoje),
             perguntaFontSize = 22.sp,
             cardModifier = Modifier
@@ -64,7 +67,8 @@ fun EmojiScreen(
                 R.string.animado,
                 R.string.preocupado,
                 R.string.feliz
-            )
+            ),
+            enabled = !alreadyAnswered // 🔒 desabilita se já respondeu
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -72,8 +76,7 @@ fun EmojiScreen(
         // SEGUNDO CARD: sentimento
         CardSection(
             foiVerificado = selectedFeeling != null,
-            onClick = {feelling -> selectedFeeling = feelling
-            },
+            onClick = { feeling -> if (!alreadyAnswered) selectedFeeling = feeling },
             perguntaText = stringResource(R.string.emoji_sentir),
             perguntaFontSize = 22.sp,
             cardModifier = Modifier
@@ -87,25 +90,31 @@ fun EmojiScreen(
                 R.string.alegre,
                 R.string.medo,
                 R.string.cansado
-            )
-
-
+            ),
+            enabled = !alreadyAnswered // 🔒 desabilita se já respondeu
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // BOTÃO FINAL
         EmojiCardDoctor(
             onClick = {
-                if (selectedEmoji != null && selectedFeeling != null) {
-                    Log.d("EMOJI_SCREEN", "Enviando -> emoji: $selectedEmoji | feeling: $selectedFeeling")
+                if (!alreadyAnswered && selectedEmoji != null && selectedFeeling != null) {
+                    Log.d(
+                        "EMOJI_SCREEN",
+                        "Enviando -> emoji: $selectedEmoji | feeling: $selectedFeeling"
+                    )
                     viewModel.loadRecommendations(
-
                         emoji = selectedEmoji!!,
                         feeling = selectedFeeling!!
                     )
+                    // ✅ marca como respondido
+                    cache.setSurveyAnswered(surveyId)
+                    alreadyAnswered = true
                     navController.navigate("QuestionScreen")
                 }
-            }
+            },
+            enabled = !alreadyAnswered // 🔒 bloqueia botão também
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -115,12 +124,49 @@ fun EmojiScreen(
             nomeResponsavel = "Equipe de Apoio SoftMind",
             telefoneResponsavel = "0800 123 456"
         )
+        Spacer(modifier = Modifier.height(12.dp))
+        Button(
+            onClick = {
+                if (selectedEmoji != null && selectedFeeling != null) {
+                    // 🚀 log para debug
+                    Log.d("EMOJI_SCREEN", "Enviando para sugestões -> emoji: $selectedEmoji | feeling: $selectedFeeling")
+
+                    // ✅ reenvia para o backend usando seu viewModel
+                    viewModel.loadRecommendations(
+                        emoji = selectedEmoji!!,
+                        feeling = selectedFeeling!!
+                    )
+
+                    // ✅ marca como respondido no cache
+                    cache.setSurveyAnswered(surveyId)
+                    alreadyAnswered = true
+
+                    // 🚀 navega para a tela de sugestões
+                    navController.navigate("SuggestionsScreen")
+                } else {
+                    // caso não tenha escolhido ainda
+                    Log.w("EMOJI_SCREEN", "Nenhum emoji/feeling selecionado!")
+                }
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = CardColor2,
+                contentColor = Color.White
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
+            Text(text = "Ver Sugestões", fontSize = 18.sp)
+        }
+
+
     }
 }
 
 @androidx.compose.ui.tooling.preview.Preview(
     showBackground = true,
-    showSystemUi = false, locale = "pt-rBR"
+    showSystemUi = false,
+    locale = "pt-rBR"
 )
 @Composable
 fun EmojiScreenPreview() {

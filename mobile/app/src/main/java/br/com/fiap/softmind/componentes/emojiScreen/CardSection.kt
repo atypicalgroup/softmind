@@ -36,7 +36,8 @@ fun CardSection(
     emojis: List<String>,
     labels: List<Int>,
     cardModifier: Modifier = Modifier,
-    cardBackgroundColor: Color = Color.White
+    cardBackgroundColor: Color = Color.White,
+    enabled: Boolean = true // 🔑 nova flag para ativar/desativar cliques
 ) {
     Card(
         shape = RoundedCornerShape(12.dp),
@@ -106,14 +107,24 @@ fun CardSection(
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier
-                                .clickable { onClick(labelText) } // devolve direto
                                 .padding(horizontal = 1.dp)
+                                .let { baseModifier ->
+                                    if (enabled) {
+                                        baseModifier.clickable { onClick(labelText) }
+                                    } else {
+                                        baseModifier // 🔒 sem clickable
+                                    }
+                                }
                         ) {
-                            Text(text = emoji, fontSize = 28.sp)
+                            Text(
+                                text = emoji,
+                                fontSize = 28.sp,
+                                color = if (enabled) Color.Unspecified else Color.LightGray // feedback visual
+                            )
                             Text(
                                 text = labelText,
                                 fontSize = 11.sp,
-                                color = Color.DarkGray
+                                color = if (enabled) Color.DarkGray else Color.Gray
                             )
                         }
                     }
@@ -122,6 +133,7 @@ fun CardSection(
         }
     }
 }
+
 
 @Preview(showBackground = true, locale = "pt-rBR")
 @Composable

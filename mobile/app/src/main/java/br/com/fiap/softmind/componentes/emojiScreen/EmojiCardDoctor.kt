@@ -31,14 +31,20 @@ import br.com.fiap.softmind.ui.theme.CardColor2
 @Composable
 fun EmojiCardDoctor(
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    enabled: Boolean = true // 🔑 novo parâmetro
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick),
+            .then(
+                if (enabled) Modifier.clickable(onClick = onClick)
+                else Modifier // 🔒 sem clique
+            ),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = CardColor),
+        colors = CardDefaults.cardColors(
+            containerColor = if (enabled) CardColor else Color.LightGray.copy(alpha = 0.4f) // muda cor se desabilitado
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(
@@ -49,24 +55,23 @@ fun EmojiCardDoctor(
                 Text(
                     text = stringResource(R.string.emoji_acompanhar),
                     fontWeight = FontWeight.Bold,
-                    fontSize = 22.sp
+                    fontSize = 22.sp,
+                    color = if (enabled) Color.Unspecified else Color.Gray // feedback visual
                 )
                 Spacer(modifier = Modifier.height(5.dp))
                 Text(
                     text = stringResource(R.string.emoji_acompanhar1),
                     fontSize = 14.sp,
-                    color = Color.DarkGray
+                    color = if (enabled) Color.DarkGray else Color.LightGray
                 )
                 Spacer(modifier = Modifier.height(5.dp))
 
                 Text(
                     text = stringResource(R.string.emoji_acompanhar2),
                     fontWeight = FontWeight.Bold,
-                    color = CardColor2,
+                    color = if (enabled) CardColor2 else Color.Gray,
                     fontSize = 20.sp,
-                    modifier = Modifier.clickable {
-                        onClick()
-                    }
+                    modifier = if (enabled) Modifier.clickable { onClick() } else Modifier
                 )
             }
             Image(
@@ -82,7 +87,9 @@ fun EmojiCardDoctor(
 @Composable
 fun EmojiCardDoctorPreview() {
     val navController = rememberNavController()
-    EmojiCardDoctor (onClick = {
-        navController.navigate("QuestionScreen")
-    })
+    EmojiCardDoctor(
+        onClick = { navController.navigate("QuestionScreen") },
+        enabled = false // 🔒 teste preview desativado
+    )
 }
+
