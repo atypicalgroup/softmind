@@ -18,3 +18,5 @@ secrets.properties
 target/
 backend/target/
 .env
+*.pdf
+*.zip
