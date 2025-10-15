@@ -2,13 +2,26 @@ package br.com.fiap.softmind.screens
 
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -22,7 +35,6 @@ import br.com.fiap.softmind.componentes.emojiScreen.EmojiCardDoctor
 import br.com.fiap.softmind.componentes.emojiScreen.EmojiHeader
 import br.com.fiap.softmind.componentes.emojiScreen.SupportPointsSection
 import br.com.fiap.softmind.ui.theme.BackgroundColor
-import br.com.fiap.softmind.ui.theme.CardColor2
 import br.com.fiap.softmind.utils.SurveyCache
 import br.com.fiap.softmind.viewmodel.MoodViewModel
 
@@ -43,6 +55,7 @@ fun EmojiScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .background(BackgroundColor)
             .padding(top = 22.dp, start = 10.dp, end = 10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -96,8 +109,6 @@ fun EmojiScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // BOTÃO FINAL
-        // BOTÃO FINAL
         EmojiCardDoctor(
             onClick = {
                 if (!alreadyAnswered && selectedEmoji != null && selectedFeeling != null) {
@@ -119,7 +130,6 @@ fun EmojiScreen(
             enabled = !alreadyAnswered
         )
 
-
         Spacer(modifier = Modifier.height(16.dp))
 
         SupportPointsSection(
@@ -128,6 +138,7 @@ fun EmojiScreen(
             telefoneResponsavel = "0800 123 456"
         )
         Spacer(modifier = Modifier.height(12.dp))
+
         Button(
             onClick = {
                 if (selectedEmoji != null && selectedFeeling != null) {
@@ -137,13 +148,12 @@ fun EmojiScreen(
                         emoji = selectedEmoji!!,
                         feeling = selectedFeeling!!
                     )
-
                     // ✅ salva no cache
                     cache.saveMood(surveyId, selectedEmoji!!, selectedFeeling!!)
                     cache.setSurveyAnswered(surveyId)
                     alreadyAnswered = true
 
-                    // 🚀 agora sempre navega para EndScreen
+                    // Sempre navega para EndScreen
                     navController.navigate("EndScreen")
                 } else {
                     // tenta recuperar do cache caso ainda não tenha nada em memória
@@ -158,7 +168,7 @@ fun EmojiScreen(
                             feeling = feeling
                         )
 
-                        // 🚀 também navega para EndScreen
+                        //navega para EndScreen
                         navController.navigate("EndScreen")
                     } else {
                         Log.w("EMOJI_SCREEN", "Nenhum emoji/feeling selecionado!")
@@ -166,19 +176,27 @@ fun EmojiScreen(
                 }
             },
             colors = ButtonDefaults.buttonColors(
-                containerColor = CardColor2,
+                containerColor = Color.Transparent,
                 contentColor = Color.White
             ),
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+                .fillMaxWidth(0.6f)
+                .height(48.dp)
+                .background(
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(Color(0xFF98FB98), Color(0xFF62BEC3))
+                    ),
+                    shape = RoundedCornerShape(24.dp)
+                ),
         ) {
-            Text(text = "Ver Sugestões", fontSize = 18.sp)
+            Text(
+                text = stringResource(R.string.ver_sugestoes),
+                color = Color.Black,
+                fontSize = 18.sp,
+                letterSpacing = 0.3.sp
+            )
         }
-
-
-
-
+        Spacer(modifier = Modifier.height(12.dp))
     }
 }
 
