@@ -69,6 +69,7 @@ class MainActivity : ComponentActivity() {
                         composable("PresentationScreen") { PresentationScreen(navController = navController) }
                         composable("LoginScreen") { LoginScreen(navController = navController) }
                         composable("EmojiScreen") { EmojiScreen(navController = navController, viewModel = sharedMoodViewModel) }
+                        composable("AdminScreen") { AdminScreen(navController = navController) }
                         composable("QuestionScreen") { QuestionsScreen(navController = navController, viewModel = sharedMoodViewModel) }
                         composable("EndScreen") { EndScreen(navController = navController, viewModel = sharedMoodViewModel) }
                     }
