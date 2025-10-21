@@ -203,12 +203,23 @@ private fun CodeInputFields(
                     .height(60.dp)
                     .focusRequester(focusRequesters[index])
                     .onFocusChanged { focusState -> isFocused.value = focusState.isFocused }
-                    .onKeyEvent {
-                        if (it.key == Key.Backspace && codeFieldState.value.text.isEmpty() && index > 0) {
-                            focusRequesters[index - 1].requestFocus()
-                            codeFields[index - 1].value = TextFieldValue("")
-                            true
-                        } else false
+                    .onKeyEvent { keyEvent ->
+                        if (keyEvent.key == Key.Backspace) {
+                            if (codeFieldState.value.text.isNotEmpty()) {
+                                // 🔹 Apaga o dígito atual
+                                codeFieldState.value = TextFieldValue("")
+                                true
+                            } else if (index > 0) {
+                                // 🔹 Campo está vazio → volta para o anterior
+                                focusRequesters[index - 1].requestFocus()
+                                codeFields[index - 1].value = TextFieldValue("")
+                                true
+                            } else {
+                                false
+                            }
+                        } else {
+                            false
+                        }
                     },
 
                 // Estilo para centralizar o texto e aumentar a fonte
@@ -223,7 +234,6 @@ private fun CodeInputFields(
                         focusedBorderColor = Color(0xFF00BFA5), // Cor de destaque
                         unfocusedBorderColor = Color(0xFFD9D9D9),
                         cursorColor = Color(0xFF00BFA5),
-//                        containerColor = Color.Transparent, // Fundo transparente
                         focusedContainerColor = Color.White,
                         unfocusedContainerColor = Color.White
                     )
