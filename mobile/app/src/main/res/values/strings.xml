@@ -134,5 +134,13 @@
     <string name="telefone_responsavel_label">Telephone:</string>
     <string name="telefone_responsavel_valor">(11) 99999-8888</string>
 
+    <string name="validar_codigo">Validate Code</string>
+    <string name="nao_recebeu_codigo">Did not receive the code?</string>
+    <string name="reenviar">Resend</string>
+    <string name="criar_nova_senha">Create New Password</string>
+    <string name="confirmar_nova_senha">Set your new password. It must be at least 6 characters long.</string>
+    <string name="nova_senha">New password</string>
+    <string name="confirmar_senha">Confirm password</string>
+    <string name="senha_diferente">The passwords do not match.</string>
 
 </resources>
