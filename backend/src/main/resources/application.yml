@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: Softmind
+  config:
+    import: optional:file:.env[.properties]
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  data:
+    mongodb:
+      uri: ${MONGO_URI}
+      auto-index-creation: true
+      database: ${MONGO_DATABASE}
+
+security:
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration: ${JWT_EXPIRATION}
+
+tmdb:
+  token: ${TMDB_TOKEN}
+
+server:
+  port: 8000
