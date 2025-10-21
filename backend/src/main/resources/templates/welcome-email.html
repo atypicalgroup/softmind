@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bem-vindo ao Softmind</title>
+
+    <!--[if mso]>
+    <style type="text/css">
+        body, table, td {font-family: Arial, sans-serif !important;}
+    </style>
+    <![endif]-->
+
+    <style>
+        /* Estilos básicos para clientes modernos */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f6f8fb;
+            font-family: 'Inter', Arial, sans-serif;
+            color: #333;
+        }
+
+        table {
+            border-spacing: 0;
+            width: 100%;
+        }
+
+        td {
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .header {
+            background-color: #6c63ff;
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .content {
+            padding: 30px 25px;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: #6c63ff;
+            color: white !important;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 500;
+            margin-top: 10px;
+        }
+
+        .password-box {
+            background: #f0f3ff;
+            border: 1px dashed #6c63ff;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 13px;
+            color: #777;
+            padding: 20px;
+        }
+
+        /* Responsividade para mobile */
+        @media screen and (max-width: 480px) {
+            .content {
+                padding: 20px 15px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .btn {
+                width: 100%;
+                display: block;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<table role="presentation" class="container" align="center">
+    <tr>
+        <td class="header">
+            <h1>🎉 Bem-vindo ao Softmind!</h1>
+        </td>
+    </tr>
+
+    <tr>
+        <td class="content">
+            <p>Olá! Seu cadastro foi criado com sucesso.</p>
+            <p>Use a senha temporária abaixo para acessar a plataforma:</p>
+
+            <div class="password-box">
+                {{TEMP_PASSWORD}}
+            </div>
+
+            <p>Por segurança, altere sua senha no primeiro login.</p>
+
+            <a href="https://softmind.app/login" class="btn">Acessar Softmind</a>
+
+            <p style="margin-top: 30px;">💙 Equipe Softmind</p>
+        </td>
+    </tr>
+
+    <tr>
+        <td class="footer">
+            © 2025 Softmind · Todos os direitos reservados
+        </td>
+    </tr>
+</table>
+</body>
+</html>

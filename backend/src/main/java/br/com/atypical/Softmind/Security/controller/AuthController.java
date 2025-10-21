@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -25,13 +24,11 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
-@Tag(name = "Autenticação", description = "Endpoints de autenticação, recuperação de senha e registro de usuários")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
     private final AuthService authService;
 
     // 🔹 LOGIN ---------------------------------------------------------
@@ -47,7 +44,7 @@ public class AuthController {
             }
     )
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(
+    public ResponseEntity<?> login(
             @RequestBody(description = "Credenciais do usuário", required = true)
             @org.springframework.web.bind.annotation.RequestBody LoginRequestDto loginRequest) {
         try {
@@ -60,6 +57,16 @@ public class AuthController {
 
             User user = userService.findByUsername(loginRequest.username())
                     .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
+
+            // 🔹 Verifica se deve trocar a senha
+            if (user.isMustChangePassword()) {
+                return ResponseEntity.status(403).body(
+                        new LoginPendingChangeDto(
+                                user.getUsername(),
+                                "É necessário alterar a senha no primeiro acesso."
+                        )
+                );
+            }
 
             String employeeName = user.getEmployeeId() != null
                     ? userService.findEmployeeNameById(user.getEmployeeId()).orElse("N/A")
@@ -77,6 +84,7 @@ public class AuthController {
         }
     }
 
+
     // 🔹 REGISTRO DE ADMIN --------------------------------------------
     @Operation(
             summary = "Registra um novo administrador",
@@ -92,7 +100,8 @@ public class AuthController {
     public ResponseEntity<AdminResponseDto> registerAdmin(
             @RequestBody(description = "Dados do administrador", required = true)
             @org.springframework.web.bind.annotation.RequestBody AdminRegisterDto dto) {
-        return ResponseEntity.ok(userService.registerAdmin(dto));
+        AdminResponseDto response = userService.registerAdmin(dto);
+        return ResponseEntity.status(201).body(response);
     }
 
     // 🔹 ESQUECI MINHA SENHA ------------------------------------------
@@ -147,5 +156,18 @@ public class AuthController {
             @RequestBody(description = "E-mail, token e nova senha", required = true)
             @org.springframework.web.bind.annotation.RequestBody PasswordChangeDto dto) {
         return ResponseEntity.ok(authService.changePassword(dto));
+    }
+
+    @Operation(
+            summary = "Troca de senha do primeiro acesso",
+            description = "Permite alterar a senha gerada automaticamente e remove o flag de troca obrigatória.",
+            tags = {"Autenticação"}
+    )
+    @PostMapping("/change-password-first-access")
+    public ResponseEntity<Void> changePasswordFirstAccess(
+            @org.springframework.web.bind.annotation.RequestBody ChangePasswordFirstAccessDto dto) {
+
+        userService.changePassword(dto.userId(), dto.newPassword());
+        return ResponseEntity.noContent().build();
     }
 }

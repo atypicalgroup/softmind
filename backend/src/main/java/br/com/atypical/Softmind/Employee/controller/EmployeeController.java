@@ -2,17 +2,15 @@ package br.com.atypical.Softmind.Employee.controller;
 
 import br.com.atypical.Softmind.Employee.dto.EmployeeCreateDto;
 import br.com.atypical.Softmind.Employee.dto.EmployeeDto;
-import br.com.atypical.Softmind.Employee.entities.Employee;
 import br.com.atypical.Softmind.Employee.repository.EmployeeRepository;
 import br.com.atypical.Softmind.Employee.service.EmployeeService;
+import br.com.atypical.Softmind.Security.entities.User;
+import br.com.atypical.Softmind.Security.service.UserService;
 import br.com.atypical.Softmind.Survey.dto.SurveyResponseCreateDto;
 import br.com.atypical.Softmind.Survey.entities.SurveyResponse;
 import br.com.atypical.Softmind.Survey.service.SurveyResponseService;
-import br.com.atypical.Softmind.Security.entities.User;
 import br.com.atypical.Softmind.shared.exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,52 +25,46 @@ import java.util.List;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
-    private final SurveyResponseService surveyResponseService;
     private final EmployeeRepository employeeRepository;
+    private final UserService userService;
+    private final SurveyResponseService surveyResponseService;
 
+    // ==========================================================
+    // 🔹 CREATE EMPLOYEE (via UserService)
+    // ==========================================================
     @Operation(
             summary = "Cria um novo funcionário",
-            description = "Registra um funcionário vinculado a uma empresa.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Funcionário criado com sucesso"),
-                    @ApiResponse(responseCode = "404", description = "Empresa não encontrada", content = @Content),
-                    @ApiResponse(responseCode = "400", description = "Dados inválidos", content = @Content)
-            },
+            description = "Registra um funcionário vinculado à empresa do usuário logado e envia um e-mail de boas-vindas com senha temporária.",
             tags = "Administração"
     )
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<EmployeeDto> create(@RequestBody EmployeeCreateDto dto,
-                                              @AuthenticationPrincipal User user) {
-
-        Employee creator = employeeRepository.findById(user.getEmployeeId())
+    public ResponseEntity<EmployeeDto> createEmployee(
+            @RequestBody EmployeeCreateDto dto,
+            @AuthenticationPrincipal User user
+    ) {
+        var creator = employeeRepository.findById(user.getEmployeeId())
                 .orElseThrow(() -> new NotFoundException("Funcionário criador não encontrado"));
 
-        String companyId = creator.getCompanyId();
-        return ResponseEntity.ok(employeeService.create(dto, companyId));
+        var createdUser = userService.registerEmployee(dto, creator.getCompanyId());
+        var employeeOpt = employeeService.findById(createdUser.getEmployeeId());
+
+        return employeeOpt
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new NotFoundException("Falha ao criar funcionário"));
     }
 
-
-    @Operation(
-            summary = "Lista todos os funcionários",
-            description = "Retorna a lista completa de funcionários cadastrados no sistema.",
-            tags = "Administração"
-    )
+    // ==========================================================
+    // 🔹 READ OPERATIONS
+    // ==========================================================
+    @Operation(summary = "Lista todos os funcionários", tags = "Administração")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<EmployeeDto>> getAll() {
         return ResponseEntity.ok(employeeService.findAll());
     }
 
-    @Operation(
-            summary = "Busca funcionário por ID",
-            description = "Retorna os dados de um funcionário específico pelo seu ID.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Funcionário encontrado"),
-                    @ApiResponse(responseCode = "404", description = "Funcionário não encontrado", content = @Content)
-            },
-            tags = "Administração"
-    )
+    @Operation(summary = "Busca funcionário por ID", tags = "Administração")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<EmployeeDto> getById(@PathVariable String id) {
@@ -81,78 +73,59 @@ public class EmployeeController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @Operation(
-            summary = "Busca funcionário por e-mail",
-            description = "Retorna os dados de um funcionário a partir do seu e-mail.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Funcionário encontrado"),
-                    @ApiResponse(responseCode = "404", description = "Funcionário não encontrado", content = @Content)
-            },
-            tags = "Administração"
-    )
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    @GetMapping("/{email}")
+    @Operation(summary = "Busca funcionário por e-mail", tags = "Administração")
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/email/{email}")
     public ResponseEntity<EmployeeDto> getByEmail(@PathVariable String email) {
         return employeeService.findByEmail(email)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @Operation(
-            summary = "Atualiza dados de um funcionário",
-            description = "Atualiza as informações de um funcionário existente.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Funcionário atualizado com sucesso"),
-                    @ApiResponse(responseCode = "404", description = "Funcionário não encontrado", content = @Content)
-            },
-            tags = "Administração"
-    )
+    // ==========================================================
+    // 🔹 UPDATE EMPLOYEE (via UserService)
+    // ==========================================================
+    @Operation(summary = "Atualiza dados de um funcionário", tags = "Administração")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     @PutMapping("/{id}")
-    public ResponseEntity<EmployeeDto> update(@PathVariable String id,
-                                              @RequestBody EmployeeCreateDto dto,
-                                              @AuthenticationPrincipal User user) {
+    public ResponseEntity<EmployeeDto> updateEmployee(
+            @PathVariable String id,
+            @RequestBody EmployeeCreateDto dto,
+            @AuthenticationPrincipal User user
+    ) {
+        var creator = employeeRepository.findById(user.getEmployeeId())
+                .orElseThrow(() -> new NotFoundException("Funcionário autenticado não encontrado"));
 
-        Employee creator = employeeRepository.findById(user.getEmployeeId())
-                .orElseThrow(() -> new NotFoundException("Funcionário criador não encontrado"));
-
-        String companyId = creator.getCompanyId();
-        return employeeService.update(id, dto, companyId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        EmployeeDto updated = userService.updateEmployeeAndUser(id, dto, creator.getCompanyId());
+        return ResponseEntity.ok(updated);
     }
 
-    @Operation(
-            summary = "Remove um funcionário",
-            description = "Exclui um funcionário do sistema.",
-            responses = {
-                    @ApiResponse(responseCode = "204", description = "Funcionário removido com sucesso"),
-                    @ApiResponse(responseCode = "404", description = "Funcionário não encontrado", content = @Content)
-            },
-            tags = "Administração"
-    )
-    @PreAuthorize("hasHole('ADMIN')")
+    // ==========================================================
+    // 🔹 DELETE
+    // ==========================================================
+    @Operation(summary = "Remove um funcionário", tags = "Administração")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id) {
         employeeService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
-
-
+    // ==========================================================
+    // 🔹 SURVEY (funcionário)
+    // ==========================================================
     @Operation(
             summary = "Enviar respostas diárias (anônimas)",
-            description = "Registra respostas anônimas e marca a participação diária do colaborador. "
-                    + "Máximo 1 resposta por dia por survey por colaborador.",
+            description = "Registra respostas anônimas e marca a participação diária do colaborador. Máximo 1 resposta por dia por survey.",
             tags = "Funcionários"
     )
     @PreAuthorize("hasRole('EMPLOYEE')")
     @PostMapping("/responses/daily")
-    public SurveyResponse submitDailySurveyResponse(
+    public ResponseEntity<SurveyResponse> submitDailySurveyResponse(
             @AuthenticationPrincipal User user,
             @RequestBody SurveyResponseCreateDto dto
     ) {
-        return surveyResponseService.saveAnonymousDailyResponse(user, dto);
+        SurveyResponse response = surveyResponseService.saveAnonymousDailyResponse(user, dto);
+        return ResponseEntity.status(201).body(response);
     }
-
 }
