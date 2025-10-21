@@ -136,4 +136,13 @@
     <string name="telefone_responsavel_label">Teléfono:</string>
     <string name="telefone_responsavel_valor">(11) 99999-8888</string>
 
+    <string name="validar_codigo">Validate Code</string>
+    <string name="nao_recebeu_codigo">¿No recibiste el código?</string>
+    <string name="reenviar">Reenviar</string>
+    <string name="criar_nova_senha">Crear nueva contraseña</string>
+    <string name="confirmar_nova_senha">Establece tu nueva contraseña. Debe tener al menos 6 caracteres.</string>
+    <string name="nova_senha">Nueva contraseña</string>
+    <string name="confirmar_senha">Confirmar contraseña</string>
+    <string name="senha_diferente">Las contraseñas no coinciden.</string>
+
 </resources>

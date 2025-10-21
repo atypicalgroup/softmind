@@ -39,37 +39,96 @@ import br.com.fiap.softmind.data.remote.model.LoginRequest
 import br.com.fiap.softmind.utils.JwtUtils
 import kotlinx.coroutines.launch
 
+// 1. ADICIONADO: Enum para gerenciar os estados de diálogo
+private enum class DialogState {
+    NONE, // Nenhum diálogo
+    FORGOT_PASSWORD, // Diálogo de e-mail (seu ForgotPasswordDialog)
+    VALIDATE_CODE, // Diálogo de código (seu ValidateCodeDialog)
+    CREATE_PASSWORD // Diálogo de criação de senha (seu CreatePasswordDialog)
+}
+
 @SuppressLint("StringFormatInvalid")
 @Composable
 fun LoginScreen(navController: NavController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
+    // ADICIONADO RECENTEMENTE
+    // ALTERADO: Usamos um único estado para rastrear qual diálogo está aberto
+    var dialogState by remember { mutableStateOf(DialogState.NONE) }
+    // ADICIONADO: Estado para guardar o e-mail que recebeu o código
+    var resetEmail by remember { mutableStateOf("") }
+
     // 1. ADICIONADO: Estado para controlar a visibilidade do pop-up
     var showDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
-    // 2. ADICIONADO: Bloco que exibe o pop-up se 'showDialog' for verdadeiro
-    if (showDialog) {
-        ForgotPasswordDialog(
-            onDismissRequest = {
-                showDialog = false
-            },
-            onConfirm = { emailParaReset ->
+    // ALTERADO: Bloco centralizado para gerenciar a exibição dos diálogos
+    when (dialogState) {
+        DialogState.FORGOT_PASSWORD -> {
+            ForgotPasswordDialog(
+                onDismissRequest = {
+                    dialogState = DialogState.NONE // Fecha o diálogo
+                },
+                onConfirm = { emailParaReset ->
+                    resetEmail = emailParaReset // Salva o email para a próxima tela
 
-                val logMessage = context.getString(R.string.msg_redefinicao_senha, emailParaReset)
-                Log.d("RESET_SENHA", logMessage)
+                    val logMessage = context.getString(R.string.msg_redefinicao_senha,
+                        emailParaReset)
+                    Log.d("RESET_SENHA", logMessage)
 
-                val toastMessage = context.getString(R.string.msg_brinde_redefinicao_senha, emailParaReset)
-                Toast.makeText(context, toastMessage, Toast.LENGTH_LONG).show()
+                    // TODO: Chamar API de reset
 
-                // TODO: Aqui você chamaria seu ViewModel para fazer a requisição à API de reset
+                    // Transiciona para a tela de validação!
+                    dialogState = DialogState.VALIDATE_CODE
+                }
+            )
+        }
 
-                showDialog = false
-            }
-        )
+        DialogState.VALIDATE_CODE -> {
+            ValidateCodeDialog(
+                onDismissRequest = {
+                    dialogState = DialogState.NONE // Fecha o diálogo
+                },
+                onConfirm = { code ->
+                    // TODO: Chamar API para validar o código (usando 'resetEmail' e 'code')
+
+                    dialogState = DialogState.CREATE_PASSWORD
+
+                },
+                onResendCode = {
+                    // TODO: Chamar API para reenviar o código (usando 'resetEmail')
+                    Toast.makeText(context, "Código reenviado para $resetEmail.", Toast.LENGTH_SHORT).show()
+                },
+                email = resetEmail // Passa o email para contexto visual (se aplicável)
+            )
+        }
+
+        // ADIÇÃO: O novo diálogo de criação de senha
+        DialogState.CREATE_PASSWORD -> {
+            CreateNewPasswordDialog(
+                onDismissRequest = {
+                    dialogState = DialogState.NONE
+                },
+                onConfirm = { newPassword ->
+                    // TODO: Chamar API para salvar a nova senha (usando 'resetEmail' e 'newPassword')
+
+                    Toast.makeText(context, "Senha redefinida com sucesso para $resetEmail!", Toast.LENGTH_LONG).show()
+
+                    // Fim do fluxo de reset: volta para o LoginScreen principal (DialogState.NONE)
+                    dialogState = DialogState.NONE
+                }
+            )
+        }
+
+        DialogState.NONE -> {
+            // Não renderiza nada, continua no fluxo normal da LoginScreen
+        }
     }
 
+
+    //CODIGO ANTIGO
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -100,7 +159,11 @@ fun LoginScreen(navController: NavController) {
             text = stringResource(id = R.string.esqueceu_senha),
             onClick = {
 
-                showDialog = true
+                //CODIGO NOVO
+                dialogState = DialogState.FORGOT_PASSWORD
+
+                // CODIGO ANTIGO
+//                showDialog = true
 
             })
 
