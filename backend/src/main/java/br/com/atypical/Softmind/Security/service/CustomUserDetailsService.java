@@ -1,6 +1,6 @@
-package br.com.atypical.Softmind.security.service;
+package br.com.atypical.Softmind.Security.service;
 
-import br.com.atypical.Softmind.security.repository.UserRepository;
+import br.com.atypical.Softmind.Security.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

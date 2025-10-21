@@ -1,4 +1,4 @@
-package br.com.atypical.Softmind.security.helpers.jwt;
+package br.com.atypical.Softmind.Security.helpers.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
+
 public class JwtService {
 
     @Value("${security.jwt.secret}")

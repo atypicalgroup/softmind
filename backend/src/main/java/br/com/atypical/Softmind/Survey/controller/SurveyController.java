@@ -3,7 +3,7 @@ package br.com.atypical.Softmind.Survey.controller;
 import br.com.atypical.Softmind.Survey.dto.SurveyCreateDto;
 import br.com.atypical.Softmind.Survey.dto.SurveyDto;
 import br.com.atypical.Softmind.Survey.service.SurveyService;
-import br.com.atypical.Softmind.security.entities.User;
+import br.com.atypical.Softmind.Security.entities.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

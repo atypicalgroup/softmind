@@ -1,6 +1,6 @@
-package br.com.atypical.Softmind.security.repository;
+package br.com.atypical.Softmind.Security.repository;
 
-import br.com.atypical.Softmind.security.entities.User;
+import br.com.atypical.Softmind.Security.entities.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;

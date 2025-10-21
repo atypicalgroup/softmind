@@ -1,4 +1,4 @@
-package br.com.atypical.Softmind.security.helpers.jwt;
+package br.com.atypical.Softmind.Security.helpers.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

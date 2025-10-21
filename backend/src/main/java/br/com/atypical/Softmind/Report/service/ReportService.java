@@ -19,7 +19,7 @@ import br.com.atypical.Softmind.Survey.entities.SurveyResponse;
 import br.com.atypical.Softmind.Survey.repository.SurveyParticipationRepository;
 import br.com.atypical.Softmind.Survey.repository.SurveyRepository;
 import br.com.atypical.Softmind.Survey.repository.SurveyResponseRepository;
-import br.com.atypical.Softmind.security.entities.User;
+import br.com.atypical.Softmind.Security.entities.User;
 import br.com.atypical.Softmind.shared.enums.QuestionType;
 import br.com.atypical.Softmind.shared.exceptions.NotFoundException;
 import br.com.atypical.Softmind.shared.utils.EmojiUtils;
