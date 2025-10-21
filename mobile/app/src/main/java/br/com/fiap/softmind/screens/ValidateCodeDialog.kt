@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -54,7 +52,7 @@ private const val CODE_LENGTH = 6
 @Composable
 fun ValidateCodeDialog(
     onDismissRequest: () -> Unit,
-    onConfirm: (code: String) -> Unit,
+    onConfirm: (String) -> Unit,
     onResendCode: () -> Unit,
     email: String, // Para contextualizar o envio do código (opcional)
     modifier: Modifier = Modifier
@@ -200,29 +198,24 @@ private fun CodeInputFields(
                 ),
                 singleLine = true,
                 modifier = Modifier
-                    .weight(1f) // Distribui o peso igualmente
-                    .padding(horizontal = 4.dp)
-                    .size(56.dp) // Tamanho fixo para cada quadrado
+                    .weight(1f)
+                    .width(50.dp) // 🔹 Tamanho fixo e equilibrado
+                    .height(60.dp)
                     .focusRequester(focusRequesters[index])
-                    .onFocusChanged { focusState ->
-                        isFocused.value = focusState.isFocused
-                    }
+                    .onFocusChanged { focusState -> isFocused.value = focusState.isFocused }
                     .onKeyEvent {
-                        // Lógica para Backspace
                         if (it.key == Key.Backspace && codeFieldState.value.text.isEmpty() && index > 0) {
-                            // Se o campo estiver vazio, move o foco para o campo anterior
                             focusRequesters[index - 1].requestFocus()
-                            // Limpa o campo anterior
                             codeFields[index - 1].value = TextFieldValue("")
                             true
-                        } else {
-                            false
-                        }
+                        } else false
                     },
+
                 // Estilo para centralizar o texto e aumentar a fonte
                 textStyle = LocalTextStyle.current.copy(
                     textAlign = TextAlign.Center,
-                    fontSize = 20.sp
+                    fontSize = 22.sp,
+                    color = Color.Black
                 ),
                 // Personalização do campo OutlinedTextField (similar ao ForgotPasswordDialog)
                 colors = TextFieldDefaults.run {
@@ -231,8 +224,8 @@ private fun CodeInputFields(
                         unfocusedBorderColor = Color(0xFFD9D9D9),
                         cursorColor = Color(0xFF00BFA5),
 //                        containerColor = Color.Transparent, // Fundo transparente
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White
                     )
                 },
                 shape = RoundedCornerShape(8.dp), // Borda quadrada/arredondada (similar à imagem)
