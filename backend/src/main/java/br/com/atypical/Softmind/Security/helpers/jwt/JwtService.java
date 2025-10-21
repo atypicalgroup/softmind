@@ -1,4 +1,4 @@
-package br.com.atypical.Softmind.security.helpers.jwt;
+package br.com.atypical.Softmind.Security.helpers.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

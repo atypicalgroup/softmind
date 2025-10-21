@@ -1,4 +1,4 @@
-package br.com.atypical.Softmind.security.entities;
+package br.com.atypical.Softmind.Security.entities;
 
 import br.com.atypical.Softmind.shared.enums.Permission;
 import lombok.AllArgsConstructor;

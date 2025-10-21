@@ -1,10 +1,10 @@
-package br.com.atypical.Softmind.security.service;
+package br.com.atypical.Softmind.Security.service;
 
-import br.com.atypical.Softmind.security.dto.*;
-import br.com.atypical.Softmind.security.entities.PasswordResetToken;
-import br.com.atypical.Softmind.security.repository.PasswordResetRepository;
-import br.com.atypical.Softmind.security.helpers.EmailHelper;
-import br.com.atypical.Softmind.security.repository.UserRepository;
+import br.com.atypical.Softmind.Security.dto.*;
+import br.com.atypical.Softmind.Security.entities.PasswordResetToken;
+import br.com.atypical.Softmind.Security.repository.PasswordResetRepository;
+import br.com.atypical.Softmind.Security.helpers.EmailHelper;
+import br.com.atypical.Softmind.Security.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,11 +36,12 @@ public class AuthService {
 
         resetRepository.save(reset);
 
-        emailHelper.sendEmail(email, "Recuperação de Senha",
-                "Olá, seu código de verificação é: " + token + "\n\n" +
-                        "Este código expira em 15 minutos.");
+        // ✅ usa o novo método com template HTML
+        emailHelper.sendPasswordResetEmail(email, token);
 
-        return new PasswordResetResponseDto("Código de verificação enviado com sucesso para o e-mail informado.");
+        return new PasswordResetResponseDto(
+                "Código de verificação enviado com sucesso para o e-mail informado."
+        );
     }
 
     // 2️⃣ Valida token
@@ -73,6 +74,10 @@ public class AuthService {
         resetRepository.save(token);
         userRepository.save(user);
 
+        // ✅ Envia e-mail de confirmação
+        emailHelper.sendPasswordChangedEmail(dto.email());
+
         return new PasswordResetResponseDto("Senha alterada com sucesso!");
     }
+
 }

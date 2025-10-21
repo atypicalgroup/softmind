@@ -1,16 +1,15 @@
-package br.com.atypical.Softmind.security.service;
+package br.com.atypical.Softmind.Security.service;
 
 import br.com.atypical.Softmind.Company.entities.Company;
 import br.com.atypical.Softmind.Company.service.CompanyService;
 import br.com.atypical.Softmind.Employee.dto.EmployeeDto;
 import br.com.atypical.Softmind.Employee.entities.Employee;
-import br.com.atypical.Softmind.Employee.mapper.EmployeeMapper;
 import br.com.atypical.Softmind.Employee.service.EmployeeService;
-import br.com.atypical.Softmind.security.dto.AdminRegisterDto;
-import br.com.atypical.Softmind.security.dto.AdminResponseDto;
+import br.com.atypical.Softmind.Security.dto.AdminRegisterDto;
+import br.com.atypical.Softmind.Security.dto.AdminResponseDto;
 import br.com.atypical.Softmind.shared.enums.Permission;
-import br.com.atypical.Softmind.security.entities.User;
-import br.com.atypical.Softmind.security.repository.UserRepository;
+import br.com.atypical.Softmind.Security.entities.User;
+import br.com.atypical.Softmind.Security.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

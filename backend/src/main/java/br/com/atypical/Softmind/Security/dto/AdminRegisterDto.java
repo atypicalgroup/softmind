@@ -1,4 +1,4 @@
-package br.com.atypical.Softmind.security.dto;
+package br.com.atypical.Softmind.Security.dto;
 
 import br.com.atypical.Softmind.Company.dto.CompanyCreateDto;
 import io.swagger.v3.oas.annotations.media.Schema;

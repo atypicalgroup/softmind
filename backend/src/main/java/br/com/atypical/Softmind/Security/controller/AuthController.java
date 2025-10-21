@@ -1,10 +1,10 @@
-package br.com.atypical.Softmind.security.controller;
+package br.com.atypical.Softmind.Security.controller;
 
-import br.com.atypical.Softmind.security.dto.*;
-import br.com.atypical.Softmind.security.entities.User;
-import br.com.atypical.Softmind.security.helpers.jwt.JwtService;
-import br.com.atypical.Softmind.security.service.AuthService;
-import br.com.atypical.Softmind.security.service.UserService;
+import br.com.atypical.Softmind.Security.dto.*;
+import br.com.atypical.Softmind.Security.entities.User;
+import br.com.atypical.Softmind.Security.helpers.jwt.JwtService;
+import br.com.atypical.Softmind.Security.service.AuthService;
+import br.com.atypical.Softmind.Security.service.UserService;
 import br.com.atypical.Softmind.shared.exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

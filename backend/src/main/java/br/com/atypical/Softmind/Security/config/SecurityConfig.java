@@ -1,6 +1,6 @@
-package br.com.atypical.Softmind.security.config;
+package br.com.atypical.Softmind.Security.config;
 
-import br.com.atypical.Softmind.security.helpers.jwt.JwtAuthenticationFilter;
+import br.com.atypical.Softmind.Security.helpers.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

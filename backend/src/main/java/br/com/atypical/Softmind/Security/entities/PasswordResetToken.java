@@ -1,4 +1,4 @@
-package br.com.atypical.Softmind.security.entities;
+package br.com.atypical.Softmind.Security.entities;
 
 import lombok.Getter;
 import lombok.Setter;

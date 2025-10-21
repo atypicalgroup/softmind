@@ -1,4 +1,4 @@
-package br.com.atypical.Softmind.security.dto;
+package br.com.atypical.Softmind.Security.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
