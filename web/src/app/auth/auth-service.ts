@@ -10,24 +10,31 @@ interface User {
   token: string;
 }
 
+interface PasswordResetResponse {
+  message: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8000/auth';
+  private apiUrl = 'http://localhost:8000/auth'; // ✅ ajuste em produção
 
   private userSubject = new BehaviorSubject<User | null>(null);
   user$ = this.userSubject.asObservable();
 
   constructor(private http: HttpClient) {}
 
-  login(username: string, password: string): Observable<User>{
-      return this.http.post<User>(`${this.apiUrl}/login`, { username, password}).pipe(
-          tap(user =>{
-            this.userSubject.next(user);
-            localStorage.setItem('usuario', JSON.stringify(user));
-          })
-      );
+  // ==================================================
+  // 🔐 LOGIN / LOGOUT / USUÁRIO ATUAL
+  // ==================================================
+  login(username: string, password: string): Observable<User> {
+    return this.http.post<User>(`${this.apiUrl}/login`, { username, password }).pipe(
+      tap(user => {
+        this.userSubject.next(user);
+        localStorage.setItem('usuario', JSON.stringify(user));
+      })
+    );
   }
 
   logout(): void {
@@ -41,5 +48,30 @@ export class AuthService {
 
     const saved = localStorage.getItem('usuario');
     return saved ? JSON.parse(saved) : null;
+  }
+
+  // ==================================================
+  // 🔁 RECUPERAÇÃO DE SENHA
+  // ==================================================
+
+  /**
+   * 1️⃣ Envia e-mail de redefinição de senha
+   */
+  forgotPassword(email: string): Observable<PasswordResetResponse> {
+    return this.http.post<PasswordResetResponse>(`${this.apiUrl}/forgot-password`, { email });
+  }
+
+  /**
+   * 2️⃣ Valida token de 6 dígitos recebido por e-mail
+   */
+  verifyToken(email: string, token: string): Observable<PasswordResetResponse> {
+    return this.http.post<PasswordResetResponse>(`${this.apiUrl}/verify-token`, { email, token });
+  }
+
+  /**
+   * 3️⃣ Altera senha com token válido
+   */
+  changePassword(email: string, token: string, newPassword: string): Observable<PasswordResetResponse> {
+    return this.http.post<PasswordResetResponse>(`${this.apiUrl}/change-password`, { email, token, newPassword });
   }
 }
