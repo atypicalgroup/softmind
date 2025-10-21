@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../auth-service';
 import { FormsModule } from "@angular/forms";
 import { NgOptimizedImage } from "@angular/common";
@@ -7,7 +7,7 @@ import { NgOptimizedImage } from "@angular/common";
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule, NgOptimizedImage],
+  imports: [FormsModule, NgOptimizedImage, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.scss'
 })

@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { Login } from './auth/login/login';
-import { Reset } from './auth/reset/reset';
 import { Validate } from './auth/validate/validate';
 import { Painel } from './portal/layout/painel/painel';
 import { Dashboard } from './portal/pages/dashboard/dashboard';
@@ -12,12 +11,15 @@ import { EmployeeCreate } from './portal/pages/employee/employee-create/employee
 import { SupportCreate } from './portal/pages/support/support-create/support-create';
 import { Support } from './portal/pages/support/support';
 import { SurveyCreate } from './portal/pages/survey/survey-create/survey-create';
+import { ResetPassword } from './auth/reset-password/reset-password';
+import { ForgotPassword } from './auth/forgot-password/forgot-password';
 
 export const routes: Routes = [
   { path: '', component: Login },
   { path: 'login', component: Login },
-  { path: 'reset', component: Reset},
-  { path: 'validate', component: Validate},
+  { path: 'recuperar-senha', component: ForgotPassword},
+  { path: 'validar-codigo', component: Validate},
+  { path: 'redefinir-senha', component: ResetPassword},
   {
     path: 'portal',
     component: Painel,
