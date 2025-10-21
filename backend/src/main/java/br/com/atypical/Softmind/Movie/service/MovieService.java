@@ -22,7 +22,7 @@ public class MovieService {
 
     private final RestTemplate restTemplate;
 
-    @Value("${security.token.tmdb}")
+    @Value("${tmdb.token}")
     private String apiKey;
 
     private static final String TMDB_URL = "https://api.themoviedb.org/3/discover/movie";
