@@ -43,7 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.com.fiap.softmind.R
 
-// Cor de destaque (do seu código)
+// 🎨 Paleta padrão
 private val DestaqueColor = Color(0xFF00BFA5)
 private val ErrorColor = Color(0xFFFF5252)
 private val ContainerColor = Color(0xFFF0F0F0)
@@ -52,36 +52,36 @@ private val ContainerColor = Color(0xFFF0F0F0)
 @Composable
 fun CreateNewPasswordDialog(
     onDismissRequest: () -> Unit,
-    onConfirm: (newPassword: String) -> Unit,
+    onConfirmNormal: (newPassword: String) -> Unit,                   // 🔹 /auth/change-password
+    onConfirmFirstLogin: ((newPassword: String) -> Unit)? = null,     // 🔹 /auth/change-password-first-access
+    isFirstLogin: Boolean = false,                                   // 🔹 Define o contexto do fluxo
     modifier: Modifier = Modifier
 ) {
     var newPassword by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-    var hasInteracted by remember { mutableStateOf(false) } // Para mostrar erros após interação
+    var hasInteracted by remember { mutableStateOf(false) }
 
-    // ESTADOS PARA VISIBILIDADE DAS SENHAS
     var isNewPasswordVisible by remember { mutableStateOf(false) }
     var isConfirmPasswordVisible by remember { mutableStateOf(false) }
 
     val focusRequester = remember { FocusRequester() }
 
+    // ✅ Regras de validação
     val isPasswordValid = newPassword.length >= 6
     val passwordsMatch = newPassword == confirmPassword
     val isConfirmButtonEnabled = isPasswordValid && passwordsMatch
 
-    // Erros a serem exibidos
     val showLengthError = hasInteracted && !isPasswordValid && newPassword.isNotEmpty()
     val showMatchError = hasInteracted && newPassword.isNotEmpty() && confirmPassword.isNotEmpty() && !passwordsMatch
 
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
-    }
+    // Foco automático no primeiro campo
+    LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
         title = {
             Text(
-                text = stringResource(R.string.criar_nova_senha),
+                text = if (isFirstLogin) "Crie sua senha definitiva" else stringResource(R.string.criar_nova_senha),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold
@@ -90,19 +90,21 @@ fun CreateNewPasswordDialog(
         text = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    text = stringResource(R.string.confirmar_nova_senha),
+                    text = if (isFirstLogin)
+                        "Por segurança, defina uma nova senha antes de continuar."
+                    else
+                        stringResource(R.string.confirmar_nova_senha),
                     textAlign = TextAlign.Center
                 )
+
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // 1. CAMPO NOVA SENHA
+                // 🔐 Campo Nova Senha
                 OutlinedTextField(
                     value = newPassword,
                     onValueChange = { newValue ->
                         newPassword = newValue
-                        if (!hasInteracted && newValue.isNotEmpty()) {
-                            hasInteracted = true
-                        }
+                        if (!hasInteracted && newValue.isNotEmpty()) hasInteracted = true
                     },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Password,
@@ -110,16 +112,12 @@ fun CreateNewPasswordDialog(
                     ),
                     singleLine = true,
                     leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = null, tint = Color(0xFF333333)) },
-                    // LÓGICA DO TRAILING ICON PARA NOVA SENHA
                     trailingIcon = {
-                        val image = if (isNewPasswordVisible)
-                            Icons.Filled.Visibility
-                        else Icons.Filled.VisibilityOff
+                        val image = if (isNewPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                         IconButton(onClick = { isNewPasswordVisible = !isNewPasswordVisible }) {
-                            Icon(imageVector = image, contentDescription = "Alternar visibilidade de senha") // Use stringResource
+                            Icon(imageVector = image, contentDescription = "Alternar visibilidade de senha")
                         }
                     },
-                    // TRANSFORMAÇÃO VISUAL CONDICIONAL PARA NOVA SENHA
                     visualTransformation = if (isNewPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     label = { Text(stringResource(R.string.nova_senha)) },
                     isError = showLengthError,
@@ -134,9 +132,7 @@ fun CreateNewPasswordDialog(
                             errorCursorColor = ErrorColor
                         )
                     },
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .focusRequester(focusRequester)
+                    modifier = modifier.fillMaxWidth().focusRequester(focusRequester)
                 )
 
                 if (showLengthError) {
@@ -152,14 +148,12 @@ fun CreateNewPasswordDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 2. CAMPO CONFIRMAR SENHA
+                // 🔐 Campo Confirmar Senha
                 OutlinedTextField(
                     value = confirmPassword,
                     onValueChange = { newValue ->
                         confirmPassword = newValue
-                        if (!hasInteracted && newValue.isNotEmpty()) {
-                            hasInteracted = true
-                        }
+                        if (!hasInteracted && newValue.isNotEmpty()) hasInteracted = true
                     },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Password,
@@ -167,16 +161,12 @@ fun CreateNewPasswordDialog(
                     ),
                     singleLine = true,
                     leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = null, tint = Color(0xFF333333)) },
-                    // LÓGICA DO TRAILING ICON PARA CONFIRMAR SENHA
                     trailingIcon = {
-                        val image = if (isConfirmPasswordVisible)
-                            Icons.Filled.Visibility
-                        else Icons.Filled.VisibilityOff
+                        val image = if (isConfirmPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                         IconButton(onClick = { isConfirmPasswordVisible = !isConfirmPasswordVisible }) {
-                            Icon(imageVector = image, contentDescription = "Alternar visibilidade de senha") // Use stringResource
+                            Icon(imageVector = image, contentDescription = "Alternar visibilidade de senha")
                         }
                     },
-                    // TRANSFORMAÇÃO VISUAL CONDICIONAL PARA CONFIRMAR SENHA
                     visualTransformation = if (isConfirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     label = { Text(stringResource(R.string.confirmar_senha)) },
                     isError = showMatchError,
@@ -206,23 +196,22 @@ fun CreateNewPasswordDialog(
                 }
             }
         },
-
-        // Botões de Ação
-        dismissButton = {
-            TextButton(
-                onClick = onDismissRequest
-            ) {
-                Text(stringResource(R.string.cancelar))
-            }
-        },
         confirmButton = {
             TextButton(
                 onClick = {
-                    onConfirm(newPassword)
+                    if (isFirstLogin && onConfirmFirstLogin != null)
+                        onConfirmFirstLogin(newPassword)
+                    else
+                        onConfirmNormal(newPassword)
                 },
-                enabled = isConfirmButtonEnabled // Habilita se a senha for válida e coincidir
+                enabled = isConfirmButtonEnabled
             ) {
-                Text(stringResource(R.string.redefinir_senha))
+                Text(text = if (isFirstLogin) "Definir senha" else "Redefinir senha")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text(stringResource(R.string.cancelar))
             }
         }
     )
@@ -233,6 +222,7 @@ fun CreateNewPasswordDialog(
 fun CreateNewPasswordDialogPreview() {
     CreateNewPasswordDialog(
         onDismissRequest = {},
-        onConfirm = {}
+        onConfirmNormal = {},
+        isFirstLogin = false
     )
 }
