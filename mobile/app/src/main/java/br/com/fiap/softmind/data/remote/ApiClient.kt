@@ -12,6 +12,8 @@ import java.util.concurrent.TimeUnit
 
 object ApiClient {
     private const val BASE_URL = "http://10.0.2.2:8000/"
+
+    var loggedUserId: String? = null
     var authToken: String? = null
     var loggedUserName: String? = null
     var loggedUsername: String? = null

@@ -8,6 +8,8 @@ class SoftmindApplicationTests {
 
 	@Test
 	void contextLoads() {
+
+        PasswordCheckRunner passwordCheckRunner = new PasswordCheckRunner();
 	}
 
 }

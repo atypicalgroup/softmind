@@ -62,6 +62,7 @@ public class AuthController {
             if (user.isMustChangePassword()) {
                 return ResponseEntity.status(403).body(
                         new LoginPendingChangeDto(
+                                user.getId(),
                                 user.getUsername(),
                                 "É necessário alterar a senha no primeiro acesso."
                         )
