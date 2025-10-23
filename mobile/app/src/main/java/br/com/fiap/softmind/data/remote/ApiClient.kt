@@ -37,5 +37,6 @@ object ApiClient {
     val authService: AuthService = retrofit.create(AuthService::class.java)
     val moodService: MoodService = retrofit.create(MoodService::class.java)
     val surveyService: SurveyService = retrofit.create(SurveyService::class.java)
+    
 
 }
