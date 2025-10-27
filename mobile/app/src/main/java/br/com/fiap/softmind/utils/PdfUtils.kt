@@ -8,7 +8,7 @@ import android.net.Uri
 import androidx.core.content.FileProvider
 import br.com.fiap.softmind.R
 import br.com.fiap.softmind.data.model.Engagement
-import br.com.fiap.softmind.screens.mapEmoji
+import br.com.fiap.softmind.screens.administrative.mapEmoji
 import java.io.File
 import java.io.FileOutputStream
 

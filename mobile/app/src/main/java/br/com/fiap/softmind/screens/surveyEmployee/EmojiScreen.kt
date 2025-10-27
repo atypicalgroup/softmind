@@ -1,4 +1,4 @@
-package br.com.fiap.softmind.screens
+package br.com.fiap.softmind.screens.surveyEmployee
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -25,8 +25,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import br.com.fiap.softmind.R
@@ -41,7 +43,7 @@ import br.com.fiap.softmind.viewmodel.MoodViewModel
 @Composable
 fun EmojiScreen(
     navController: NavController,
-    viewModel: MoodViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    viewModel: MoodViewModel = viewModel()
 ) {
     val context = LocalContext.current
     val cache = remember { SurveyCache(context) }
@@ -200,7 +202,7 @@ fun EmojiScreen(
     }
 }
 
-@androidx.compose.ui.tooling.preview.Preview(
+@Preview(
     showBackground = true,
     showSystemUi = false,
     locale = "pt-rBR"

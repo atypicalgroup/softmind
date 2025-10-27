@@ -18,18 +18,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import br.com.fiap.softmind.data.utils.MoodStatusManager
-import br.com.fiap.softmind.screens.AdminScreen
-import br.com.fiap.softmind.screens.EmojiScreen
-import br.com.fiap.softmind.screens.EndScreen
-import br.com.fiap.softmind.screens.LoginScreen
-import br.com.fiap.softmind.screens.QuestionsScreen
+import br.com.fiap.softmind.screens.administrative.AdminScreen
+import br.com.fiap.softmind.screens.surveyEmployee.EmojiScreen
+import br.com.fiap.softmind.screens.surveyEmployee.EndScreen
+import br.com.fiap.softmind.screens.auth.LoginScreen
+import br.com.fiap.softmind.screens.surveyEmployee.QuestionsScreen
 import br.com.fiap.softmind.screens.SplashScreen
 import br.com.fiap.softmind.screens.PresentationScreen
 import br.com.fiap.softmind.ui.theme.SoftmindTheme
 import br.com.fiap.softmind.viewmodel.MoodViewModel
 import br.com.fiap.softmind.viewmodel.MoodViewModelFactory
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
