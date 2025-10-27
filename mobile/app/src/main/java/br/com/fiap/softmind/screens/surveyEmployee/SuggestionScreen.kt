@@ -1,4 +1,4 @@
-package br.com.fiap.softmind.screens
+package br.com.fiap.softmind.screens.surveyEmployee
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -30,7 +30,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import br.com.fiap.softmind.componentes.EndButton
 import br.com.fiap.softmind.componentes.EndRecommendation
-import br.com.fiap.softmind.componentes.EndTrophy
 import br.com.fiap.softmind.componentes.HeaderEnd
 import br.com.fiap.softmind.viewmodel.MoodViewModel
 import coil.compose.AsyncImage

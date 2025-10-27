@@ -1,4 +1,4 @@
-package br.com.fiap.softmind.screens
+package br.com.fiap.softmind.screens.surveyEmployee
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

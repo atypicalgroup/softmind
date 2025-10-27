@@ -1,4 +1,4 @@
-package br.com.fiap.softmind.screens
+package br.com.fiap.softmind.screens.auth
 
 import ForgotPasswordDialog
 import android.annotation.SuppressLint
@@ -89,29 +89,48 @@ fun LoginScreen(navController: NavController) {
                                 ValidateCodeRequest(email = resetEmail, token = token)
                             )
                             if (response.isSuccessful) {
-                                Toast.makeText(context, "Código validado!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Código validado!", Toast.LENGTH_SHORT)
+                                    .show()
                                 resetToken = token
                                 dialogState = DialogState.CREATE_PASSWORD
                             } else {
-                                Toast.makeText(context, "Código inválido ou expirado.", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "Código inválido ou expirado.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         } catch (e: Exception) {
                             Log.e("VALIDATE_CODE", "Erro: ${e.message}")
-                            Toast.makeText(context, "Falha de conexão: ${e.message}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                "Falha de conexão: ${e.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
                 },
                 onResendCode = {
                     coroutineScope.launch {
                         try {
-                            val response = ApiClient.authService.forgotPassword(ForgotPasswordRequest(email = resetEmail))
+                            val response =
+                                ApiClient.authService.forgotPassword(ForgotPasswordRequest(email = resetEmail))
                             if (response.isSuccessful) {
-                                Toast.makeText(context, "Novo código enviado para $resetEmail!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "Novo código enviado para $resetEmail!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             } else {
-                                Toast.makeText(context, "Erro ao reenviar código.", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "Erro ao reenviar código.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         } catch (e: Exception) {
-                            Toast.makeText(context, "Falha: ${e.message}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Falha: ${e.message}", Toast.LENGTH_SHORT)
+                                .show()
                         }
                     }
                 },
@@ -137,15 +156,27 @@ fun LoginScreen(navController: NavController) {
                                 )
 
                                 if (response.isSuccessful) {
-                                    Toast.makeText(context, "Senha criada com sucesso! Faça login novamente.", Toast.LENGTH_LONG).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Senha criada com sucesso! Faça login novamente.",
+                                        Toast.LENGTH_LONG
+                                    ).show()
                                     dialogState = DialogState.NONE
                                     email = ""
                                     password = ""
                                 } else {
-                                    Toast.makeText(context, "Erro ao criar nova senha.", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Erro ao criar nova senha.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             } catch (e: Exception) {
-                                Toast.makeText(context, "Falha de conexão: ${e.message}", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "Falha de conexão: ${e.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                     },
@@ -166,13 +197,25 @@ fun LoginScreen(navController: NavController) {
                                     )
                                 )
                                 if (response.isSuccessful) {
-                                    Toast.makeText(context, "Senha redefinida com sucesso!", Toast.LENGTH_LONG).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Senha redefinida com sucesso!",
+                                        Toast.LENGTH_LONG
+                                    ).show()
                                     dialogState = DialogState.NONE
                                 } else {
-                                    Toast.makeText(context, "Erro ao redefinir senha.", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Erro ao redefinir senha.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             } catch (e: Exception) {
-                                Toast.makeText(context, "Falha de conexão: ${e.message}", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "Falha de conexão: ${e.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                     },

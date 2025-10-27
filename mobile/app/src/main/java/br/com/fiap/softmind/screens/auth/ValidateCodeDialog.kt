@@ -1,4 +1,4 @@
-package br.com.fiap.softmind.screens
+package br.com.fiap.softmind.screens.auth
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,6 +21,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -158,7 +159,7 @@ fun ValidateCodeDialog(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CodeInputFields(
-    codeFields: List<androidx.compose.runtime.MutableState<TextFieldValue>>,
+    codeFields: List<MutableState<TextFieldValue>>,
     focusRequesters: List<FocusRequester>,
     length: Int
 ) {
