@@ -7,69 +7,84 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import br.com.fiap.softmind.data.utils.MoodStatusManager
-import br.com.fiap.softmind.screens.administrative.AdminScreen
-import br.com.fiap.softmind.screens.surveyEmployee.EmojiScreen
-import br.com.fiap.softmind.screens.surveyEmployee.EndScreen
-import br.com.fiap.softmind.screens.auth.LoginScreen
-import br.com.fiap.softmind.screens.surveyEmployee.QuestionsScreen
 import br.com.fiap.softmind.screens.SplashScreen
 import br.com.fiap.softmind.screens.PresentationScreen
+import br.com.fiap.softmind.screens.auth.LoginScreen
+import br.com.fiap.softmind.screens.administrative.AdminScreen
+import br.com.fiap.softmind.screens.surveyEmployee.EmojiScreen
+import br.com.fiap.softmind.screens.surveyEmployee.SuggestionScreen
+import br.com.fiap.softmind.screens.surveyEmployee.SurveyScreen
 import br.com.fiap.softmind.ui.theme.SoftmindTheme
 import br.com.fiap.softmind.viewmodel.MoodViewModel
-import br.com.fiap.softmind.viewmodel.MoodViewModelFactory
+import br.com.fiap.softmind.viewmodel.SurveyViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
             SoftmindTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val context = LocalContext.current
-
-                    val moodStatusManager = remember { MoodStatusManager(context) }
-                    val factory = remember { MoodViewModelFactory(moodStatusManager) }
-
-                    var showSplashScreen by remember { mutableStateOf(true) }
                     val navController = rememberNavController()
+                    var showSplashScreen by remember { mutableStateOf(true) }
 
-                    val sharedMoodViewModel: MoodViewModel = viewModel(factory = factory)
+                    // 🔹 ViewModels compartilhados entre telas
+                    val moodViewModel: MoodViewModel = viewModel()
+                    val surveyViewModel: SurveyViewModel = viewModel()
 
-                    val hasAnsweredToday = sharedMoodViewModel.hasSubmittedToday()
-                    val mainStartDestination = if (hasAnsweredToday) {
-                        "EndScreen"
-                    } else {
-                        "PresentationScreen"
-                    }
-
-
+                    // 🔹 Splash inicial
                     if (showSplashScreen) {
-                        SplashScreen(onTimeout = { showSplashScreen = false })
+                        SplashScreen(
+                            onTimeout = { showSplashScreen = false }
+                        )
                     }
+
+                    // 🔹 Navegação principal
                     NavHost(
                         navController = navController,
-                        startDestination = mainStartDestination
+                        startDestination = "PresentationScreen"
                     ) {
-                        composable("PresentationScreen") { PresentationScreen(navController = navController) }
-                        composable("LoginScreen") { LoginScreen(navController = navController) }
-                        composable("EmojiScreen") { EmojiScreen(navController = navController, viewModel = sharedMoodViewModel) }
-                        composable("AdminScreen") { AdminScreen(navController = navController) }
-                        composable("QuestionScreen") { QuestionsScreen(navController = navController, viewModel = sharedMoodViewModel) }
-                        composable("EndScreen") { EndScreen(navController = navController, viewModel = sharedMoodViewModel) }
+                        composable("PresentationScreen") {
+                            PresentationScreen(navController = navController)
+                        }
+                        composable("LoginScreen") {
+                            LoginScreen(
+                                navController = navController,
+                                surveyViewModel = surveyViewModel
+                            )
+                        }
+                        composable("EmojiScreen") {
+                            EmojiScreen(
+                                navController = navController,
+                                moodViewModel = moodViewModel,
+                                surveyViewModel = surveyViewModel
+                            )
+                        }
+                        composable("SurveyScreen") {
+                            SurveyScreen(
+                                navController = navController,
+                                viewModel = moodViewModel
+                            )
+                        }
+                        composable("SuggestionScreen") {
+                            SuggestionScreen(
+                                navController = navController,
+                                viewModel = moodViewModel
+                            )
+                        }
+                        composable("AdminScreen") {
+                            AdminScreen(navController = navController)
+                        }
                     }
                 }
             }

@@ -30,4 +30,6 @@ public record SurveyDto(
 
         @Schema(description = "Status da pesquisa (ativa ou inativa)", example = "false")
         boolean active
+
+
 ) {}

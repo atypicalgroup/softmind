@@ -17,7 +17,6 @@ public class SurveyResponse {
     @Id
     private String id;
     private String surveyId;
-    private String employeeId;
     private List<Answer> answers;
     private LocalDateTime answeredAt;
 }

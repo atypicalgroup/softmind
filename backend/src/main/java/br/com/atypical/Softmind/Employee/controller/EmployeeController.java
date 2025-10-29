@@ -120,11 +120,12 @@ public class EmployeeController {
             tags = "Funcionários"
     )
     @PreAuthorize("hasRole('EMPLOYEE')")
-    @PostMapping("/responses/daily")
-    public ResponseEntity<SurveyResponse> submitDailySurveyResponse(
+    @PostMapping("/response/daily")
+    public ResponseEntity<SurveyResponse> saveAnonymousDailyResponse(
             @AuthenticationPrincipal User user,
             @RequestBody SurveyResponseCreateDto dto
     ) {
+
         SurveyResponse response = surveyResponseService.saveAnonymousDailyResponse(user, dto);
         return ResponseEntity.status(201).body(response);
     }

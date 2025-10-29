@@ -88,7 +88,7 @@ fun EmojiCardDoctor(
 fun EmojiCardDoctorPreview() {
     val navController = rememberNavController()
     EmojiCardDoctor(
-        onClick = { navController.navigate("QuestionScreen") },
+        onClick = { navController.navigate("SurveyScreen") },
         enabled = false // 🔒 teste preview desativado
     )
 }
