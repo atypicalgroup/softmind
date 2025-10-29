@@ -17,6 +17,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -31,16 +32,29 @@ import androidx.navigation.NavController
 import br.com.fiap.softmind.componentes.EndButton
 import br.com.fiap.softmind.componentes.EndRecommendation
 import br.com.fiap.softmind.componentes.HeaderEnd
+import br.com.fiap.softmind.componentes.emojiScreen.SupportPointsSection
 import br.com.fiap.softmind.viewmodel.MoodViewModel
 import coil.compose.AsyncImage
 
 @Composable
-fun EndScreen(
+fun SuggestionScreen(
     navController: NavController,
     viewModel: MoodViewModel = viewModel()
 ) {
     val movies by viewModel.movies.collectAsState()
-    val activities by viewModel.activities.collectAsState() // 👈 vamos expor no ViewModel também
+    val activities by viewModel.activities.collectAsState()
+
+    // ✅ Carrega recomendações se ainda não houver nada carregado
+    LaunchedEffect(Unit) {
+        if (movies.isEmpty() && activities.isEmpty()) {
+            try {
+                viewModel.loadRecommendations(emoji = "😊", feeling = "Motivado")
+                // 🔹 você pode depois ajustar para pegar o último emoji/feeling do backend
+            } catch (e: Exception) {
+                println("Erro ao carregar recomendações: ${e.message}")
+            }
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -55,10 +69,7 @@ fun EndScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             Spacer(modifier = Modifier.height(35.dp))
-
             HeaderEnd()
-            Spacer(modifier = Modifier.height(16.dp))
-//            EndTrophy()
             Spacer(modifier = Modifier.height(16.dp))
             EndRecommendation()
 
@@ -119,7 +130,16 @@ fun EndScreen(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
+            SupportPointsSection(
+                horarioFuncionamento = "Atendimento online 24h",
+                nomeResponsavel = "Equipe de Apoio SoftMind",
+                telefoneResponsavel = "0800 123 456"
+            )
+            Spacer(modifier = Modifier.height(12.dp))
             EndButton(navController = navController)
+
+
         }
     }
 }
+

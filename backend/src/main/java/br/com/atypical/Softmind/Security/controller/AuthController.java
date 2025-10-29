@@ -5,6 +5,8 @@ import br.com.atypical.Softmind.Security.entities.User;
 import br.com.atypical.Softmind.Security.helpers.jwt.JwtService;
 import br.com.atypical.Softmind.Security.service.AuthService;
 import br.com.atypical.Softmind.Security.service.UserService;
+import br.com.atypical.Softmind.Survey.service.SurveyResponseService;
+import br.com.atypical.Softmind.Survey.service.SurveyService;
 import br.com.atypical.Softmind.shared.exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -30,6 +32,7 @@ public class AuthController {
     private final JwtService jwtService;
     private final UserService userService;
     private final AuthService authService;
+    private final SurveyResponseService  surveyResponse;
 
     // 🔹 LOGIN ---------------------------------------------------------
     @Operation(
@@ -58,7 +61,6 @@ public class AuthController {
             User user = userService.findByUsername(loginRequest.username())
                     .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
 
-            // 🔹 Verifica se deve trocar a senha
             if (user.isMustChangePassword()) {
                 return ResponseEntity.status(403).body(
                         new LoginPendingChangeDto(
@@ -78,12 +80,28 @@ public class AuthController {
                     Map.of("name", employeeName)
             );
 
-            return ResponseEntity.ok(new LoginResponseDto(token, loginRequest.username(), employeeName));
+            // 🔹 NOVO BLOCO: checa se respondeu a pesquisa do dia
+            boolean alreadyAnswered = false;
+            try {
+                alreadyAnswered = surveyResponse.hasAnsweredToday(user);
+            } catch (NotFoundException e) {
+                // Se não há pesquisa ativa ou funcionário, não bloqueia o login
+                alreadyAnswered = false;
+            }
+
+            // 🔹 Retorna o DTO com o campo alreadyAnswered
+            return ResponseEntity.ok(new LoginResponseDto(
+                    token,
+                    loginRequest.username(),
+                    employeeName,
+                    alreadyAnswered
+            ));
 
         } catch (AuthenticationException e) {
             return ResponseEntity.status(401).build();
         }
     }
+
 
 
     // 🔹 REGISTRO DE ADMIN --------------------------------------------

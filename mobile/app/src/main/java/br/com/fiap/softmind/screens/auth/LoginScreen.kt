@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import br.com.fiap.softmind.R
@@ -22,10 +23,10 @@ import br.com.fiap.softmind.componentes.StartButton
 import br.com.fiap.softmind.componentes.loginScreen.*
 import br.com.fiap.softmind.data.remote.ApiClient
 import br.com.fiap.softmind.data.remote.model.*
+import br.com.fiap.softmind.viewmodel.SurveyViewModel
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
-// Gerencia os estados dos diálogos
 private enum class DialogState {
     NONE,
     FORGOT_PASSWORD,
@@ -35,14 +36,16 @@ private enum class DialogState {
 
 @SuppressLint("StringFormatInvalid")
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(
+    navController: NavController,
+    surveyViewModel: SurveyViewModel = viewModel()
+) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    // Estado do fluxo de redefinição
     var dialogState by remember { mutableStateOf(DialogState.NONE) }
     var resetEmail by remember { mutableStateOf("") }
     var resetToken by remember { mutableStateOf("") }
@@ -51,184 +54,116 @@ fun LoginScreen(navController: NavController) {
     // 🔹 Controle central dos diálogos
     // ==========================================================
     when (dialogState) {
-
-        // 1️⃣ Esqueci a senha
-        DialogState.FORGOT_PASSWORD -> {
-            ForgotPasswordDialog(
-                onDismissRequest = { dialogState = DialogState.NONE },
-                onConfirm = { emailParaReset ->
-                    resetEmail = emailParaReset
-                    coroutineScope.launch {
-                        try {
-                            val response = ApiClient.authService.forgotPassword(
-                                ForgotPasswordRequest(emailParaReset)
-                            )
-                            if (response.isSuccessful) {
-                                Toast.makeText(context, "Código enviado para $emailParaReset", Toast.LENGTH_LONG).show()
-                                dialogState = DialogState.VALIDATE_CODE
-                            } else {
-                                Toast.makeText(context, "Erro ao enviar código.", Toast.LENGTH_SHORT).show()
-                            }
-                        } catch (e: Exception) {
-                            Log.e("FORGOT_PASSWORD", "Erro: ${e.message}")
-                            Toast.makeText(context, "Falha de conexão: ${e.message}", Toast.LENGTH_SHORT).show()
+        DialogState.FORGOT_PASSWORD -> ForgotPasswordDialog(
+            onDismissRequest = { dialogState = DialogState.NONE },
+            onConfirm = { emailParaReset ->
+                resetEmail = emailParaReset
+                coroutineScope.launch {
+                    try {
+                        val response = ApiClient.authService.forgotPassword(
+                            ForgotPasswordRequest(emailParaReset)
+                        )
+                        if (response.isSuccessful) {
+                            Toast.makeText(context, "Código enviado para $emailParaReset", Toast.LENGTH_LONG).show()
+                            dialogState = DialogState.VALIDATE_CODE
+                        } else {
+                            Toast.makeText(context, "Erro ao enviar código.", Toast.LENGTH_SHORT).show()
                         }
+                    } catch (e: Exception) {
+                        Log.e("FORGOT_PASSWORD", "Erro: ${e.message}")
+                        Toast.makeText(context, "Falha de conexão: ${e.message}", Toast.LENGTH_SHORT).show()
                     }
                 }
-            )
-        }
-
-        // 2️⃣ Validação do código recebido por e-mail
-        DialogState.VALIDATE_CODE -> {
-            ValidateCodeDialog(
-                onDismissRequest = { dialogState = DialogState.NONE },
-                onConfirm = { token ->
-                    coroutineScope.launch {
-                        try {
-                            val response = ApiClient.authService.validateToken(
-                                ValidateCodeRequest(email = resetEmail, token = token)
-                            )
-                            if (response.isSuccessful) {
-                                Toast.makeText(context, "Código validado!", Toast.LENGTH_SHORT)
-                                    .show()
-                                resetToken = token
-                                dialogState = DialogState.CREATE_PASSWORD
-                            } else {
-                                Toast.makeText(
-                                    context,
-                                    "Código inválido ou expirado.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        } catch (e: Exception) {
-                            Log.e("VALIDATE_CODE", "Erro: ${e.message}")
-                            Toast.makeText(
-                                context,
-                                "Falha de conexão: ${e.message}",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
-                },
-                onResendCode = {
-                    coroutineScope.launch {
-                        try {
-                            val response =
-                                ApiClient.authService.forgotPassword(ForgotPasswordRequest(email = resetEmail))
-                            if (response.isSuccessful) {
-                                Toast.makeText(
-                                    context,
-                                    "Novo código enviado para $resetEmail!",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            } else {
-                                Toast.makeText(
-                                    context,
-                                    "Erro ao reenviar código.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        } catch (e: Exception) {
-                            Toast.makeText(context, "Falha: ${e.message}", Toast.LENGTH_SHORT)
-                                .show()
-                        }
-                    }
-                },
-                email = resetEmail
-            )
-        }
-
-        // 3️⃣ Criação de nova senha — primeiro login ou redefinição comum
-        DialogState.CREATE_PASSWORD -> {
-            if (ApiClient.loggedUserId != null && resetToken.isEmpty()) {
-                // Primeiro login
-                CreateNewPasswordDialog(
-                    onDismissRequest = { dialogState = DialogState.NONE },
-                    onConfirmNormal = {},
-                    onConfirmFirstLogin = { newPassword ->
-                        coroutineScope.launch {
-                            try {
-                                val response = ApiClient.authService.changePasswordFirstAccess(
-                                    FirstLoginResetRequest(
-                                        userId = ApiClient.loggedUserId ?: "",
-                                        newPassword = newPassword
-                                    )
-                                )
-
-                                if (response.isSuccessful) {
-                                    Toast.makeText(
-                                        context,
-                                        "Senha criada com sucesso! Faça login novamente.",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                    dialogState = DialogState.NONE
-                                    email = ""
-                                    password = ""
-                                } else {
-                                    Toast.makeText(
-                                        context,
-                                        "Erro ao criar nova senha.",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            } catch (e: Exception) {
-                                Toast.makeText(
-                                    context,
-                                    "Falha de conexão: ${e.message}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }
-                    },
-                    isFirstLogin = true
-                )
-            } else {
-                // Redefinição de senha comum
-                CreateNewPasswordDialog(
-                    onDismissRequest = { dialogState = DialogState.NONE },
-                    onConfirmNormal = { newPassword ->
-                        coroutineScope.launch {
-                            try {
-                                val response = ApiClient.authService.changePassword(
-                                    ResetPasswordRequest(
-                                        email = resetEmail,
-                                        token = resetToken,
-                                        newPassword = newPassword
-                                    )
-                                )
-                                if (response.isSuccessful) {
-                                    Toast.makeText(
-                                        context,
-                                        "Senha redefinida com sucesso!",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                    dialogState = DialogState.NONE
-                                } else {
-                                    Toast.makeText(
-                                        context,
-                                        "Erro ao redefinir senha.",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            } catch (e: Exception) {
-                                Toast.makeText(
-                                    context,
-                                    "Falha de conexão: ${e.message}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }
-                    },
-                    isFirstLogin = false
-                )
             }
-        }
+        )
 
-        DialogState.NONE -> Unit // Nenhum diálogo ativo
+        DialogState.VALIDATE_CODE -> ValidateCodeDialog(
+            onDismissRequest = { dialogState = DialogState.NONE },
+            onConfirm = { token ->
+                coroutineScope.launch {
+                    try {
+                        val response = ApiClient.authService.validateToken(
+                            ValidateCodeRequest(email = resetEmail, token = token)
+                        )
+                        if (response.isSuccessful) {
+                            Toast.makeText(context, "Código validado!", Toast.LENGTH_SHORT).show()
+                            resetToken = token
+                            dialogState = DialogState.CREATE_PASSWORD
+                        } else {
+                            Toast.makeText(context, "Código inválido ou expirado.", Toast.LENGTH_SHORT).show()
+                        }
+                    } catch (e: Exception) {
+                        Log.e("VALIDATE_CODE", "Erro: ${e.message}")
+                        Toast.makeText(context, "Falha: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            },
+            onResendCode = {
+                coroutineScope.launch {
+                    try {
+                        val response = ApiClient.authService.forgotPassword(ForgotPasswordRequest(email = resetEmail))
+                        if (response.isSuccessful) {
+                            Toast.makeText(context, "Novo código enviado para $resetEmail!", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(context, "Erro ao reenviar código.", Toast.LENGTH_SHORT).show()
+                        }
+                    } catch (e: Exception) {
+                        Toast.makeText(context, "Falha: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            },
+            email = resetEmail
+        )
+
+        DialogState.CREATE_PASSWORD -> CreateNewPasswordDialog(
+            onDismissRequest = { dialogState = DialogState.NONE },
+            onConfirmNormal = { newPassword ->
+                coroutineScope.launch {
+                    try {
+                        val response = ApiClient.authService.changePassword(
+                            ResetPasswordRequest(email = resetEmail, token = resetToken, newPassword = newPassword)
+                        )
+                        if (response.isSuccessful) {
+                            Toast.makeText(context, "Senha redefinida com sucesso!", Toast.LENGTH_LONG).show()
+                            dialogState = DialogState.NONE
+                        } else {
+                            Toast.makeText(context, "Erro ao redefinir senha.", Toast.LENGTH_SHORT).show()
+                        }
+                    } catch (e: Exception) {
+                        Toast.makeText(context, "Falha de conexão: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            },
+            onConfirmFirstLogin = { newPassword ->
+                coroutineScope.launch {
+                    try {
+                        val response = ApiClient.authService.changePasswordFirstAccess(
+                            FirstLoginResetRequest(
+                                userId = ApiClient.loggedUserId ?: "",
+                                newPassword = newPassword
+                            )
+                        )
+                        if (response.isSuccessful) {
+                            Toast.makeText(context, "Senha criada com sucesso! Faça login novamente.", Toast.LENGTH_LONG).show()
+                            dialogState = DialogState.NONE
+                            email = ""
+                            password = ""
+                        } else {
+                            Toast.makeText(context, "Erro ao criar nova senha.", Toast.LENGTH_SHORT).show()
+                        }
+                    } catch (e: Exception) {
+                        Toast.makeText(context, "Falha de conexão: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            },
+            isFirstLogin = ApiClient.loggedUserId != null && resetToken.isEmpty()
+        )
+
+        DialogState.NONE -> Unit
     }
 
     // ==========================================================
-    // 🔹 Layout principal da tela de login
+    // 🔹 Layout principal
     // ==========================================================
     Column(
         modifier = Modifier
@@ -281,6 +216,7 @@ fun LoginScreen(navController: NavController) {
                                 userId = jsonObject.getString("userId"),
                                 username = jsonObject.getString("username"),
                                 message = jsonObject.getString("message")
+
                             )
                             ApiClient.loggedUserId = pending.userId
                             resetEmail = pending.username
@@ -288,30 +224,49 @@ fun LoginScreen(navController: NavController) {
                             dialogState = DialogState.CREATE_PASSWORD
                         }
 
-                        // 🔸 Login comum com JWT
+                        // 🔸 Login comum com token
                         jsonObject.has("token") -> {
                             val normal = LoginResponse(
                                 token = jsonObject.getString("token"),
                                 username = jsonObject.getString("username"),
-                                name = jsonObject.getString("name")
+                                name = jsonObject.getString("name"),
+                                alreadyAnswered = jsonObject.optBoolean("alreadyAnswered", false)
                             )
-                            ApiClient.authToken = normal.token
+
+                            surveyViewModel.updateSurveyStatus(normal.alreadyAnswered)
+
+
+                            ApiClient.authToken = normal.token.removePrefix("Bearer ").trim()
                             ApiClient.loggedUserName = normal.name
                             ApiClient.loggedUsername = normal.username
 
                             Toast.makeText(context, "Login realizado com sucesso!", Toast.LENGTH_SHORT).show()
-                            if (email.contains("admin")) navController.navigate("AdminScreen")
-                            else navController.navigate("EmojiScreen")
+
+                            // 🔹 Direciona o usuário
+                            if (email.contains("admin")) {
+                                navController.navigate("AdminScreen")
+                            } else {
+
+                                if (normal.alreadyAnswered) {
+                                    Toast.makeText(context, "Você já respondeu a pesquisa de hoje!", Toast.LENGTH_LONG).show()
+                                    navController.navigate("SuggestionScreen") {
+                                        popUpTo("LoginScreen") { inclusive = true }
+                                    }
+                                }else {
+                                    surveyViewModel.loadDailySurvey()
+                                    navController.navigate("EmojiScreen") {
+                                        popUpTo("LoginScreen") { inclusive = true }
+                                    }
+                                }
+
+                            }
                         }
 
-                        // 🔸 Outros erros
-                        else -> {
-                            Toast.makeText(context, "Usuário ou senha incorretos.", Toast.LENGTH_SHORT).show()
-                        }
+                        else -> Toast.makeText(context, "Usuário ou senha incorretos.", Toast.LENGTH_SHORT).show()
                     }
                 } catch (e: Exception) {
                     Log.e("LOGIN", "Erro: ${e.message}")
-                    Toast.makeText(context, "Falha na conexão: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Falha de conexão: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         })

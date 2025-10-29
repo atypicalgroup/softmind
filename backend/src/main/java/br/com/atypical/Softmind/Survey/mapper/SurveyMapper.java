@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class SurveyMapper {
+
     public Survey toEntity(SurveyCreateDto dto) {
         Survey survey = new Survey();
         survey.setTitle(dto.title());
@@ -23,16 +24,16 @@ public class SurveyMapper {
                                 .map(q -> {
                                     var question = new Question();
                                     question.setText(q.text());
-                                    question.setType(q.type()); // cuidado: se no DTO vem String, converte com QuestionType.valueOf(...)
+                                    question.setType(q.type());
                                     question.setOptions(q.options());
                                     return question;
                                 })
-                                .collect(Collectors.toCollection(ArrayList::new)) // ✅ mutável
+                                .collect(Collectors.toCollection(ArrayList::new))
         );
         return survey;
     }
 
-    public SurveyDto toDto(Survey entity) {
+    public SurveyDto toDto(Survey entity, boolean alreadyAnswered) {
         return new SurveyDto(
                 entity.getId(),
                 entity.getCompanyId(),
@@ -40,11 +41,15 @@ public class SurveyMapper {
                 entity.getDescription(),
                 entity.getQuestions() == null ? List.of() :
                         entity.getQuestions().stream()
-                                .map(q -> new QuestionDto(q.getText(), q.getType(), q.getOptions()))
+                                .map(this::toQuestionDto)
                                 .toList(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt(),
                 entity.isActive()
         );
+    }
+
+    public QuestionDto toQuestionDto(Question question) {
+        return new QuestionDto(question.getText(), question.getType(), question.getOptions());
     }
 }

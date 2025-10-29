@@ -28,6 +28,12 @@ class SurveyViewModel : ViewModel() {
     private val _answers = MutableStateFlow<List<SurveyAnswer>>(emptyList())
     val answers: StateFlow<List<SurveyAnswer>> = _answers
 
+    private val _alreadyAnswered = MutableStateFlow(false)
+    val alreadyAnswered: StateFlow<Boolean> = _alreadyAnswered
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
     val currentQuestion: SurveyQuestion?
         get() = _survey.value?.questions?.getOrNull(_currentIndex.value)
 
@@ -37,65 +43,90 @@ class SurveyViewModel : ViewModel() {
     val isSurveyCompleted: Boolean
         get() = _currentIndex.value >= totalQuestions
 
-    // Carregar pesquisa diária
+    /**
+     * 🔹 Carrega a pesquisa diária diretamente do backend
+     */
     fun loadDailySurvey() {
         viewModelScope.launch {
             try {
+                _isLoading.value = true
                 val response = ApiClient.surveyService.getDailySurvey()
-                if (response.isSuccessful) {
-                    _survey.value = response.body()
-                    _currentIndex.value = 0 // reset ao carregar nova pesquisa
-                    _answers.value = emptyList()
-                } else {
-                    Log.e("SURVEY", "Erro: ${response.code()}")
+
+                when (response.code()) {
+                    204 -> {
+                        // já respondeu hoje
+                        _alreadyAnswered.value = true
+                        _survey.value = null
+                    }
+                    200 -> {
+                        val surveyData = response.body()
+                        _survey.value = surveyData
+                        _currentIndex.value = 0
+                        _answers.value = emptyList()
+                        _alreadyAnswered.value = surveyData?.alreadyAnswered ?: false
+                    }
+                    else -> {
+                        Log.e("SURVEY", "Erro: ${response.code()} ${response.message()}")
+                    }
                 }
             } catch (e: Exception) {
                 Log.e("SURVEY", "Falha na conexão", e)
+            } finally {
+                _isLoading.value = false
             }
         }
     }
 
-    // Avançar para a próxima pergunta
+    /**
+     * Avança para a próxima pergunta e salva a resposta
+     */
     fun nextQuestion(selectedAnswer: String) {
         val question = currentQuestion ?: return
-        val updatedAnswers = _answers.value.toMutableList().apply {
+        val updated = _answers.value.toMutableList().apply {
             removeAll { it.questionText == question.text }
             add(SurveyAnswer(question.text, selectedAnswer))
         }
-        _answers.value = updatedAnswers
+        _answers.value = updated
 
-        if (_currentIndex.value < totalQuestions - 1) {
+        if (_currentIndex.value < totalQuestions - 1)
             _currentIndex.value++
-        } else {
-            // Finalizou todas
+        else
             _currentIndex.value = totalQuestions
-        }
     }
 
-    // Voltar para a anterior
     fun previousQuestion() {
-        if (_currentIndex.value > 0) {
-            _currentIndex.value--
-        }
+        if (_currentIndex.value > 0) _currentIndex.value--
     }
 
-    // Enviar respostas para o backend
-    fun submitAnswers() {
+    /**
+     * 🔹 Envia respostas para o backend
+     */
+    fun submitAnswers(answers: List<SurveyAnswer>) {
         viewModelScope.launch {
             try {
+                _isLoading.value = true
                 val request = EmployeeDailyResponseRequest(
-                    answers = _answers.value,
+                    answers = answers,
                     participationDate = Instant.now().toString()
                 )
                 val response = ApiClient.surveyService.submitEmployeeDailyResponse(request)
                 if (response.isSuccessful) {
                     _submitResult.value = response.body()
+                    _alreadyAnswered.value = true
                 } else {
                     Log.e("SURVEY", "Erro ao enviar respostas: ${response.code()}")
                 }
             } catch (e: Exception) {
                 Log.e("SURVEY", "Falha na conexão", e)
+            } finally {
+                _isLoading.value = false
             }
         }
     }
+
+
+    fun updateSurveyStatus(answered: Boolean) {
+        _alreadyAnswered.value = answered
+    }
+
 }

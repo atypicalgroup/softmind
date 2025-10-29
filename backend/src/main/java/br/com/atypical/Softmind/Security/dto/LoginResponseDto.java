@@ -12,5 +12,11 @@ public record LoginResponseDto(
         String username,
 
         @Schema(description = "Nome do funcionário", example = "Maria da Silva")
-        String name
+        String name,
+
+        @Schema(
+                description = "Indica se o colaborador já respondeu a pesquisa diária",
+                example = "true"
+        )
+        boolean alreadyAnswered
 ) {}

@@ -10,8 +10,13 @@ import java.util.Optional;
 
 public interface SurveyParticipationRepository extends MongoRepository<SurveyParticipation, String> {
     Optional<SurveyParticipation> findByEmployeeIdAndSurveyIdAndParticipationDateBetween(
-            String employeeId, String surveyId, LocalDateTime participationDateAtAfter, LocalDateTime participationDateAtBefore);
+            String employeeId,
+            String surveyId,
+            LocalDateTime participationDateAtAfter,
+            LocalDateTime participationDateAtBefore);
+
     long countByEmployeeIdAndSurveyId(String employeeId, String surveyId);
+
     List<SurveyParticipation> findBySurveyIdAndParticipationDateBetween(String surveyId, LocalDateTime answeredAtAfter, LocalDateTime answeredAtBefore);
 }
 
