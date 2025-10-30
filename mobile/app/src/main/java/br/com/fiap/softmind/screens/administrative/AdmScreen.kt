@@ -27,7 +27,8 @@ import br.com.fiap.softmind.data.model.AdminReport
 import br.com.fiap.softmind.utils.generatePdfFromReport
 import br.com.fiap.softmind.utils.openPdfFile
 import br.com.fiap.softmind.viewmodel.EngagementViewModel
-
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 @Composable
 fun AdminScreen(
     navController: NavController,
@@ -72,10 +73,14 @@ private fun AdminReportContent(navController: NavController, report: AdminReport
     val comentario = report.alerts?.firstOrNull() ?: "Nenhum alerta para esta semana"
     val bemEstar = report.currentHealthyPercentage ?: 0.0
 
+    val scrollState = rememberScrollState()
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFEEF0F6))
+            .verticalScroll(scrollState)
             .padding(top = 26.dp, start = 8.dp, end = 8.dp, bottom = 16.dp)
     ) {
         // Cabeçalho e calendário
