@@ -41,7 +41,7 @@ export class SurveyView implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/portal/pesquisas']);
+    this.router.navigate(['/portal/pesquisa']);
   }
 
   activateSurvey(): void {

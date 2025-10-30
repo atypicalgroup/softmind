@@ -44,17 +44,17 @@ export class Survey implements OnInit {
 
   /** 🔹 Navega para criação de nova pesquisa */
   goToCreate(): void {
-    this.router.navigate(['/portal/pesquisas/cadastrar']);
+    this.router.navigate(['/portal/pesquisa/cadastrar']);
   }
 
   /** 🔹 Visualiza detalhes da pesquisa */
   viewSurvey(survey: SurveyModel): void {
-    this.router.navigate(['/portal/pesquisas/visualizar', survey.id]);
+    this.router.navigate(['/portal/pesquisa/visualizar', survey.id]);
   }
 
   /** 🔹 Edita uma pesquisa existente */
   editSurvey(survey: SurveyModel): void {
-    this.router.navigate(['/portal/pesquisas/editar', survey.id]);
+    this.router.navigate(['/portal/pesquisa/editar', survey.id]);
   }
 
   /** 🔹 Ativa uma pesquisa */

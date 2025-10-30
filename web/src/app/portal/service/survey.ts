@@ -21,7 +21,7 @@ export interface SurveyModel {
   providedIn: 'root'
 })
 export class SurveyService {
-  private readonly API_URL = 'http://localhost:8000/surveys/company';
+  private readonly API_URL = 'http://localhost:8000/surveys';
 
   constructor(
     private http: HttpClient,
@@ -37,7 +37,7 @@ export class SurveyService {
       throw new Error('companyId não encontrado no usuário logado.');
     }
 
-    return this.http.get<SurveyModel[]>(`${this.API_URL}/${companyId}`);
+    return this.http.get<SurveyModel[]>(`${this.API_URL}/company/${companyId}`);
   }
 
   /** 🔹 Cria uma nova pesquisa */

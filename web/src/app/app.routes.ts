@@ -13,7 +13,7 @@ import { Support } from './portal/pages/support/support';
 import { SurveyCreate } from './portal/pages/survey/survey-create/survey-create';
 import { ResetPassword } from './core/auth/reset-password/reset-password';
 import { ForgotPassword } from './core/auth/forgot-password/forgot-password';
-import { AuthGuard } from './core/auth/auth-guard'; 
+import { AuthGuard } from './core/auth/auth-guard';
 
 export const routes: Routes = [
   { path: '', component: Login },
@@ -32,7 +32,7 @@ export const routes: Routes = [
       {
         path: 'funcionario',
         children: [
-          { path: 'listar', component: Employee },
+          { path: '', component: Employee },
           { path: 'cadastrar', component: EmployeeCreate },
           { path: '', redirectTo: 'listar', pathMatch: 'full' }
         ]
@@ -40,16 +40,17 @@ export const routes: Routes = [
       {
         path: 'pesquisa',
         children: [
-          { path: 'listar', component: Survey },
+          { path: '', component: Survey },
           { path: 'cadastrar', component: SurveyCreate },
           { path: 'visualizar/:id', loadComponent: () => import('./portal/pages/survey/survey-view/survey-view').then(m => m.SurveyView) },
+          // { path: 'editar/:id',}
           { path: '', redirectTo: 'listar', pathMatch: 'full' }
         ]
       },
       {
         path: 'suporte',
         children: [
-          { path: 'listar', component: Support },
+          { path: '', component: Support },
           { path: 'cadastrar', component: SupportCreate },
           { path: '', redirectTo: 'listar', pathMatch: 'full' }
         ]
