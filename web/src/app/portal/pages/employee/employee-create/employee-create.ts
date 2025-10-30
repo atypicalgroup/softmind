@@ -45,7 +45,7 @@ export class EmployeeCreate {
       next: () => {
         this.loading = false;
         this.successMessage = 'Funcionário cadastrado com sucesso!';
-        setTimeout(() => this.router.navigate(['/portal/funcionarios']), 1500);
+        setTimeout(() => this.router.navigate(['/portal/funcionario']), 1500);
       },
       error: (err) => {
         this.loading = false;
