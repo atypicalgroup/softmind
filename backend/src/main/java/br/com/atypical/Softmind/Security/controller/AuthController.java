@@ -19,8 +19,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
+
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
@@ -89,14 +93,20 @@ public class AuthController {
             // ==========================================================
             // 🔹 Gera token com claims extras
             // ==========================================================
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("name", employeeName);
+            claims.put("role", user.getPermission());
+
+            if (companyId != null) {
+                claims.put("companyId", companyId);
+            }
+            if (user.getEmployeeId() != null) {
+                claims.put("employeeId", user.getEmployeeId());
+            }
+
             String token = jwtService.generateTokenWithClaims(
                     loginRequest.username(),
-                    Map.of(
-                            "name", employeeName,
-                            "role", user.getPermission(),
-                            "companyId", companyId,
-                            "employeeId", user.getEmployeeId()
-                    )
+                    claims
             );
 
             // ==========================================================
@@ -121,7 +131,11 @@ public class AuthController {
             ));
 
         } catch (AuthenticationException e) {
+            log.warn("Falha na autenticação de {}: {}", loginRequest.username(), e.getMessage());
             return ResponseEntity.status(401).body(Map.of("error", "Credenciais inválidas"));
+        } catch (Exception e) {
+            log.error("Erro interno no login de {}: {}", loginRequest.username(), e.getMessage(), e);
+            return ResponseEntity.status(500).body(Map.of("error", "Erro interno no login", "details", e.getMessage()));
         }
     }
 
