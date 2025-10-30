@@ -1,45 +1,63 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { SupportService } from '../../../service/support';
 
 @Component({
   selector: 'app-support-create',
-  imports: [ ReactiveFormsModule, CommonModule],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './support-create.html',
   styleUrl: './support-create.scss'
 })
 export class SupportCreate {
-  supportPointForm: FormGroup;
+  form: FormGroup;
+  loading = false;
+  successMessage = '';
+  errorMessage = '';
 
-  constructor(private fb: FormBuilder) {
-    this.supportPointForm = this.fb.group({
-      name: ['Central de Atendimento de RH', Validators.required],
-      description: ['Atendimento relacionado a dúvidas de folha de pagamento e benefícios', Validators.required],
-      contactNumber: this.fb.array([
-        this.fb.control('+55 11 99999-9999', Validators.required),
-        this.fb.control('+55 11 98888-8888', Validators.required)
-      ])
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private supportService: SupportService
+  ) {
+    this.form = this.fb.group({
+      name: ['', Validators.required],
+      description: ['', Validators.required],
+      contactNumber: this.fb.array([this.fb.control('', Validators.required)])
     });
   }
 
-  // Getter para acessar os contatos
-  get contactNumbers(): FormArray {
-    return this.supportPointForm.get('contactNumber') as FormArray;
+  get contacts(): FormArray {
+    return this.form.get('contactNumber') as FormArray;
   }
 
-  addContact() {
-    this.contactNumbers.push(this.fb.control('', Validators.required));
+  addContact(): void {
+    this.contacts.push(this.fb.control('', Validators.required));
   }
 
-  removeContact(index: number) {
-    this.contactNumbers.removeAt(index);
+  removeContact(index: number): void {
+    this.contacts.removeAt(index);
   }
 
-  onSubmit() {
-    if (this.supportPointForm.valid) {
-      console.log('Novo Ponto de Apoio:', this.supportPointForm.value);
-      // Aqui você pode chamar o service para enviar ao backend:
-      // this.supportPointService.create(this.supportPointForm.value).subscribe(...)
-    }
+  onSubmit(): void {
+    if (this.form.invalid) return;
+
+    this.loading = true;
+    const payload = this.form.value;
+
+    this.supportService.create(payload).subscribe({
+      next: () => {
+        this.loading = false;
+        this.successMessage = 'Ponto de apoio cadastrado com sucesso!';
+        setTimeout(() => this.router.navigate(['/portal/suporte']), 1500);
+      },
+      error: (err) => {
+        this.loading = false;
+        this.errorMessage = `Erro ao salvar ponto (${err.status || 'desconhecido'})`;
+        console.error(err);
+      }
+    });
   }
 }

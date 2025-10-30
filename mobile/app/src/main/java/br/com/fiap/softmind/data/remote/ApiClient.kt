@@ -2,6 +2,7 @@ package br.com.fiap.softmind.data.remote
 
 import br.com.fiap.softmind.data.remote.api.AuthService
 import br.com.fiap.softmind.data.remote.api.MoodService
+import br.com.fiap.softmind.data.remote.api.ReportService
 import br.com.fiap.softmind.data.remote.api.SupportService
 import br.com.fiap.softmind.data.remote.api.SurveyService
 import okhttp3.OkHttpClient
@@ -42,6 +43,7 @@ object ApiClient {
     val surveyService: SurveyService = retrofit.create(SurveyService::class.java)
 
     val supportService: SupportService by lazy { retrofit.create(SupportService::class.java)}
-    
+
+    val reportService: ReportService = retrofit.create(ReportService::class.java)
 
 }

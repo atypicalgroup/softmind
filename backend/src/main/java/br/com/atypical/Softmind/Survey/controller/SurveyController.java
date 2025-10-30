@@ -71,7 +71,7 @@ public class SurveyController {
             tags = "Administração"
     )
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/{companyId}")
+    @GetMapping("/company/{companyId}")
     public List<SurveyDto> getByCompany(
             @Parameter(description = "ID da empresa", example = "66dff9b2c0d1a45a6e2b1234")
             @PathVariable String companyId) {

@@ -1,7 +1,7 @@
 .card {
+  height: 140px;
   border-radius: 10px;
   transition: transform 0.2s ease-in-out;
-  padding: 1rem;
   background: #f8f9fa; // cor base neutra
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
@@ -11,12 +11,16 @@
 
   h6 {
     font-size: 0.9rem;
-    font-weight: 600;
-    color: #495057;
-    margin-bottom: 0.5rem;
+    font-weight: 700;
+    color: #ddd;
+    background-color: #76A253;
+    border-radius: 50px;
+    margin: 0;
+    padding: 10px 20px;
   }
 
   p {
+    padding: 0;
     margin: 0;
     color: #6c757d;
   }
@@ -24,7 +28,6 @@
   h2 {
     font-size: 1.8rem;
     font-weight: bold;
-    margin: 0.5rem 0;
     color: #212529;
   }
 
@@ -32,12 +35,20 @@
     font-size: 0.85rem;
     color: #6c757d;
   }
-
-  .card-footer {
+  .description {
+    font-size: 1.2rem;
+    padding: 0 20px;
+  }
+  .card-body {
     font-size: 0.85rem;
-    margin-top: 0.5rem;
     font-weight: 500;
-
+    display: flex;
+    flex-direction: row;
+    margin: -15px 10px;
+    h2{
+      font-size: 2.5rem;
+      font-weight: 700;
+    }
     .positive {
       color: #28a745; // verde
     }

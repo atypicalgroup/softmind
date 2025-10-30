@@ -1,49 +1,92 @@
-import { Component } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { SurveyService, SurveyModel } from '../../service/survey';
 
 @Component({
   selector: 'app-survey',
-  imports: [RouterLink],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './survey.html',
-  styleUrl: './survey.scss'
+  styleUrls: ['./survey.scss']
 })
-export class Survey {
-  surveys = [
-    {
-      title: 'Pesquisa de Clima Organizacional',
-      description: 'Pesquisa sobre satisfação dos colaboradores',
-      questions: [
-        { text: 'Como você avalia sua carga de trabalho?', type: 'SINGLE_CHOICE', options: ['Leve', 'Média', 'Alta'] },
-        { text: 'Você trabalha além do seu horário regular?', type: 'SINGLE_CHOICE', options: ['Nunca', 'Às vezes', 'Sempre'] }
-      ]
-    },
-    {
-      title: 'Pesquisa de Benefícios',
-      description: 'Feedback sobre benefícios oferecidos pela empresa',
-      questions: [
-        { text: 'O plano de saúde atende suas necessidades?', type: 'SINGLE_CHOICE', options: ['Sim', 'Não'] }
-      ]
+export class Survey implements OnInit {
+  surveys: SurveyModel[] = [];
+  loading = true;
+  error?: string;
+
+  constructor(
+    private router: Router,
+    private surveyService: SurveyService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadSurveys();
+  }
+
+  /** 🔹 Carrega todas as pesquisas da empresa logada */
+  loadSurveys(): void {
+    this.loading = true;
+    this.error = undefined;
+
+    this.surveyService.getAll().subscribe({
+      next: (data) => {
+        this.surveys = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.loading = false;
+        this.error = `Erro ao carregar pesquisas (${err.status || 'desconhecido'})`;
+        console.error(err);
+      }
+    });
+  }
+
+  /** 🔹 Navega para criação de nova pesquisa */
+  goToCreate(): void {
+    this.router.navigate(['/portal/pesquisas/cadastrar']);
+  }
+
+  /** 🔹 Visualiza detalhes da pesquisa */
+  viewSurvey(survey: SurveyModel): void {
+    this.router.navigate(['/portal/pesquisas/visualizar', survey.id]);
+  }
+
+  /** 🔹 Edita uma pesquisa existente */
+  editSurvey(survey: SurveyModel): void {
+    this.router.navigate(['/portal/pesquisas/editar', survey.id]);
+  }
+
+  /** 🔹 Ativa uma pesquisa */
+  activateSurvey(survey: SurveyModel): void {
+    if (confirm(`Deseja ativar a pesquisa "${survey.title}"?`)) {
+      this.surveyService.activateSurvey(survey.id!).subscribe({
+        next: (updated) => {
+          this.surveys = this.surveys.map(s =>
+            s.id === updated.id ? { ...s, active: true } : { ...s, active: false }
+          );
+          alert('Pesquisa ativada com sucesso!');
+        },
+        error: (err) => {
+          console.error(err);
+          alert('Erro ao ativar pesquisa.');
+        }
+      });
     }
-  ];
-
-  constructor(private router: Router) {}
-
-  goToCreate() {
-    this.router.navigate(['/portal/surveys/create']);
   }
 
-  viewSurvey(survey: any) {
-    console.log('Visualizar:', survey);
-    // pode abrir um modal com detalhes da pesquisa
-  }
-
-  editSurvey(survey: any) {
-    console.log('Editar:', survey);
-    // pode redirecionar para a tela de edição
-  }
-
-  deleteSurvey(survey: any) {
-    console.log('Excluir:', survey);
-    // chamar service para excluir no backend
+  /** 🔹 Exclui uma pesquisa */
+  deleteSurvey(survey: SurveyModel): void {
+    if (confirm(`Deseja excluir a pesquisa "${survey.title}"?`)) {
+      this.surveyService.delete(survey.id!).subscribe({
+        next: () => {
+          this.surveys = this.surveys.filter(s => s.id !== survey.id);
+        },
+        error: (err) => {
+          console.error(err);
+          alert('Erro ao excluir pesquisa.');
+        }
+      });
+    }
   }
 }

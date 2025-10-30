@@ -8,6 +8,11 @@ interface User {
   name: string;
   username: string;
   token: string;
+  email?: string;
+  role?: string;
+  phone?: string;
+  companyId: string;
+  alreadyAnswered?: boolean;
 }
 
 interface PasswordResetResponse {
@@ -48,6 +53,10 @@ export class AuthService {
 
     const saved = localStorage.getItem('usuario');
     return saved ? JSON.parse(saved) : null;
+  }
+  getToken(): string | null {
+    const user = this.getUser();
+    return user?.token ?? null;
   }
 
   // ==================================================

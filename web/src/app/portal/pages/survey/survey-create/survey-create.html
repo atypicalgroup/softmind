@@ -1,58 +1,125 @@
 <div class="card shadow p-4">
-  <h2 class="mb-4">Criar Nova Pesquisa</h2>
+  <h2 class="mb-4">Cadastrar Pesquisa</h2>
 
-  <form [formGroup]="surveyForm" (ngSubmit)="onSubmit()">
+  <!-- ✅ Mensagens de status -->
+  <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
 
-    <!-- Título -->
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+    <!-- 🧩 Campos principais -->
     <div class="mb-3">
-      <label class="form-label">Título</label>
-      <input type="text" formControlName="title" class="form-control" placeholder="Pesquisa de Clima Organizacional">
+      <label for="title" class="form-label">Título</label>
+      <input
+        id="title"
+        formControlName="title"
+        class="form-control"
+        placeholder="Ex: Clima Organizacional"
+      >
     </div>
 
-    <!-- Descrição -->
     <div class="mb-3">
-      <label class="form-label">Descrição</label>
-      <textarea rows="3" formControlName="description" class="form-control" placeholder="Descrição da pesquisa"></textarea>
+      <label for="description" class="form-label">Descrição</label>
+      <textarea
+        id="description"
+        formControlName="description"
+        class="form-control"
+        rows="2"
+        placeholder="Breve descrição sobre o propósito da pesquisa"
+      ></textarea>
     </div>
 
-    <!-- Perguntas -->
-    <div formArrayName="questions" class="mb-3">
-      <label class="form-label">Perguntas</label>
-
-      <div *ngFor="let question of questions.controls; let i = index" [formGroupName]="i" class="border p-3 mb-3 rounded">
-
-        <div class="mb-2">
-          <label class="form-label">Texto da Pergunta</label>
-          <input type="text" formControlName="text" class="form-control" placeholder="Digite a pergunta">
+    <!-- 🧠 Perguntas -->
+    <div formArrayName="questions">
+      <div
+        *ngFor="let question of questions.controls; let q = index"
+        [formGroupName]="q"
+        class="border rounded p-3 mb-3 bg-light"
+      >
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="mb-0">Pergunta {{ q + 1 }}</h6>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-danger"
+            (click)="removeQuestion(q)"
+          >
+            Remover
+          </button>
         </div>
 
-        <div class="mb-2">
-          <label for="type-{{i}}" class="form-label">Tipo</label>
-          <select id="type-{{i}}" formControlName="type" class="form-select">
+        <!-- Texto da pergunta -->
+        <div class="mb-3">
+          <label class="form-label">Texto</label>
+          <input
+            formControlName="text"
+            class="form-control"
+            placeholder="Ex: Como você avalia sua carga de trabalho?"
+          >
+        </div>
+
+        <!-- Tipo da pergunta -->
+        <div class="mb-3">
+          <label for="type"  class="form-label">Tipo de Pergunta</label>
+          <select formControlName="type" name="type" class="form-select" id="type">
+            <option value="SINGLE_CHOICE">Única Escolha</option>
+            <option value="MULTIPLE_CHOICE">Múltipla Escolha</option>
             <option value="TEXT">Texto Aberto</option>
-            <option value="SINGLE_CHOICE">Múltipla Escolha (única)</option>
-            <option value="MULTIPLE_CHOICE">Múltipla Escolha (múltiplas)</option>
           </select>
         </div>
 
-        <!-- Opções -->
-        <div formArrayName="options" *ngIf="question.get('type')?.value !== 'TEXT'" class="mb-2">
-          <label class="form-label">Opções</label>
-          <div *ngFor="let option of getOptions(i).controls; let j = index" class="d-flex mb-1">
-            <input type="text" [formControlName]="j" class="form-control me-2" placeholder="Digite uma opção">
-            <button type="button" class="btn btn-danger btn-sm" (click)="removeOption(i, j)">X</button>
+        <!-- ✅ Opções (somente se não for texto) -->
+        <div *ngIf="question.get('type')?.value !== 'TEXT'">
+          <label class="form-label">Opções de Resposta</label>
+          <div
+            *ngFor="let opt of getOptions(q).controls; let o = index"
+            class="d-flex align-items-center mb-2"
+          >
+            <input
+              [formControlName]="o"
+              class="form-control me-2"
+              placeholder="Digite uma opção (ex: Leve, Média, Alta)"
+            >
+            <button
+              *ngIf="getOptions(q).length > 1"
+              type="button"
+              class="btn btn-outline-danger"
+              (click)="removeOption(q, o)"
+            >
+              Remover
+            </button>
           </div>
-          <button type="button" class="btn btn-secondary btn-sm mt-2" (click)="addOption(i)">+ Adicionar Opção</button>
+
+          <button
+            type="button"
+            class="btn btn-outline-secondary btn-sm mt-2"
+            (click)="addOption(q)"
+          >
+            + Adicionar Opção
+          </button>
         </div>
-
-        <!-- Botão remover pergunta -->
-        <button type="button" class="btn btn-outline-danger btn-sm mt-2" (click)="removeQuestion(i)">Remover Pergunta</button>
       </div>
-
-      <button type="button" class="btn btn-outline-primary btn-sm mt-2" (click)="addQuestion()">+ Nova Pergunta</button>
     </div>
 
-    <!-- Botão salvar -->
-    <button type="submit" class="btn btn-success w-100">Salvar Pesquisa</button>
+    <!-- 🆕 Adicionar nova pergunta -->
+    <button
+      type="button"
+      class="btn btn-outline-primary mb-3"
+      (click)="addQuestion()"
+    >
+      + Adicionar Pergunta
+    </button>
+
+    <!-- 💾 Botão principal -->
+    <button
+      type="submit"
+      class="btn btn-primary w-100"
+      [disabled]="loading || form.invalid"
+    >
+      <ng-container *ngIf="!loading">Salvar Pesquisa</ng-container>
+      <ng-container *ngIf="loading">
+        <div class="spinner-border spinner-border-sm text-light me-2"></div>
+        Salvando...
+      </ng-container>
+    </button>
   </form>
 </div>

@@ -135,4 +135,10 @@ public class UserService {
                 .get()
                 .generate(8);
     }
+
+
+    public Optional<EmployeeDto> findEmployeeById(String employeeId) {
+        return employeeService.findById(employeeId);
+    }
+
 }

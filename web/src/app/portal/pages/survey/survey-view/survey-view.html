@@ -1,0 +1,97 @@
+<div class="card shadow p-4">
+
+  <!-- 🔹 Cabeçalho -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="mb-0">Visualizar Pesquisa</h2>
+      <p class="text-muted mb-0">Veja os detalhes e perguntas da pesquisa selecionada.</p>
+    </div>
+    <button class="btn btn-outline-secondary" (click)="goBack()">
+      <i class="bi bi-arrow-left me-2"></i> Voltar
+    </button>
+  </div>
+
+  <!-- 🔹 Estado de carregamento -->
+  <div *ngIf="loading" class="text-center text-secondary py-5">
+    <div class="spinner-border text-success" role="status"></div>
+    <p class="mt-3">Carregando pesquisa...</p>
+  </div>
+
+  <!-- 🔹 Mensagem de erro -->
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <!-- 🔹 Conteúdo -->
+  <ng-container *ngIf="!loading && survey">
+
+    <!-- Informações principais -->
+    <div class="border rounded p-3 mb-4 bg-light">
+      <div class="row">
+        <div class="col-md-8">
+          <h4 class="fw-bold">{{ survey.title }}</h4>
+          <p class="text-muted mb-1">{{ survey.description }}</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+          <span class="badge px-3 py-2 fs-6"
+                [class.bg-success]="survey.active"
+                [class.bg-secondary]="!survey.active">
+            {{ survey.active ? 'Ativa' : 'Inativa' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Perguntas -->
+    <div>
+      <h5 class="mb-3">Perguntas</h5>
+
+      <div *ngFor="let q of survey.questions; let i = index" class="mb-4 border-bottom pb-3">
+        <h6 class="fw-bold mb-2">
+          {{ i + 1 }}. {{ q.text }}
+        </h6>
+
+        <div *ngIf="q.type === 'TEXT'" class="text-muted">
+          <i class="bi bi-chat-text me-2"></i>
+          Resposta aberta
+        </div>
+
+        <div *ngIf="q.type === 'SINGLE_CHOICE'">
+          <i class="bi bi-circle me-2 text-success"></i>
+          Escolha única
+          <ul class="mt-2 mb-0">
+            <li *ngFor="let opt of q.options">{{ opt }}</li>
+          </ul>
+        </div>
+
+        <div *ngIf="q.type === 'MULTIPLE_CHOICE'">
+          <i class="bi bi-check2-square me-2 text-primary"></i>
+          Múltipla escolha
+          <ul class="mt-2 mb-0">
+            <li *ngFor="let opt of q.options">{{ opt }}</li>
+          </ul>
+        </div>
+
+        <div *ngIf="q.type === 'SCALE'">
+          <i class="bi bi-bar-chart me-2 text-warning"></i>
+          Escala de avaliação
+        </div>
+      </div>
+    </div>
+
+    <!-- Rodapé -->
+    <div class="d-flex justify-content-end mt-4">
+      <button
+        class="btn btn-warning me-2"
+        [disabled]="survey.active"
+        (click)="activateSurvey()"
+      >
+        <i class="bi bi-lightning-charge me-1"></i> Ativar Pesquisa
+      </button>
+
+      <button class="btn btn-danger" (click)="deleteSurvey()">
+        <i class="bi bi-trash me-1"></i> Excluir
+      </button>
+    </div>
+  </ng-container>
+</div>

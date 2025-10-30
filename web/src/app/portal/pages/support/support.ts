@@ -1,40 +1,65 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { Router} from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { SupportService, SupportPoint } from '../../service/support';
 
 @Component({
   selector: 'app-support',
-  imports: [ CommonModule],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './support.html',
   styleUrl: './support.scss'
 })
-export class Support {
-  supportPoints = [
-    {
-      name: 'Central de Atendimento de RH',
-      description: 'Atendimento relacionado a dúvidas de folha de pagamento e benefícios',
-      contactNumber: ['+55 11 99999-9999', '+55 11 98888-8888']
-    },
-    {
-      name: 'TI - Suporte Técnico',
-      description: 'Apoio em equipamentos, rede e sistemas internos',
-      contactNumber: ['+55 11 97777-7777']
+export class Support implements OnInit {
+  supportPoints: SupportPoint[] = [];
+  loading = true;
+  error?: string;
+
+  constructor(
+    private router: Router,
+    private supportService: SupportService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadSupportPoints();
+  }
+
+  loadSupportPoints(): void {
+    this.loading = true;
+    this.error = undefined;
+
+    this.supportService.getAll().subscribe({
+      next: (data) => {
+        this.supportPoints = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.loading = false;
+        this.error = `Erro ao carregar pontos de apoio (${err.status || 'desconhecido'})`;
+        console.error(err);
+      }
+    });
+  }
+
+  goToCreate(): void {
+    this.router.navigate(['/portal/suporte/cadastrar']);
+  }
+
+  editPoint(point: SupportPoint): void {
+    this.router.navigate(['/portal/suporte/editar', point.id]);
+  }
+
+  deletePoint(point: SupportPoint): void {
+    if (confirm(`Deseja excluir o ponto "${point.name}"?`)) {
+      this.supportService.delete(point.id!).subscribe({
+        next: () => {
+          this.supportPoints = this.supportPoints.filter(p => p.id !== point.id);
+        },
+        error: (err) => {
+          console.error(err);
+          alert('Erro ao excluir ponto de apoio.');
+        }
+      });
     }
-  ];
-
-  constructor(private router: Router) {}
-
-  goToCreate() {
-    this.router.navigate(['/portal/support-points/create']);
-  }
-
-  editPoint(point: any) {
-    console.log('Editar:', point);
-    // redirecionar para tela de edição
-  }
-
-  deletePoint(point: any) {
-    console.log('Excluir:', point);
-    // chamar service para remover
   }
 }

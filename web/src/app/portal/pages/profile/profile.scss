@@ -1,14 +1,18 @@
 .profile {
-  .card {
-    border-radius: 8px;
-  }
-
-  h5 {
+  h2 {
     font-weight: 600;
-    color: #333;
+    color: #1f1f24;
   }
 
-  .btn {
-    min-width: 160px;
+  .card {
+    border-radius: 12px;
+  }
+
+  button {
+    font-weight: 500;
+  }
+
+  .text-muted {
+    color: #fff !important;
   }
 }
