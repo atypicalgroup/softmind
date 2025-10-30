@@ -8,7 +8,7 @@ import { SurveyService, SurveyModel } from '../../service/survey';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './survey.html',
-  styleUrl: './survey.scss'
+  styleUrls: ['./survey.scss']
 })
 export class Survey implements OnInit {
   surveys: SurveyModel[] = [];
@@ -24,6 +24,7 @@ export class Survey implements OnInit {
     this.loadSurveys();
   }
 
+  /** 🔹 Carrega todas as pesquisas da empresa logada */
   loadSurveys(): void {
     this.loading = true;
     this.error = undefined;
@@ -41,18 +42,40 @@ export class Survey implements OnInit {
     });
   }
 
+  /** 🔹 Navega para criação de nova pesquisa */
   goToCreate(): void {
     this.router.navigate(['/portal/pesquisas/cadastrar']);
   }
 
+  /** 🔹 Visualiza detalhes da pesquisa */
   viewSurvey(survey: SurveyModel): void {
     this.router.navigate(['/portal/pesquisas/visualizar', survey.id]);
   }
 
+  /** 🔹 Edita uma pesquisa existente */
   editSurvey(survey: SurveyModel): void {
     this.router.navigate(['/portal/pesquisas/editar', survey.id]);
   }
 
+  /** 🔹 Ativa uma pesquisa */
+  activateSurvey(survey: SurveyModel): void {
+    if (confirm(`Deseja ativar a pesquisa "${survey.title}"?`)) {
+      this.surveyService.activateSurvey(survey.id!).subscribe({
+        next: (updated) => {
+          this.surveys = this.surveys.map(s =>
+            s.id === updated.id ? { ...s, active: true } : { ...s, active: false }
+          );
+          alert('Pesquisa ativada com sucesso!');
+        },
+        error: (err) => {
+          console.error(err);
+          alert('Erro ao ativar pesquisa.');
+        }
+      });
+    }
+  }
+
+  /** 🔹 Exclui uma pesquisa */
   deleteSurvey(survey: SurveyModel): void {
     if (confirm(`Deseja excluir a pesquisa "${survey.title}"?`)) {
       this.surveyService.delete(survey.id!).subscribe({

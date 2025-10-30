@@ -1,5 +1,4 @@
 <div class="card shadow p-4">
-
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h2 class="mb-0">Gerenciador de Pesquisas</h2>
     <button class="btn btn-primary" (click)="goToCreate()">+ Nova Pesquisa</button>
@@ -20,6 +19,7 @@
       <tr>
         <th>Título</th>
         <th>Descrição</th>
+        <th>Status</th>
         <th>Perguntas</th>
         <th>Ações</th>
       </tr>
@@ -28,11 +28,23 @@
       <tr *ngFor="let survey of surveys">
         <td>{{ survey.title }}</td>
         <td>{{ survey.description }}</td>
+        <td>
+          <span [class.text-success]="survey.active" [class.text-muted]="!survey.active">
+            {{ survey.active ? 'Ativa' : 'Inativa' }}
+          </span>
+        </td>
         <td>{{ survey.questions.length }}</td>
         <td>
           <button class="btn btn-sm btn-info me-2" (click)="viewSurvey(survey)">Visualizar</button>
           <button class="btn btn-sm btn-warning me-2" (click)="editSurvey(survey)">Editar</button>
-          <button class="btn btn-sm btn-danger" (click)="deleteSurvey(survey)">Excluir</button>
+          <button class="btn btn-sm btn-danger me-2" (click)="deleteSurvey(survey)">Excluir</button>
+          <button
+            *ngIf="!survey.active"
+            class="btn btn-sm btn-success"
+            (click)="activateSurvey(survey)"
+          >
+            Ativar
+          </button>
         </td>
       </tr>
     </tbody>

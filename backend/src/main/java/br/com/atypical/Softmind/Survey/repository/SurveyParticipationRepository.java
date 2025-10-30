@@ -18,5 +18,8 @@ public interface SurveyParticipationRepository extends MongoRepository<SurveyPar
     long countByEmployeeIdAndSurveyId(String employeeId, String surveyId);
 
     List<SurveyParticipation> findBySurveyIdAndParticipationDateBetween(String surveyId, LocalDateTime answeredAtAfter, LocalDateTime answeredAtBefore);
+
+    List<SurveyParticipation> findBySurveyId(String surveyId);
+
 }
 

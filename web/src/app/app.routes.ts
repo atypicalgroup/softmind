@@ -13,43 +13,50 @@ import { Support } from './portal/pages/support/support';
 import { SurveyCreate } from './portal/pages/survey/survey-create/survey-create';
 import { ResetPassword } from './core/auth/reset-password/reset-password';
 import { ForgotPassword } from './core/auth/forgot-password/forgot-password';
+import { AuthGuard } from './core/auth/auth-guard'; 
 
 export const routes: Routes = [
   { path: '', component: Login },
   { path: 'login', component: Login },
-  { path: 'recuperar-senha', component: ForgotPassword},
-  { path: 'validar-codigo', component: Validate},
-  { path: 'redefinir-senha', component: ResetPassword},
+  { path: 'recuperar-senha', component: ForgotPassword },
+  { path: 'validar-codigo', component: Validate },
+  { path: 'redefinir-senha', component: ResetPassword },
+
   {
     path: 'portal',
     component: Painel,
+    canActivate: [AuthGuard],
     children: [
-      { path: 'dashboard', component: Dashboard},
-      { path: 'relatorios', component: Reports},
-      { path: 'funcionario',
+      { path: 'dashboard', component: Dashboard },
+      { path: 'relatorios', component: Reports },
+      {
+        path: 'funcionario',
         children: [
           { path: 'listar', component: Employee },
           { path: 'cadastrar', component: EmployeeCreate },
           { path: '', redirectTo: 'listar', pathMatch: 'full' }
         ]
       },
-      { path: 'pesquisa',
+      {
+        path: 'pesquisa',
         children: [
-          { path: 'listar', component: Survey},
-          { path: 'cadastrar', component:SurveyCreate},
+          { path: 'listar', component: Survey },
+          { path: 'cadastrar', component: SurveyCreate },
+          { path: 'visualizar/:id', loadComponent: () => import('./portal/pages/survey/survey-view/survey-view').then(m => m.SurveyView) },
           { path: '', redirectTo: 'listar', pathMatch: 'full' }
         ]
       },
-      { path: 'suporte',
+      {
+        path: 'suporte',
         children: [
           { path: 'listar', component: Support },
           { path: 'cadastrar', component: SupportCreate },
           { path: '', redirectTo: 'listar', pathMatch: 'full' }
         ]
-       },
-      { path: 'perfil', component: Profile},
-      { path: '', redirectTo:'dashboard', pathMatch: 'full'}
+      },
+      { path: 'perfil', component: Profile },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },
-  { path: '**', redirectTo: ''}
+  { path: '**', redirectTo: '' }
 ];

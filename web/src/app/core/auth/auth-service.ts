@@ -8,7 +8,11 @@ interface User {
   name: string;
   username: string;
   token: string;
-
+  email?: string;
+  role?: string;
+  phone?: string;
+  companyId: string;
+  alreadyAnswered?: boolean;
 }
 
 interface PasswordResetResponse {

@@ -1,0 +1,14 @@
+@use "../../../style/index" as *;
+
+
+.card {
+  background-color: $bg-dark;
+  border-radius: 12px;
+  color: $white;
+}
+
+canvas {
+  color: $white;
+  width: 100% !important;
+  height: 100% !important;
+}

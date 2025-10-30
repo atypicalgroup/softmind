@@ -12,5 +12,8 @@ public interface SurveyResponseRepository extends MongoRepository<SurveyResponse
     List<SurveyResponse> findBySurveyIdAndAnsweredAtBetween(String surveyId, LocalDateTime answeredAtAfter, LocalDateTime answeredAtBefore);
 
     Optional<SurveyResponse> findTopBySurveyIdOrderByAnsweredAtDesc(String id);
+
+    List<SurveyResponse> findBySurveyId(String surveyId);
+
 }
 

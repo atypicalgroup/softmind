@@ -50,5 +50,16 @@ public class AdminReportController {
                 .header("Content-Disposition", "attachment; filename=relatorio-semanal.pdf")
                 .body(pdfBytes);
     }
+    @Operation(
+            summary = "Resumo Geral de bem-estar",
+            description = "Retorna o relatório geral da empresa do admin autenticado",
+            tags = "Administração"
+    )
+    @GetMapping("/admin")
+    public ResponseEntity<AdminReportDTO> getGlobalReport(@AuthenticationPrincipal User user) {
+        var report = reportService.getGlobalAdminReport(user);
+        return ResponseEntity.ok(report);
+    }
+
 }
 

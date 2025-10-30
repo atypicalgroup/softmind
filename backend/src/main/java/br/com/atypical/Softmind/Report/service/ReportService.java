@@ -385,4 +385,83 @@ public class ReportService {
                 .findFirst()
                 .orElse("unknown");
     }
+
+    public AdminReportDTO getGlobalAdminReport(User user) {
+        Employee creator = employeeRepository.findById(user.getEmployeeId())
+                .orElseThrow(() -> new NotFoundException("Funcionário não encontrado"));
+
+        String companyId = creator.getCompanyId();
+
+        // Carrega tudo sem restrição de data
+        var surveys = surveyRepository.findByCompanyId(companyId);
+        var companyEmployees = employeeRepository.findByCompanyId(companyId)
+                .stream().filter(Employee::isActive).toList();
+
+        List<SurveySummaryDTO> allSurveySummaries = surveys.stream()
+                .map(s -> buildSurveySummaryWithoutDate(s, companyEmployees))
+                .toList();
+
+        AdminReportWeekSummaryDTO summary = buildAdminReportSummary(allSurveySummaries);
+
+        // DailyMood - considera todos os registros
+        List<DailyMood> allMoods = dailyMoodRepository.findByCompanyId(companyId);
+
+        BigDecimal avgMood = calculateAverageMood(allMoods);
+
+        return AdminReportDTO.builder()
+                .surveySummary(allSurveySummaries)
+                .weekSummary(summary)
+                .previousHealthyPercentage(BigDecimal.ZERO)
+                .currentHealthyPercentage(avgMood)
+                .healthyPercentage(BigDecimal.ZERO)
+                .moodSummary(buildMoodSummary(allMoods))
+                .startOfWeek(null)
+                .endOfWeek(null)
+                .alerts(List.of("Relatório geral consolidado de bem-estar da empresa"))
+                .build();
+    }
+    private SurveySummaryDTO buildSurveySummaryWithoutDate(Survey survey, List<Employee> companyEmployees) {
+        var surveyResponses = surveyResponseRepository.findBySurveyId(survey.getId());
+        var surveyParticipation = surveyParticipationRepository.findBySurveyId(survey.getId());
+
+        Map<String, QuestionType> questionTextToType = mapQuestionTextToType(survey);
+        Map<String, Map<String, Map<String, Long>>> questionDailyResponseCounts = new HashMap<>();
+
+        int totalEmployees = companyEmployees.size();
+
+        List<String> uniqueParticipantsList = surveyParticipation.stream()
+                .map(SurveyParticipation::getEmployeeId)
+                .distinct()
+                .toList();
+
+        long uniqueParticipantsCount = uniqueParticipantsList.size();
+
+        Map<String, Long> totalPerSector = companyEmployees.stream()
+                .filter(e -> uniqueParticipantsList.contains(e.getId()))
+                .collect(Collectors.groupingBy(Employee::getSector, Collectors.counting()));
+
+        for (SurveyResponse resp : surveyResponses) {
+            String date = resp.getAnsweredAt().toLocalDate().format(DateTimeFormatter.ISO_DATE);
+            resp.getAnswers().stream()
+                    .filter(a -> questionTextToType.containsKey(a.getQuestionText()))
+                    .forEach(a -> questionDailyResponseCounts
+                            .computeIfAbsent(a.getQuestionText(), q -> new HashMap<>())
+                            .computeIfAbsent(date, d -> new HashMap<>())
+                            .merge(a.getResponse(), 1L, Long::sum));
+        }
+
+        List<QuestionResponseDTO> questionResponseDTOs = convertToQuestionResponseDTOs(questionDailyResponseCounts);
+
+        return SurveySummaryDTO.builder()
+                .surveyId(survey.getId())
+                .surveyTitle(survey.getTitle())
+                .questionResponses(questionResponseDTOs)
+                .participants(SurveyParticipantsDTO.builder()
+                        .total(uniqueParticipantsCount)
+                        .totalPerSector(totalPerSector)
+                        .build())
+                .engagement(calculateSimpleEngagement(totalEmployees, uniqueParticipantsCount))
+                .build();
+    }
+
 }

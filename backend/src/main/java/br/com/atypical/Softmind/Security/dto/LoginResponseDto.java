@@ -15,6 +15,11 @@ public record LoginResponseDto(
         String name,
 
         @Schema(
+                description = "Empresa do funcionário cadastrado",
+                example = ""
+        )
+        String companyId,
+        @Schema(
                 description = "Indica se o colaborador já respondeu a pesquisa diária",
                 example = "true"
         )
