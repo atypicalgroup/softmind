@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import br.com.fiap.softmind.R
+import br.com.fiap.softmind.componentes.InterFont
 import br.com.fiap.softmind.data.remote.model.SupportPoint
 import br.com.fiap.softmind.viewmodel.SupportViewModel
 
@@ -145,33 +147,74 @@ private fun SupportPointsDialog(
     )
 }
 
+//@Composable
+//fun SupportPointsButton(
+//    nome: String,
+//    onClick: () -> Unit,
+//    modifier: Modifier = Modifier
+//) {
+//    Button(
+//        onClick = onClick,
+//        modifier = modifier
+//            .fillMaxWidth(0.8f)
+//            .height(52.dp)
+//            .clip(RoundedCornerShape(26.dp))
+//            .background(
+//                brush = Brush.horizontalGradient(
+//                    colors = listOf(Color(0xFF98FB98), Color(0xFF62BEC3))
+//                )
+//            ),
+//        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+//        elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
+//    ) {
+//        Text(
+//            text = nome,
+//            color = Color.Black,
+//            fontSize = 18.sp,
+//            letterSpacing = 0.3.sp,
+//            fontWeight = FontWeight.SemiBold
+//        )
+//    }
+//}
+
+
 @Composable
 fun SupportPointsButton(
     nome: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Button(
         onClick = onClick,
         modifier = modifier
-            .fillMaxWidth(0.8f)
-            .height(52.dp)
-            .clip(RoundedCornerShape(26.dp))
-            .background(
-                brush = Brush.horizontalGradient(
-                    colors = listOf(Color(0xFF98FB98), Color(0xFF62BEC3))
-                )
-            ),
-        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-        elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
+            .width(200.dp)
+            .height(50.dp),
+        shape = RoundedCornerShape(25.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent
+        ),
+        contentPadding = PaddingValues(),
     ) {
-        Text(
-            text = nome,
-            color = Color.Black,
-            fontSize = 18.sp,
-            letterSpacing = 0.3.sp,
-            fontWeight = FontWeight.SemiBold
-        )
+        Box(
+            modifier = Modifier
+                .background(
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(Color(0xFF98FB98), Color(0xFF62BEC3))
+                    ),
+                    shape = RoundedCornerShape(25.dp)
+                )
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = nome,
+                color = Color.Black,
+                fontSize = 18.sp,
+                fontFamily = InterFont,
+                fontWeight = Bold,
+                letterSpacing = 0.3.sp
+            )
+        }
     }
 }
 
