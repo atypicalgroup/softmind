@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { NgOptimizedImage } from "@angular/common";
-import { AuthService } from '../../../auth/auth-service';
+import { AuthService } from '../../../core/auth/auth-service';
 
 @Component({
   selector: 'app-sidebar',

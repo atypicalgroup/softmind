@@ -43,7 +43,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/api/physical-activities/**").permitAll()
                         .requestMatchers("/api/movies/**").permitAll()
-                        //.requestMatchers("/mood/daily/recommendations").permitAll()
+                        .requestMatchers("/reports/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

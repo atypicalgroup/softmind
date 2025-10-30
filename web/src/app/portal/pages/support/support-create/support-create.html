@@ -1,34 +1,41 @@
 <div class="card shadow p-4">
   <h2 class="mb-4">Cadastrar Ponto de Apoio</h2>
 
-  <form [formGroup]="supportPointForm" (ngSubmit)="onSubmit()">
+  <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
 
-    <!-- Nome -->
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <div class="mb-3">
       <label for="name" class="form-label">Nome</label>
-      <input type="text" id="name" formControlName="name" class="form-control" placeholder="Central de Atendimento de RH">
+      <input id="name" formControlName="name" class="form-control" placeholder="Ex: Central de Atendimento de RH">
     </div>
 
-    <!-- Descrição -->
     <div class="mb-3">
       <label for="description" class="form-label">Descrição</label>
-      <textarea id="description" formControlName="description" rows="3" class="form-control"
-        placeholder="Atendimento relacionado a dúvidas de folha de pagamento e benefícios"></textarea>
+      <textarea id="description" formControlName="description" class="form-control" rows="3"></textarea>
     </div>
 
-    <!-- Telefones -->
-    <div formArrayName="contactNumber" class="mb-3">
-      <label class="form-label">Telefones de Contato</label>
-
-      <div *ngFor="let phone of contactNumbers.controls; let i = index" class="d-flex mb-2">
-        <input type="text" [formControlName]="i" class="form-control me-2" placeholder="+55 11 99999-9999">
-        <button type="button" class="btn btn-danger btn-sm" (click)="removeContact(i)">Remover</button>
+    <div class="mb-3">
+      <label class="form-label">Telefones</label>
+      <div formArrayName="contactNumber">
+        <div *ngFor="let contact of contacts.controls; let i = index" class="d-flex align-items-center mb-2">
+          <input [formControlName]="i" class="form-control me-2" placeholder="+55 11 99999-9999">
+          <button *ngIf="contacts.length > 1" type="button" class="btn btn-outline-danger" (click)="removeContact(i)">
+            Remover
+          </button>
+        </div>
       </div>
-
-      <button type="button" class="btn btn-secondary btn-sm mt-2" (click)="addContact()">Adicionar Telefone</button>
+      <button type="button" class="btn btn-outline-secondary mt-2" (click)="addContact()">
+        + Adicionar Telefone
+      </button>
     </div>
 
-    <!-- Botão -->
-    <button type="submit" class="btn btn-primary w-100">Salvar Ponto de Apoio</button>
+    <button type="submit" class="btn btn-primary w-100" [disabled]="loading || form.invalid">
+      <span *ngIf="!loading">Salvar Ponto de Apoio</span>
+      <span *ngIf="loading">
+        <div class="spinner-border spinner-border-sm text-light me-2"></div>
+        Salvando...
+      </span>
+    </button>
   </form>
 </div>

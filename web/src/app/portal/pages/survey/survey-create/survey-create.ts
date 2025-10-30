@@ -2,68 +2,84 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { SurveyService } from '../../../service/survey';
 
 @Component({
   selector: 'app-survey-create',
-  imports: [ReactiveFormsModule, CommonModule],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './survey-create.html',
   styleUrl: './survey-create.scss'
 })
 export class SurveyCreate {
-  surveyForm: FormGroup;
+  form: FormGroup;
+  loading = false;
+  successMessage = '';
+  errorMessage = '';
 
-  constructor(private fb: FormBuilder) {
-    this.surveyForm = this.fb.group({
-      title: ['Pesquisa de Clima Organizacional', Validators.required],
-      description: ['Pesquisa sobre satisfação dos colaboradores', Validators.required],
-      questions: this.fb.array([
-        this.createQuestion()
-      ])
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private surveyService: SurveyService
+  ) {
+    this.form = this.fb.group({
+      title: ['', Validators.required],
+      description: ['', Validators.required],
+      questions: this.fb.array([this.createQuestion()])
     });
   }
 
-  // Getter para acessar as perguntas
   get questions(): FormArray {
-    return this.surveyForm.get('questions') as FormArray;
+    return this.form.get('questions') as FormArray;
   }
 
-  // Cria um grupo de pergunta
   createQuestion(): FormGroup {
     return this.fb.group({
-      text: ['Nova pergunta', Validators.required],
-      type: ['TEXT', Validators.required],
-      options: this.fb.array([
-        this.fb.control('') // opção inicial
-      ])
+      text: ['', Validators.required],
+      type: ['SINGLE_CHOICE', Validators.required],
+      options: this.fb.array([this.fb.control('', Validators.required)])
     });
   }
 
-  addQuestion() {
+  addQuestion(): void {
     this.questions.push(this.createQuestion());
   }
 
-  removeQuestion(index: number) {
+  removeQuestion(index: number): void {
     this.questions.removeAt(index);
   }
 
-  // Getter para opções dentro de uma pergunta
+  addOption(questionIndex: number): void {
+    const options = this.questions.at(questionIndex).get('options') as FormArray;
+    options.push(this.fb.control('', Validators.required));
+  }
+
+  removeOption(questionIndex: number, optionIndex: number): void {
+    const options = this.questions.at(questionIndex).get('options') as FormArray;
+    options.removeAt(optionIndex);
+  }
   getOptions(questionIndex: number): FormArray {
     return this.questions.at(questionIndex).get('options') as FormArray;
   }
 
-  addOption(questionIndex: number) {
-    this.getOptions(questionIndex).push(this.fb.control(''));
-  }
 
-  removeOption(questionIndex: number, optionIndex: number) {
-    this.getOptions(questionIndex).removeAt(optionIndex);
-  }
+  onSubmit(): void {
+    if (this.form.invalid) return;
 
-  onSubmit() {
-    if (this.surveyForm.valid) {
-      console.log('Nova Pesquisa:', this.surveyForm.value);
-      // aqui entra o service que envia para o backend
-      // this.surveyService.create(this.surveyForm.value).subscribe(...)
-    }
+    this.loading = true;
+    const payload = this.form.value;
+
+    this.surveyService.create(payload).subscribe({
+      next: () => {
+        this.loading = false;
+        this.successMessage = 'Pesquisa cadastrada com sucesso!';
+        setTimeout(() => this.router.navigate(['/portal/pesquisas']), 1500);
+      },
+      error: (err) => {
+        this.loading = false;
+        this.errorMessage = `Erro ao salvar pesquisa (${err.status || 'desconhecido'})`;
+        console.error(err);
+      }
+    });
   }
 }

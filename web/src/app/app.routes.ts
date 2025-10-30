@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { Login } from './auth/login/login';
-import { Validate } from './auth/validate/validate';
+import { Login } from './core/auth/login/login';
+import { Validate } from './core/auth/validate/validate';
 import { Painel } from './portal/layout/painel/painel';
 import { Dashboard } from './portal/pages/dashboard/dashboard';
 import { Profile } from './portal/pages/profile/profile';
@@ -11,8 +11,8 @@ import { EmployeeCreate } from './portal/pages/employee/employee-create/employee
 import { SupportCreate } from './portal/pages/support/support-create/support-create';
 import { Support } from './portal/pages/support/support';
 import { SurveyCreate } from './portal/pages/survey/survey-create/survey-create';
-import { ResetPassword } from './auth/reset-password/reset-password';
-import { ForgotPassword } from './auth/forgot-password/forgot-password';
+import { ResetPassword } from './core/auth/reset-password/reset-password';
+import { ForgotPassword } from './core/auth/forgot-password/forgot-password';
 
 export const routes: Routes = [
   { path: '', component: Login },
