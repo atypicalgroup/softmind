@@ -27,13 +27,16 @@ import br.com.fiap.softmind.componentes.emojiScreen.EmojiHeader
 import br.com.fiap.softmind.componentes.emojiScreen.SupportPointsSection
 import br.com.fiap.softmind.ui.theme.BackgroundColor
 import br.com.fiap.softmind.viewmodel.MoodViewModel
+import br.com.fiap.softmind.viewmodel.SupportViewModel
 import br.com.fiap.softmind.viewmodel.SurveyViewModel
 
 @Composable
 fun EmojiScreen(
     navController: NavController,
     moodViewModel: MoodViewModel = viewModel(),
-    surveyViewModel: SurveyViewModel = viewModel()
+    surveyViewModel: SurveyViewModel = viewModel(),
+    supportViewModel: SupportViewModel = viewModel()
+
 ) {
     val context = LocalContext.current
 
@@ -45,6 +48,8 @@ fun EmojiScreen(
     // 🔹 Seleções locais
     var selectedEmoji by remember { mutableStateOf<String?>(null) }
     var selectedFeeling by remember { mutableStateOf<String?>(null) }
+
+    val supportPoints by supportViewModel.supportPoints.collectAsState()
 
     // 🔹 Atualiza automaticamente ao abrir a tela
     LaunchedEffect(Unit) {
@@ -163,12 +168,8 @@ fun EmojiScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-        SupportPointsSection(
-            horarioFuncionamento = "Atendimento online 24h",
-            nomeResponsavel = "Equipe de Apoio SoftMind",
-            telefoneResponsavel = "0800 123 456"
-        )
+        Spacer(modifier = Modifier.height(8.dp))
+        SupportPointsSection()
         Spacer(modifier = Modifier.height(12.dp))
     }
 }

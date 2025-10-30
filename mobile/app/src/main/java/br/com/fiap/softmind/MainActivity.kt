@@ -23,6 +23,7 @@ import br.com.fiap.softmind.screens.surveyEmployee.SurveyScreen
 import br.com.fiap.softmind.ui.theme.SoftmindTheme
 import br.com.fiap.softmind.viewmodel.MoodViewModel
 import br.com.fiap.softmind.viewmodel.SurveyViewModel
+import br.com.fiap.softmind.viewmodel.SupportViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,6 +42,7 @@ class MainActivity : ComponentActivity() {
                     // 🔹 ViewModels compartilhados entre telas
                     val moodViewModel: MoodViewModel = viewModel()
                     val surveyViewModel: SurveyViewModel = viewModel()
+                    val supportViewModel: SupportViewModel = viewModel()
 
                     // 🔹 Splash inicial
                     if (showSplashScreen) {
@@ -67,7 +69,8 @@ class MainActivity : ComponentActivity() {
                             EmojiScreen(
                                 navController = navController,
                                 moodViewModel = moodViewModel,
-                                surveyViewModel = surveyViewModel
+                                surveyViewModel = surveyViewModel,
+                                supportViewModel = supportViewModel
                             )
                         }
                         composable("SurveyScreen") {
@@ -79,7 +82,9 @@ class MainActivity : ComponentActivity() {
                         composable("SuggestionScreen") {
                             SuggestionScreen(
                                 navController = navController,
-                                viewModel = moodViewModel
+                                moodViewModel = moodViewModel,
+                                supportViewModel = supportViewModel
+
                             )
                         }
                         composable("AdminScreen") {
