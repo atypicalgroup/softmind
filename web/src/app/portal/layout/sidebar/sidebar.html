@@ -1,105 +1,111 @@
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+  rel="stylesheet"
+/>
 
 <aside class="sidebar">
-  <header class="nav-header">
-      <img src="" ngSrc="images/logo_portal.png" width="145" height="35" alt="Logo do Portal" />
-      <img src="icons/close_sidebar.png" class="close-sidebar" alt="close sidebar icon">
 
+  <!-- 🔹 Cabeçalho -->
+  <header class="nav-header d-flex justify-content-between align-items-center">
+    <img
+      ngSrc="images/logo_portal.png"
+      width="145"
+      height="35"
+      alt="Logo do Portal"
+    />
+    <!-- <button class="btn btn-link p-0 close-sidebar">
+      <i class="bi bi-x-lg fs-4"></i>
+    </button> -->
   </header>
-  <div class="input-group mb-3 nav-search">
-      <span class="input-group-text">
-        <i class="bi bi-search"></i>
-      </span>
-      <input type="text" class="form-control" placeholder="Pesquisar..." aria-label="Pesquisar">
-  </div>
+
+  <!-- 🔹 Campo de busca -->
+  <!-- <div class="input-group mb-3 nav-search">
+    <span class="input-group-text bg-transparent border-end-0">
+      <i class="bi bi-search"></i>
+    </span>
+    <input
+      type="text"
+      class="form-control border-start-0"
+      placeholder="Pesquisar..."
+      aria-label="Pesquisar"
+    />
+  </div> -->
+
+  <!-- 🔹 Navegação -->
   <nav class="navbar">
-    <ul>
-      <li>
-        <a routerLink="dashboard" routerLinkActive="active">
-          <i class="fas fa-chart-line"></i>
+    <ul class="nav flex-column">
+
+      <li class="nav-item">
+        <a routerLink="dashboard" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-speedometer2 me-2"></i>
           Dashboard
         </a>
       </li>
-      <li>
-        <a routerLink="relatorios" routerLinkActive="active">
-          <i class="fas fa-file-alt"></i>
+
+      <li class="nav-item">
+        <a routerLink="relatorios" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-bar-chart-line me-2"></i>
           Relatórios
         </a>
       </li>
-      <li class="nav-item dropdown">
-        <a routerLink="/portal/funcionario" class="nav-link dropdown-toggle" id="dropDownLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="fa-solid fa-users"></i>
-          Funcionários</a>
-        <ul class="dropdown-menu" aria-labelledby="dropDownLink">
-          <li>
-            <a href="#" class="dropdown-item" routerLink="/portal/funcionario/cadastrar">
-              <i class="fa-solid fa-user-plus"></i>
-              Cadastrar Novo
-            </a>
-          </li>
-        </ul>
+
+      <li class="nav-item">
+        <a routerLink="/portal/funcionario" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-people me-2"></i>
+          Funcionários
+        </a>
       </li>
 
-      <li class="nav-item dropdown">
-        <a routerLink="/portal/suporte" class="nav-link dropdown-toggle" id="dropDownLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="fa-solid fa-users"></i>
-          Ponto de Suporte</a>
-        <ul class="dropdown-menu" aria-labelledby="dropDownLink">
-          <li>
-            <a href="#" class="dropdown-item" routerLink="/portal/suporte/cadastrar">
-              <i class="fa-solid fa-user-plus"></i>
-              Cadastrar
-            </a>
-          </li>
-          <li><a href="#" class="dropdown-item" routerLink="/portal/suporte/atualizar"><i class="fa-solid fa-users-gear"></i> Atualizar</a></li>
-          <li>
-            <a href="#" class="dropdown-item" routerLink="/portal/suporte/delete">
-              <i class="fa-solid fa-user-minus"></i>
-              Deletar
-            </a>
-          </li>
-        </ul>
+      <li class="nav-item">
+        <a routerLink="/portal/suporte" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-life-preserver me-2"></i>
+          Pontos de Suporte
+        </a>
       </li>
 
-      <li class="nav-item dropdown">
-        <a routerLink="/portal/pesquisa" class="nav-link dropdown-toggle" id="dropDownLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="fa-solid fa-users"></i>
-          Pesquisa</a>
-        <ul class="dropdown-menu" aria-labelledby="dropDownLink">
-          <li>
-            <a class="dropdown-item" routerLink="/portal/pesquisa/cadastrar">
-              <i class="fa-solid fa-user-plus"></i>
-              Criar nova pesquisa
-            </a>
-          </li>
-          <li><a class="dropdown-item" routerLink="/portal/pesquisa/gerenciar-pesquisas"><i class="fa-solid fa-users-gear"></i>Gerenciar Pesquisa</a></li>
-
-        </ul>
+      <li class="nav-item">
+        <a routerLink="/portal/pesquisa" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-clipboard-check me-2"></i>
+          Pesquisas
+        </a>
       </li>
+
     </ul>
   </nav>
-  <hr>
+
+  <hr class="my-4" />
+
+  <!-- 🔹 Configurações -->
   <div class="nav-config">
-    <div class="config-link">
-        <span><i class="fa-solid fa-gear"></i> Ajustes</span>
+
+    <div class="config-link mb-3">
+      <i class="bi bi-gear me-2"></i>
+      Ajustes
     </div>
 
-    <a routerLink="perfil" class="config-profile">
-        <div class="profile-data">
-
-          <img ngSrc="images/img_profile.png" width="32" height="32" alt="Imagem de Perfil">
-          <div class="texts">
-            <h5>Name gerenciador</h5>
-            <p>Configurações da conta</p>
-          </div>
+    <a routerLink="perfil" class="config-profile d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center">
+        <img
+          ngSrc="images/img_profile.png"
+          width="32"
+          height="32"
+          alt="Imagem de Perfil"
+          class="rounded-circle me-2"
+        />
+        <div class="texts">
+          <h6 class="mb-0 fw-semibold">{{ userName }}</h6>
+          <small>Configurações da conta</small>
         </div>
-        <span><i class="fa-solid fa-arrow-right"></i></span>
+      </div>
+      <i class="bi bi-chevron-right"></i>
     </a>
+
   </div>
 
-  <footer class="nav-footer">
-      <button class="btn btn-degrade" (click)="onLogout()"> Desconectar
-        <i class="fa-solid fa-arrow-right"></i>
-      </button>
+  <footer class="nav-footer mt-auto pt-4">
+    <button class="btn btn-degrade w-100 d-flex justify-content-between align-items-center" (click)="onLogout()">
+      Desconectar
+      <i class="bi bi-box-arrow-right"></i>
+    </button>
   </footer>
 </aside>

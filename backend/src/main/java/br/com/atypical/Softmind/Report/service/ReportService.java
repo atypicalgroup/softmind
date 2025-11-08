@@ -7,16 +7,19 @@ import br.com.atypical.Softmind.Mood.repository.DailyMoodRepository;
 import br.com.atypical.Softmind.Report.dto.AdminReportDTO;
 import br.com.atypical.Softmind.Report.dto.AdminReportWeekSummaryDTO;
 import br.com.atypical.Softmind.Report.dto.DailyResponseDTO;
+import br.com.atypical.Softmind.Report.dto.MoodSummaryDTO;
 import br.com.atypical.Softmind.Report.dto.QuestionResponseDTO;
 import br.com.atypical.Softmind.Report.dto.ResponseDTO;
 import br.com.atypical.Softmind.Report.dto.SurveyParticipantsDTO;
 import br.com.atypical.Softmind.Report.dto.SurveySummaryDTO;
 import br.com.atypical.Softmind.Survey.entities.Question;
 import br.com.atypical.Softmind.Survey.entities.Survey;
+import br.com.atypical.Softmind.Survey.entities.SurveyParticipation;
 import br.com.atypical.Softmind.Survey.entities.SurveyResponse;
+import br.com.atypical.Softmind.Survey.repository.SurveyParticipationRepository;
 import br.com.atypical.Softmind.Survey.repository.SurveyRepository;
 import br.com.atypical.Softmind.Survey.repository.SurveyResponseRepository;
-import br.com.atypical.Softmind.security.entities.User;
+import br.com.atypical.Softmind.Security.entities.User;
 import br.com.atypical.Softmind.shared.enums.QuestionType;
 import br.com.atypical.Softmind.shared.exceptions.NotFoundException;
 import br.com.atypical.Softmind.shared.utils.EmojiUtils;
@@ -43,13 +46,13 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -57,16 +60,28 @@ public class ReportService {
 
     private final SurveyRepository surveyRepository;
     private final SurveyResponseRepository surveyResponseRepository;
+    private final SurveyParticipationRepository surveyParticipationRepository;
     private final EmployeeRepository employeeRepository;
     private final DailyMoodRepository dailyMoodRepository;
 
-    private final Map<String, Integer> EMOJI_MAPPING = Map.of(
-            "happy", 100,
-            "sad", 50,
-            "tired", 0,
-            "anxious", -25,
-            "fear", -50
-    );
+    private static final Map<String, Integer> EMOJI_MAPPING = new HashMap<>();
+    private static final Map<String, Set<String>> FEELING_EQUIVALENTS = new HashMap<>();
+
+    static {
+        FEELING_EQUIVALENTS.put("happy", Set.of("happy", "alegre"));
+        FEELING_EQUIVALENTS.put("sad", Set.of("sad", "triste"));
+        FEELING_EQUIVALENTS.put("tired", Set.of("tired", "cansado"));
+        FEELING_EQUIVALENTS.put("anxious", Set.of("anxious", "ansioso"));
+        FEELING_EQUIVALENTS.put("fear", Set.of("fear", "medo"));
+        FEELING_EQUIVALENTS.put("anger", Set.of("anger", "raiva"));
+
+        EMOJI_MAPPING.put("happy", 2);
+        EMOJI_MAPPING.put("sad", -2);
+        EMOJI_MAPPING.put("tired", 0);
+        EMOJI_MAPPING.put("anxious", -1);
+        EMOJI_MAPPING.put("fear", -1);
+        EMOJI_MAPPING.put("anger", -2);
+    }
 
     public AdminReportDTO getAdminReport(LocalDate date, User user) {
         Employee creator = employeeRepository.findById(user.getEmployeeId())
@@ -75,9 +90,9 @@ public class ReportService {
         String companyId = creator.getCompanyId();
 
         var startOfWeek = Optional.ofNullable(date).orElse(LocalDate.now())
-                .with(DayOfWeek.MONDAY).atStartOfDay();
+                .with(DayOfWeek.MONDAY).atStartOfDay().minusHours(3);
         var endOfWeek = Optional.ofNullable(date).orElse(LocalDate.now())
-                .with(DayOfWeek.SUNDAY).atTime(23, 59, 59);
+                .with(DayOfWeek.SUNDAY).atTime(23, 59, 59).minusHours(3);
 
         var startOfPreviousWeek = startOfWeek.minusWeeks(1);
         var endOfPreviousWeek = endOfWeek.minusWeeks(1);
@@ -91,15 +106,11 @@ public class ReportService {
                 .map(s -> buildSurveySummary(s, companyEmployees, startOfWeek, endOfWeek))
                 .toList();
 
-        List<SurveySummaryDTO> prevSurveySummary = surveys.stream()
-                .map(s -> buildSurveySummary(s, companyEmployees, startOfPreviousWeek, endOfPreviousWeek))
-                .toList();
-
-        AdminReportWeekSummaryDTO summary = buildAdminReportSummary(currentSurveySummary, companyEmployees);
+        AdminReportWeekSummaryDTO summary = buildAdminReportSummary(currentSurveySummary);
 
         // DailyMood → calcula o Emocionômetro
-        List<DailyMood> currentMoods = dailyMoodRepository.findByCompanyIdAndCreatedAtBetween(companyId, startOfWeek, endOfWeek);
         List<DailyMood> prevMoods = dailyMoodRepository.findByCompanyIdAndCreatedAtBetween(companyId, startOfPreviousWeek, endOfPreviousWeek);
+        List<DailyMood> currentMoods = dailyMoodRepository.findByCompanyIdAndCreatedAtBetween(companyId, startOfWeek, endOfWeek);
 
         BigDecimal avgCurrent = calculateAverageMood(currentMoods);
         BigDecimal avgPrevious = calculateAverageMood(prevMoods);
@@ -108,9 +119,13 @@ public class ReportService {
         return AdminReportDTO.builder()
                 .surveySummary(currentSurveySummary)
                 .weekSummary(summary)
+                .previousHealthyPercentage(avgPrevious)
+                .currentHealthyPercentage(avgCurrent)
                 .healthyPercentage(healthyPercentage)
+                .moodSummary(buildMoodSummary(currentMoods))
                 .startOfWeek(startOfWeek.toLocalDate())
                 .endOfWeek(endOfWeek.toLocalDate())
+                .alerts(List.of("O bem-estar emocional da equipe " + getHealthLabel(avgPrevious, avgCurrent, healthyPercentage)))
                 .build();
     }
 
@@ -118,40 +133,88 @@ public class ReportService {
         if (moods == null || moods.isEmpty()) {
             return BigDecimal.ZERO.setScale(2, RoundingMode.HALF_EVEN);
         }
+
         long total = moods.size();
         long soma = moods.stream()
                 .filter(m -> m.getFeeling() != null)
-                .mapToInt(m -> EMOJI_MAPPING.getOrDefault(m.getFeeling().toLowerCase(), 0))
+                .mapToInt(m -> EMOJI_MAPPING.getOrDefault(normalizeFeeling(m.getFeeling()).toLowerCase(), 0))
                 .sum();
         return BigDecimal.valueOf((double) soma / total)
                 .setScale(2, RoundingMode.HALF_EVEN);
+    }
+
+    public MoodSummaryDTO buildMoodSummary(List<DailyMood> moods) {
+        Map<String, Long> emojiCounts = getEmojiCounts(moods);
+
+        Map<String, BigDecimal> percentages = new HashMap<>();
+        for (Map.Entry<String, Long> entry : emojiCounts.entrySet()) {
+            BigDecimal percent = BigDecimal.valueOf((double) entry.getValue() / moods.size() * 100)
+                    .setScale(2, RoundingMode.HALF_EVEN);
+            percentages.put(entry.getKey(), percent);
+        }
+
+        var mainMood = percentages.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .orElse(null);
+
+        return MoodSummaryDTO.builder()
+                .mainMoodOfWeek(mainMood)
+                .moods(percentages)
+                .build();
+    }
+
+    private Map<String, Long> getEmojiCounts(List<DailyMood> moods) {
+        return moods.stream()
+                .filter(m -> m.getFeeling() != null && !m.getFeeling().isBlank())
+                .collect(Collectors.groupingBy((v) -> normalizeFeeling(v.getFeeling()), Collectors.counting()));
     }
 
     private static BigDecimal getHealthyPercentage(BigDecimal prev, BigDecimal curr) {
         if (prev.compareTo(BigDecimal.ZERO) == 0) {
             return BigDecimal.ZERO;
         }
-        return curr.subtract(prev)
-                .divide(prev, 4, RoundingMode.HALF_EVEN)
-                .multiply(BigDecimal.valueOf(100))
-                .setScale(2, RoundingMode.HALF_EVEN);
+        BigDecimal diff = curr.subtract(prev);
+        BigDecimal percent = diff.abs().divide(prev.abs(), 4, RoundingMode.HALF_EVEN).multiply(BigDecimal.valueOf(100));
+
+        if (prev.compareTo(BigDecimal.ZERO) < 0 && curr.compareTo(BigDecimal.ZERO) < 0 && curr.compareTo(prev) < 0) {
+            percent = percent.negate();
+        } else if (prev.compareTo(BigDecimal.ZERO) < 0 && curr.compareTo(BigDecimal.ZERO) < 0 && curr.compareTo(prev) > 0) {
+            percent = percent;
+        } else {
+            percent = diff.divide(prev, 4, RoundingMode.HALF_EVEN).multiply(BigDecimal.valueOf(100));
+        }
+
+        return percent.setScale(2, RoundingMode.HALF_EVEN);
     }
 
-    private AdminReportWeekSummaryDTO buildAdminReportSummary(List<SurveySummaryDTO> surveySummaryList, List<Employee> companyEmployees) {
+    private AdminReportWeekSummaryDTO buildAdminReportSummary(List<SurveySummaryDTO> surveySummaryList) {
         var globalQuestionResponseCounts = aggregateGlobalQuestions(surveySummaryList);
         var mostVotedResponses = findMostVotedResponses(globalQuestionResponseCounts);
+
+        BigDecimal averageEngagement = surveySummaryList.stream()
+                .map(SurveySummaryDTO::getEngagement)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .divide(BigDecimal.valueOf(Math.max(1, surveySummaryList.size())), 2, RoundingMode.HALF_EVEN);
 
         var totalResponses = surveySummaryList.stream()
                 .map(SurveySummaryDTO::getParticipants)
                 .mapToLong(SurveyParticipantsDTO::getTotal)
                 .sum();
 
+        List<String> allUniqueParticipants = surveySummaryList.stream()
+                .flatMap(s -> s.getParticipants().getTotalPerSector() != null ?
+                        s.getParticipants().getTotalPerSector().entrySet().stream().flatMap(e -> Stream.generate(e::getKey).limit(e.getValue()))
+                        : Stream.empty())
+                .toList();
+        Map<String, Long> totalPerSector = allUniqueParticipants.stream()
+                .collect(Collectors.groupingBy(s -> s, Collectors.counting()));
+
         return AdminReportWeekSummaryDTO.builder()
                 .mostVotedResponses(mostVotedResponses)
-                .overallEngagement(calculateEngagement(companyEmployees.size(), totalResponses))
+                .overallEngagement(averageEngagement)
                 .participants(SurveyParticipantsDTO.builder()
                         .total(totalResponses)
-                        .totalPerSector(Collections.emptyMap()) // anônimo
+                        .totalPerSector(totalPerSector)
                         .build())
                 .build();
     }
@@ -159,9 +222,26 @@ public class ReportService {
     private SurveySummaryDTO buildSurveySummary(Survey survey, List<Employee> companyEmployees,
                                                 LocalDateTime start, LocalDateTime end) {
         var surveyResponses = surveyResponseRepository.findBySurveyIdAndAnsweredAtBetween(survey.getId(), start, end);
+        var surveyParticipation = surveyParticipationRepository.findBySurveyIdAndParticipationDateBetween(survey.getId(), start, end);
 
         Map<String, QuestionType> questionTextToType = mapQuestionTextToType(survey);
         Map<String, Map<String, Map<String, Long>>> questionDailyResponseCounts = new HashMap<>();
+
+        int totalEmployees = companyEmployees.size();
+
+        List<String> uniqueParticipantsList = surveyParticipation.stream()
+                .map(SurveyParticipation::getEmployeeId)
+                .distinct()
+                .toList();
+
+        long uniqueParticipantsCount = uniqueParticipantsList.size();
+
+        Map<String, Long> totalPerSector = companyEmployees.stream()
+                .filter(e -> uniqueParticipantsList.contains(e.getId()))
+                .collect(Collectors.groupingBy(
+                        Employee::getSector,
+                        Collectors.counting()
+                ));
 
         for (SurveyResponse resp : surveyResponses) {
             String date = resp.getAnsweredAt().toLocalDate().format(DateTimeFormatter.ISO_DATE);
@@ -174,17 +254,16 @@ public class ReportService {
         }
 
         List<QuestionResponseDTO> questionResponseDTOs = convertToQuestionResponseDTOs(questionDailyResponseCounts);
-        long numberOfResponses = surveyResponses.size();
 
         return SurveySummaryDTO.builder()
                 .surveyId(survey.getId())
                 .surveyTitle(survey.getTitle())
                 .questionResponses(questionResponseDTOs)
                 .participants(SurveyParticipantsDTO.builder()
-                        .total(numberOfResponses)
-                        .totalPerSector(Collections.emptyMap()) // anônimo
+                        .total(uniqueParticipantsCount)
+                        .totalPerSector(totalPerSector)
                         .build())
-                .engagement(calculateEngagement(companyEmployees.size(), numberOfResponses))
+                .engagement(calculateSimpleEngagement(totalEmployees, uniqueParticipantsCount))
                 .build();
     }
 
@@ -230,8 +309,8 @@ public class ReportService {
                 .collect(Collectors.toMap(Question::getText, Question::getType));
     }
 
-    private BigDecimal calculateEngagement(long totalEmployees, long totalResponses) {
-        return BigDecimal.valueOf(totalEmployees > 0 ? (double) totalResponses / totalEmployees * 100 : 0)
+    private BigDecimal calculateSimpleEngagement(long totalEmployees, long uniqueRespondents) {
+        return BigDecimal.valueOf(totalEmployees > 0 ? (double) uniqueRespondents / totalEmployees * 100 : 0)
                 .setScale(2, RoundingMode.HALF_EVEN);
     }
 
@@ -273,7 +352,7 @@ public class ReportService {
                             + "%\nEngajamento dos colaboradores"))
                     .setTextAlignment(TextAlignment.CENTER).setFontSize(24).setBackgroundColor(ColorConstants.GREEN));
 
-            String destaque = EmojiUtils.mapDescriptionToEmoji("Feliz"); // exemplo simplificado
+            String destaque = EmojiUtils.mapDescriptionToEmoji("Feliz");
             dataBlocks.addCell(new Cell().add(new Paragraph(destaque + "\nSentimento da semana"))
                     .setFont(emojiFont).setFontSize(20).setTextAlignment(TextAlignment.CENTER).setBackgroundColor(ColorConstants.YELLOW));
 
@@ -287,11 +366,102 @@ public class ReportService {
     }
 
     private String getHealthLabel(AdminReportDTO reportDTO) {
-        if (reportDTO.getHealthyPercentage().compareTo(BigDecimal.ZERO) == 0) {
+        return getHealthLabel(reportDTO.getPreviousHealthyPercentage(), reportDTO.getCurrentHealthyPercentage(), reportDTO.getHealthyPercentage());
+    }
+
+    private String getHealthLabel(BigDecimal avgPrevious, BigDecimal avgCurrent, BigDecimal healthyPercentage) {
+        if (avgPrevious.compareTo(avgCurrent) == 0) {
             return "manteve-se estável.";
         }
-        return reportDTO.getHealthyPercentage().compareTo(BigDecimal.ZERO) > 0
-                ? "cresceu " + reportDTO.getHealthyPercentage() + "%."
-                : "diminuiu " + reportDTO.getHealthyPercentage().negate() + "%.";
+        return avgCurrent.compareTo(avgPrevious) > 0
+                ? "cresceu " + healthyPercentage + "%."
+                : "diminuiu " + healthyPercentage + "%.";
     }
+
+    public String normalizeFeeling(String feeling) {
+        return FEELING_EQUIVALENTS.entrySet().stream()
+                .filter(entry -> entry.getValue().contains(feeling.toLowerCase()))
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .orElse("unknown");
+    }
+
+    public AdminReportDTO getGlobalAdminReport(User user) {
+        Employee creator = employeeRepository.findById(user.getEmployeeId())
+                .orElseThrow(() -> new NotFoundException("Funcionário não encontrado"));
+
+        String companyId = creator.getCompanyId();
+
+        // Carrega tudo sem restrição de data
+        var surveys = surveyRepository.findByCompanyId(companyId);
+        var companyEmployees = employeeRepository.findByCompanyId(companyId)
+                .stream().filter(Employee::isActive).toList();
+
+        List<SurveySummaryDTO> allSurveySummaries = surveys.stream()
+                .map(s -> buildSurveySummaryWithoutDate(s, companyEmployees))
+                .toList();
+
+        AdminReportWeekSummaryDTO summary = buildAdminReportSummary(allSurveySummaries);
+
+        // DailyMood - considera todos os registros
+        List<DailyMood> allMoods = dailyMoodRepository.findByCompanyId(companyId);
+
+        BigDecimal avgMood = calculateAverageMood(allMoods);
+
+        return AdminReportDTO.builder()
+                .surveySummary(allSurveySummaries)
+                .weekSummary(summary)
+                .previousHealthyPercentage(BigDecimal.ZERO)
+                .currentHealthyPercentage(avgMood)
+                .healthyPercentage(BigDecimal.ZERO)
+                .moodSummary(buildMoodSummary(allMoods))
+                .startOfWeek(null)
+                .endOfWeek(null)
+                .alerts(List.of("Relatório geral consolidado de bem-estar da empresa"))
+                .build();
+    }
+    private SurveySummaryDTO buildSurveySummaryWithoutDate(Survey survey, List<Employee> companyEmployees) {
+        var surveyResponses = surveyResponseRepository.findBySurveyId(survey.getId());
+        var surveyParticipation = surveyParticipationRepository.findBySurveyId(survey.getId());
+
+        Map<String, QuestionType> questionTextToType = mapQuestionTextToType(survey);
+        Map<String, Map<String, Map<String, Long>>> questionDailyResponseCounts = new HashMap<>();
+
+        int totalEmployees = companyEmployees.size();
+
+        List<String> uniqueParticipantsList = surveyParticipation.stream()
+                .map(SurveyParticipation::getEmployeeId)
+                .distinct()
+                .toList();
+
+        long uniqueParticipantsCount = uniqueParticipantsList.size();
+
+        Map<String, Long> totalPerSector = companyEmployees.stream()
+                .filter(e -> uniqueParticipantsList.contains(e.getId()))
+                .collect(Collectors.groupingBy(Employee::getSector, Collectors.counting()));
+
+        for (SurveyResponse resp : surveyResponses) {
+            String date = resp.getAnsweredAt().toLocalDate().format(DateTimeFormatter.ISO_DATE);
+            resp.getAnswers().stream()
+                    .filter(a -> questionTextToType.containsKey(a.getQuestionText()))
+                    .forEach(a -> questionDailyResponseCounts
+                            .computeIfAbsent(a.getQuestionText(), q -> new HashMap<>())
+                            .computeIfAbsent(date, d -> new HashMap<>())
+                            .merge(a.getResponse(), 1L, Long::sum));
+        }
+
+        List<QuestionResponseDTO> questionResponseDTOs = convertToQuestionResponseDTOs(questionDailyResponseCounts);
+
+        return SurveySummaryDTO.builder()
+                .surveyId(survey.getId())
+                .surveyTitle(survey.getTitle())
+                .questionResponses(questionResponseDTOs)
+                .participants(SurveyParticipantsDTO.builder()
+                        .total(uniqueParticipantsCount)
+                        .totalPerSector(totalPerSector)
+                        .build())
+                .engagement(calculateSimpleEngagement(totalEmployees, uniqueParticipantsCount))
+                .build();
+    }
+
 }

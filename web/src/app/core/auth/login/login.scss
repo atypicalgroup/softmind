@@ -1,0 +1,48 @@
+@use "../../../../style/index" as *;
+
+
+.login-container {
+  // background: linear-gradient(135deg, #0dfddd, #6610f2); // degrade azul/roxo bootstrap
+  height: 100vh;
+  background-image: url('/images/bg-login.png');
+  background-position: 70% 30%;
+  background-size: cover;
+  background-repeat: no-repeat;
+
+
+
+  .login-card {
+    background-color: $dark;
+    width: 100%;
+    max-width: 470px;
+    border-radius: 1rem;
+    border-radius: 25px;
+    color: $white;
+
+    .card-title {
+      // font-weight: 600;
+      color: #0dfddd;
+    }
+    .card-subtitle {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .form-control {
+      border-radius: 0.5rem;
+    }
+
+    .btn {
+      border-radius: 0.5rem;
+    }
+
+    a {
+      color: #0d6efd;
+
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}

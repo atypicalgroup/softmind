@@ -2,6 +2,8 @@ package br.com.fiap.softmind.data.remote
 
 import br.com.fiap.softmind.data.remote.api.AuthService
 import br.com.fiap.softmind.data.remote.api.MoodService
+import br.com.fiap.softmind.data.remote.api.ReportService
+import br.com.fiap.softmind.data.remote.api.SupportService
 import br.com.fiap.softmind.data.remote.api.SurveyService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -12,6 +14,8 @@ import java.util.concurrent.TimeUnit
 
 object ApiClient {
     private const val BASE_URL = "http://10.0.2.2:8000/"
+
+    var loggedUserId: String? = null
     var authToken: String? = null
     var loggedUserName: String? = null
     var loggedUsername: String? = null
@@ -37,5 +41,9 @@ object ApiClient {
     val authService: AuthService = retrofit.create(AuthService::class.java)
     val moodService: MoodService = retrofit.create(MoodService::class.java)
     val surveyService: SurveyService = retrofit.create(SurveyService::class.java)
+
+    val supportService: SupportService by lazy { retrofit.create(SupportService::class.java)}
+
+    val reportService: ReportService = retrofit.create(ReportService::class.java)
 
 }

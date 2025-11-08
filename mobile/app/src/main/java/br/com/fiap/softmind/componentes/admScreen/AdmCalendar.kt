@@ -35,7 +35,7 @@ fun AdmCalendar(
             colors = CardDefaults.cardColors(containerColor = Color(0xFFF9F9F9)),
         ) {
             OutlinedButton(
-                onClick = { viewModel.loadRandomEngagement() },
+                onClick = { viewModel.loadAdminReport() },
                 shape = RoundedCornerShape(50),
                 border = BorderStroke(1.dp, Color.Transparent),
                 colors = ButtonDefaults.outlinedButtonColors(

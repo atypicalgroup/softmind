@@ -1,138 +1,58 @@
-@use "../../../../style/index" as *;
-
 .sidebar {
-  width: 320px;
-  background: $bg-dark;
-  border-right: 1px solid $white;
-  padding: 1rem;
-  height: 100%;
-  color: $white;
-  overflow:hidden;
-  border-right: none;
-
-  .nav-header {
-    height: 80px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    .close-sidebar {
-      cursor: pointer;
-    }
-  }
-
-  .nav-search {
-    color: #ddd;
-
-    .input-group-text {
-      border: 2px solid #ddd;
-      background-color: #303030;
-      color: #fff;
-      font-size: 1.2rem;
-
-    }
-    .form-control {
-      background-color: #303030;
-      border: 2px solid #ddd;
-      box-shadow: none;
-      color: #fff;
-      border-left: none;
-
-      &::placeholder {
-          color: #ddd;
-          opacity: 0.7;
-      }
-    }
-  }
-
-  .navbar {
-    height: 400px;
-    align-items: start;
-    ul {
-      width: 100%;
-      list-style: none;
-      padding: 0;
-      margin: 0;
-
-      li {
-        cursor: pointer;
-
-        a {
-          display: block;
-          padding: 8px 12px;
-          border-radius: 6px;
-          text-decoration: none;
-          color: $white;
-          font-weight: bold;
-
-          &:hover {
-            background-color: $second;
-            color: $primary;
-          }
-
-          &.active {
-            background-color: $primary;
-            color: $second;
-            font-weight: 500;
-          }
-        }
-        .dropdown-menu {
-          background-color: $bg-dark !important;
-          border: none !important;
-          box-shadow: none !important;
-
-          .dropdown-item {
-            background-color: $bg-dark !important;
-            color: $white;
-            border-bottom: 1px solid #dddddda5;
-              &:hover {
-              background-color: $second;
-              color: $primary;
-            }
-          }
-        }
-      }
-    }
-  }
-  .nav-config {
-    height: 220px;
-    list-style: none;
-    text-decoration: none;
-    .config-link {
-      padding: 15px 0;
-      display: flex;
-      justify-content: space-between;
-    }
-    .config-profile {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      .profile-data {
-        display: flex;
-        align-items: center;
-        width: 80%;
-        gap: 0.75rem;
-        img {
-          border-radius: 50%;
-        }
-        h5 {
-          margin: 0;
-          font-size: 1rem;
-          font-weight: 600;
-        }
-        p {
-          margin: 0;
-          font-size: 0.85rem;
-          color: #6c757d;
-        }
-
-        div.texts {
-          display: flex;
-          flex-direction: column;
-        }
-      }
-
-    }
-  }
-
+  width: 350px;
+  min-height: 100vh;
+  background: #1f1f24;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
 }
+
+.sidebar .nav-link {
+  color: #d1d1d1;
+  font-weight: 500;
+  padding: 0.75rem 0;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding-left: 0.9rem;
+}
+
+.nav-header img {
+  cursor: pointer;
+}
+
+.btn-degrade {
+  background: linear-gradient(90deg, #28a745, #20c997);
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.btn-degrade:hover {
+  opacity: 0.9;
+}
+
+.nav-config {
+  color: #ddd !important;
+  .config-profile {
+    text-decoration: none;
+    color: #ddd;
+  }
+}
+
+// .nav-config .texts {
+
+//   text-decoration: none;
+//   color: #ddd;
+// }
+
+

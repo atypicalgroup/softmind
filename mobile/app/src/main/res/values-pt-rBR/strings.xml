@@ -138,12 +138,25 @@
     <string name="adm_medica">Desenho de mulher em jaleco branco, com expressão sorridente.</string>
 
     <string name="pontos_de_apoio">Pontos de Apoio</string>
+    <string name="ver_sugestoes">Ver Sugestões</string>
     <string name="titulo_pontos_de_apoio">Pontos de Apoio</string>
     <string name="texto_horario_funcionamento">Atendimento de Segunda a Sexta, das 08:00 às 18:00.</string>
     <string name="nome_responsavel_label">Responsável:</string>
     <string name="nome_responsavel_valor">Maria Silva</string>
     <string name="telefone_responsavel_label">Telefone:</string>
     <string name="telefone_responsavel_valor">(11) 99999-8888</string>
+
+
+    <string name="validar_codigo">Validar Código</string>
+    <string name="nao_recebeu_codigo">Não recebeu o código?</string>
+    <string name="reenviar">Reenviar</string>
+    <string name="criar_nova_senha">Criar Nova Senha</string>
+    <string name="confirmar_nova_senha">Defina sua nova senha. Ela deve ter no mínimo 6 caracteres.</string>
+    <string name="nova_senha">Nova senha</string>
+    <string name="confirmar_senha">Confirmar senha</string>
+    <string name="senha_diferente">As senhas não coincidem.</string>
+
+
 
 
 

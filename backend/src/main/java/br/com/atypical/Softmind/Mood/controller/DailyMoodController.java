@@ -3,14 +3,10 @@ package br.com.atypical.Softmind.Mood.controller;
 import br.com.atypical.Softmind.Employee.entities.Employee;
 import br.com.atypical.Softmind.Employee.repository.EmployeeRepository;
 import br.com.atypical.Softmind.Mood.dto.DailyMoodRequestDto;
-import br.com.atypical.Softmind.Mood.dto.DailyMoodResponseDto;
-import br.com.atypical.Softmind.Movie.dto.MovieDto;
-import br.com.atypical.Softmind.Survey.dto.QuestionDto;
 import br.com.atypical.Softmind.Mood.service.DailyMoodService;
-import br.com.atypical.Softmind.security.entities.User;
+import br.com.atypical.Softmind.Security.entities.User;
 import br.com.atypical.Softmind.shared.exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -45,4 +41,6 @@ public class DailyMoodController {
                 dto
         ));
     }
+
+
 }

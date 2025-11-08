@@ -8,6 +8,7 @@ data class SurveyDto(
     val questions: List<SurveyQuestion>,
     val createdAt: String,
     val updatedAt: String,
-    val active: Boolean
+    val active: Boolean,
+    val alreadyAnswered: Boolean
 )
 

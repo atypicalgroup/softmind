@@ -10,13 +10,14 @@ import br.com.atypical.Softmind.Survey.entities.SurveyResponse;
 import br.com.atypical.Softmind.Survey.repository.SurveyParticipationRepository;
 import br.com.atypical.Softmind.Survey.repository.SurveyRepository;
 import br.com.atypical.Softmind.Survey.repository.SurveyResponseRepository;
-import br.com.atypical.Softmind.security.entities.User;
+import br.com.atypical.Softmind.Security.entities.User;
 import br.com.atypical.Softmind.shared.exceptions.NotFoundException;
 import br.com.atypical.Softmind.shared.utils.EmojiUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Optional;
@@ -37,47 +38,54 @@ public class SurveyResponseService {
         Employee employee = employeeRepository.findById(user.getEmployeeId())
                 .orElseThrow(() -> new NotFoundException("Funcionário não encontrado"));
 
-        // Busca a survey ativa da empresa
         Survey activeSurvey = surveyRepository.findByCompanyIdAndActiveTrue(employee.getCompanyId())
                 .orElseThrow(() -> new NotFoundException("Nenhuma pesquisa ativa encontrada"));
 
         LocalDateTime participationDate = Optional.ofNullable(dto.participationDate())
                 .orElse(LocalDateTime.now(ZONE_BR));
 
-        LocalDateTime startDate = participationDate.toLocalDate().atStartOfDay();
-        LocalDateTime endDate = participationDate.toLocalDate().atTime(23, 59);
+        // 🔹 1) Intercepta e registra a participação ANTES da resposta
+        registerParticipation(employee, activeSurvey, participationDate);
 
-        // 1) Garante no máx. 1 resposta por dia
-        participationRepo.findByEmployeeIdAndSurveyIdAndParticipationDateBetween(
-                employee.getId(), activeSurvey.getId(), startDate, endDate
-        ).ifPresent(p -> {
-            throw new RuntimeException("Já respondeu esta pesquisa hoje.");
-        });
-
-        // 2) Salva resposta anônima
-        SurveyResponse resp = new SurveyResponse();
-        resp.setSurveyId(activeSurvey.getId());
-        resp.setAnsweredAt(participationDate);
-        resp.setAnswers(dto.answers().stream().map(a -> {
+        // 🔹 2) Salva a resposta de forma 100% anônima
+        SurveyResponse anonymousResponse = new SurveyResponse();
+        anonymousResponse.setSurveyId(activeSurvey.getId());
+        anonymousResponse.setAnsweredAt(participationDate);
+        anonymousResponse.setAnswers(dto.answers().stream().map(a -> {
             Answer ans = new Answer();
             ans.setQuestionText(a.questionText());
             ans.setResponse(EmojiUtils.mapEmojiToDescription(a.response()));
             return ans;
         }).toList());
-        SurveyResponse saved = responseRepo.save(resp);
 
-        // 3) Registra participação
-        SurveyParticipation part = new SurveyParticipation();
-        part.setEmployeeId(employee.getId());
-        part.setSurveyId(activeSurvey.getId());
-        part.setParticipationDate(participationDate);
-        part.setCreatedAt(LocalDateTime.now(ZONE_BR));
-        part.setUniqueKey(employee.getId() + "|" + activeSurvey.getId() + "|" + participationDate.toLocalDate());
-        participationRepo.save(part);
+        return responseRepo.save(anonymousResponse);
 
-        return saved;
     }
 
+
+    private void registerParticipation(Employee employee, Survey survey, LocalDateTime participationDate) {
+        LocalDateTime startOfDay = participationDate.toLocalDate().atStartOfDay();
+        LocalDateTime endOfDay = participationDate.toLocalDate().atTime(23, 59);
+
+        boolean alreadyParticipated = participationRepo
+                .findByEmployeeIdAndSurveyIdAndParticipationDateBetween(
+                        employee.getId(), survey.getId(), startOfDay, endOfDay
+                )
+                .isPresent();
+
+        if (alreadyParticipated) {
+            throw new RuntimeException("Já respondeu esta pesquisa hoje.");
+        }
+
+        SurveyParticipation part = new SurveyParticipation();
+        part.setEmployeeId(employee.getId());
+        part.setSurveyId(survey.getId());
+        part.setParticipationDate(participationDate);
+        part.setCreatedAt(LocalDateTime.now(ZONE_BR));
+        part.setUniqueKey(employee.getId() + "|" + survey.getId() + "|" + participationDate.toLocalDate());
+        participationRepo.save(part);
+
+    }
 
     public long countEmployeeResponses(User user) {
         Employee employee = employeeRepository.findById(user.getEmployeeId())
@@ -96,16 +104,57 @@ public class SurveyResponseService {
         Survey activeSurvey = surveyRepository.findByCompanyIdAndActiveTrue(employee.getCompanyId())
                 .orElseThrow(() -> new NotFoundException("Nenhuma pesquisa ativa encontrada"));
 
-        Optional<SurveyResponse> optionalResponse = responseRepo
-                .findTopBySurveyIdAndEmployeeIdOrderByAnsweredAtDesc(activeSurvey.getId(), employee.getId());
+        // 🔹 1) Verifica se o funcionário respondeu hoje
+        LocalDate today = LocalDate.now(ZONE_BR);
+        LocalDateTime startOfDay = today.atStartOfDay();
+        LocalDateTime endOfDay = startOfDay.plusDays(1);
 
-        SurveyResponse response = optionalResponse
-                .orElseThrow(() -> new RuntimeException("Nenhuma resposta encontrada"));
+        boolean hasParticipated = participationRepo
+                .findByEmployeeIdAndSurveyIdAndParticipationDateBetween(
+                        employee.getId(),
+                        activeSurvey.getId(),
+                        startOfDay,
+                        endOfDay
+                )
+                .isPresent();
 
-        if (response.getAnswers().isEmpty()) {
-            throw new RuntimeException("Nenhuma resposta registrada");
+        if (!hasParticipated) {
+            throw new RuntimeException("O funcionário ainda não respondeu hoje.");
         }
 
+        // 🔹 2) Busca a resposta mais recente do survey (não vinculada a funcionário)
+        Optional<SurveyResponse> optionalResponse = responseRepo
+                .findTopBySurveyIdOrderByAnsweredAtDesc(activeSurvey.getId());
+
+        SurveyResponse response = optionalResponse
+                .orElseThrow(() -> new RuntimeException("Nenhuma resposta encontrada para a pesquisa."));
+
+        if (response.getAnswers().isEmpty()) {
+            throw new RuntimeException("Nenhuma resposta registrada.");
+        }
+
+        // 🔹 3) Retorna o primeiro emoji (ou qualquer outro critério que desejar)
         return response.getAnswers().get(0).getResponse();
     }
+
+
+    public boolean hasAnsweredToday(User user) {
+        Employee employee = employeeRepository.findById(user.getEmployeeId())
+                .orElseThrow(() -> new NotFoundException("Funcionário não encontrado"));
+
+        Survey activeSurvey = surveyRepository.findByCompanyIdAndActiveTrue(employee.getCompanyId())
+                .orElseThrow(() -> new NotFoundException("Nenhuma pesquisa ativa encontrada"));
+
+        LocalDate today = LocalDate.now(ZoneId.of("America/Sao_Paulo"));
+        LocalDateTime startOfDay = today.atStartOfDay();
+        LocalDateTime endOfDay = startOfDay.plusDays(1);
+
+        return participationRepo.findByEmployeeIdAndSurveyIdAndParticipationDateBetween(
+                employee.getId(),
+                activeSurvey.getId(),
+                startOfDay,
+                endOfDay
+        ).isPresent();
+    }
+
 }

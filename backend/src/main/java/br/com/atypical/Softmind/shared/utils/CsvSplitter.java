@@ -28,50 +28,38 @@ public class CsvSplitter {
 
     // Questions and options for the survey
     private static final String QUESTIONS_JSON = "[" +
-        "{ \"text\":\"Qual o seu Emoji do dia?\", \"type\":\"EMOJI\", \"options\":[ \"\\uD83D\\uDE00\", \"\\uD83D\\uDE10\", \"\\uD83D\\uDE22\", \"\\uD83D\\uDE21\", \"\\uD83D\\uDE0D\", \"\\uD83D\\uDE34\" ] }, " +
-        "{ \"text\":\"Qual o seu sentimento de hoje?\", \"type\":\"TEXT\" }, " +
-        "{ \"text\":\"Como você diria que a sua empresa está?\", \"type\":\"MULTIPLE_CHOICE\", \"options\":[ \"Muito boa\", \"Boa\", \"Regular\", \"Ruim\", \"Muito ruim\" ] }, " +
-        "{ \"text\":\"Qual o maior desafio que sua empresa enfrenta hoje?\", \"type\":\"TEXT\" }, " +
-        "{ \"text\":\"Como você classificaria o clima organizacional da sua empresa?\", \"type\":\"SCALE\", \"options\":[ \"1 - Muito ruim\", \"2 - Ruim\", \"3 - Regular\", \"4 - Bom\", \"5 - Excelente\" ] }, " +
-        "{ \"text\":\"Como você avalia a comunicação interna da sua empresa?\", \"type\":\"MULTIPLE_CHOICE\", \"options\":[ \"Muito eficiente\", \"Eficiente\", \"Razoável\", \"Ineficiente\", \"Muito ineficiente\" ] }, " +
-        "{ \"text\":\"Qual o nível de motivação dos colaboradores na sua empresa?\", \"type\":\"EMOJI\", \"options\":[ \"\\uD83D\\uDE00 Muito motivados\", \"\\uD83D\\uDE42 Motivados\", \"\\uD83D\\uDE10 Indiferentes\", \"\\uD83D\\uDE41 Pouco motivados\", \"\\uD83D\\uDE21 Nada motivados\" ] }, " +
-        "{ \"text\":\"Como você avalia o suporte que a liderança dá aos funcionários?\", \"type\":\"SCALE\", \"options\":[ \"1 - Muito ruim\", \"2 - Ruim\", \"3 - Regular\", \"4 - Bom\", \"5 - Excelente\" ] }, " +
-        "{ \"text\":\"Como você enxerga as oportunidades de crescimento profissional na sua empresa?\", \"type\":\"MULTIPLE_CHOICE\", \"options\":[ \"Muitas oportunidades\", \"Algumas oportunidades\", \"Poucas oportunidades\", \"Nenhuma oportunidade\" ] }, " +
-        "{ \"text\":\"Qual o grau de satisfação geral dos colaboradores com a empresa?\", \"type\":\"EMOJI\", \"options\":[ \"\\uD83D\\uDE01 Muito satisfeitos\", \"\\uD83D\\uDE42 Satisfeitos\", \"\\uD83D\\uDE10 Neutros\", \"\\uD83D\\uDE41 Insatisfeitos\", \"\\uD83D\\uDE21 Muito insatisfeitos\" ] }" +
+        "{\"text\": \"Como você avalia sua carga de trabalho?\", \"type\": \"MULTIPLE_CHOICE\", \"options\": [\"Muito Leve\", \"Leve\", \"Média\", \"Alta\", \"Muito Alta\"]}," +
+        "{\"text\": \"Sua carga de trabalho afeta sua qualidade de vida?\", \"type\": \"MULTIPLE_CHOICE\", \"options\": [\"Não\", \"Raramente\", \"Às vezes\", \"Frequentemente\", \"Sempre\"]}," +
+        "{\"text\": \"Você trabalha além do seu horário regular?\", \"type\": \"MULTIPLE_CHOICE\", \"options\": [\"Não\", \"Raramente\", \"Às vezes\", \"Frequentemente\", \"Sempre\"]}," +
+        "{\"text\": \"Você tem apresentado sintomas como insônia, irritabilidade ou cansaço extremo?\", \"type\": \"MULTIPLE_CHOICE\", \"options\": [\"Nunca\", \"Raramente\", \"Às vezes\", \"Frequentemente\", \"Sempre\"]}," +
+        "{\"text\": \"Você sente que sua saúde mental prejudica sua produtividade no trabalho?\", \"type\": \"MULTIPLE_CHOICE\", \"options\": [\"Nunca\", \"Raramente\", \"Às vezes\", \"Frequentemente\", \"Sempre\"]}," +
+        "{\"text\": \"Como está o seu relacionamento com seu chefe numa escala de 1 a 5?\", \"type\": \"SCALE\", \"options\": [\"1\", \"2\", \"3\", \"4\", \"5\"]}," +
+        "{\"text\": \"Como está o seu relacionamento com seus colegas de trabalho numa escala de 1 a 5?\", \"type\": \"SCALE\", \"options\": [\"1\", \"2\", \"3\", \"4\", \"5\"]}," +
+        "{\"text\": \"Sinto que sou tratado(a) com respeito pelos meus colegas de trabalho.\", \"type\": \"SCALE\", \"options\": [\"1\", \"2\", \"3\", \"4\", \"5\"]}," +
+        "{\"text\": \"Consigo me relacionar de forma saudável e colaborativa com minha equipe.\", \"type\": \"SCALE\", \"options\": [\"1\", \"2\", \"3\", \"4\", \"5\"]}," +
+        "{\"text\": \"Tenho liberdade para expressar minhas opiniões sem medo de retaliações.\", \"type\": \"SCALE\", \"options\": [\"1\", \"2\", \"3\", \"4\", \"5\"]}," +
+        "{\"text\": \"Me sinto acolhido(a) a parte do time onde trabalho.\", \"type\": \"SCALE\", \"options\": [\"1\", \"2\", \"3\", \"4\", \"5\"]}," +
+        "{\"text\": \"Sinto que existe espírito de cooperação entre os colaboradores.\", \"type\": \"SCALE\", \"options\": [\"1\", \"2\", \"3\", \"4\", \"5\"]}," +
+        "{\"text\": \"Recebo orientações claras e objetivas sobre minhas atividades e responsabilidades.\", \"type\": \"SCALE\", \"options\": [\"1\", \"2\", \"3\", \"4\", \"5\"]}," +
+        "{\"text\": \"Sinto que posso me comunicar abertamente com minha liderança.\", \"type\": \"SCALE\", \"options\": [\"1\", \"2\", \"3\", \"4\", \"5\"]}," +
+        "{\"text\": \"As informações importantes circulam de forma eficiente dentro da empresa.\", \"type\": \"SCALE\", \"options\": [\"1\", \"2\", \"3\", \"4\", \"5\"]}," +
+        "{\"text\": \"Tenho clareza sobre as metas e os resultados esperados de mim.\", \"type\": \"SCALE\", \"options\": [\"1\", \"2\", \"3\", \"4\", \"5\"]}," +
+        "{\"text\": \"Minha liderança demonstra interesse pelo meu bem-estar no trabalho.\", \"type\": \"SCALE\", \"options\": [\"1\", \"2\", \"3\", \"4\", \"5\"]}," +
+        "{\"text\": \"Minha liderança está disponível para me ouvir quando necessário.\", \"type\": \"SCALE\", \"options\": [\"1\", \"2\", \"3\", \"4\", \"5\"]}," +
+        "{\"text\": \"Me sinto confortável para reportar problemas ou dificuldades ao meu líder.\", \"type\": \"SCALE\", \"options\": [\"1\", \"2\", \"3\", \"4\", \"5\"]}," +
+        "{\"text\": \"Minha liderança reconhece minhas entregas e esforços.\", \"type\": \"SCALE\", \"options\": [\"1\", \"2\", \"3\", \"4\", \"5\"]}," +
+        "{\"text\": \"Existe confiança e transparência na relação com minha liderança.\", \"type\": \"SCALE\", \"options\": [\"1\", \"2\", \"3\", \"4\", \"5\"]}" +
     "]";
-
-    private static final String[] TEXT_RESPONSES = {
-        "Estou muito animado hoje!",
-        "Me sinto um pouco cansado, mas produtivo.",
-        "Dia difícil, muitos desafios.",
-        "Motivado com os novos projetos.",
-        "Preocupado com os prazos.",
-        "Esperançoso com as mudanças recentes.",
-        "Reflexivo sobre as metas da equipe.",
-        "Focado nas entregas da semana.",
-        "Ansioso com as reuniões de hoje.",
-        "Satisfeito com os resultados alcançados."
-    };
-
-    private static final String[] CHALLENGE_RESPONSES = {
-        "Comunicação interna precisa melhorar.",
-        "Alta rotatividade de funcionários.",
-        "Processos internos burocráticos.",
-        "Falta de clareza nas metas e objetivos.",
-        "Limitações orçamentárias.",
-        "Adaptação às novas tecnologias.",
-        "Concorrência acirrada no mercado.",
-        "Dificuldade em atrair novos talentos.",
-        "Equilibrar qualidade e velocidade nas entregas.",
-        "Manter a cultura organizacional com o crescimento."
-    };
 
     // Random number generator
     private static final Random RANDOM = new Random();
 
     // API endpoint URLs
-    private static final String API_ENDPOINT_EMPLOYEES = "http://localhost:8000/employees/{employeeId}/68c898b0bde1421af5dcf4c9/responses";
+    private static final String API_ENDPOINT_EMPLOYEES = "http://localhost:8000/employees/responses/daily";
     private static final String API_ENDPOINT_AUTH = "http://localhost:8000/auth/login";
+    private static final String[] MOOD_EMOJIS = {"😔", "😟", "😠", "😄", "😱", "🥱"};
+    private static final String[] MOOD_FEELINGS = {"Sad", "Anxious", "Anger", "Happy", "Fear", "Tired"};
+    private static final String API_ENDPOINT_MOOD = "http://localhost:8000/mood/daily/recommendations";
 
     // Map to cache authentication tokens by username
     private static final Map<String, String> authTokenCache = new HashMap<>();
@@ -106,9 +94,9 @@ public class CsvSplitter {
 
                 String[] columns = line.split(",");
                 if (columns.length >= 3) {
-                    String employeeId = columns[0];
-                    surveyId = columns[1]; // Assuming surveyId is the second column
-                    String username = columns[2];
+                    String employeeId = columns[1];
+                    surveyId = columns[2]; // Assuming surveyId is the second column
+                    String username = columns[0];
 
                     // Store employee data (we only need to keep one record per employee)
                     employeeData.put(employeeId, new String[]{surveyId, username});
@@ -117,8 +105,8 @@ public class CsvSplitter {
         }
 
         // Define the date range (15/09/2025 to 21/09/2025)
-        LocalDate startDate = LocalDate.of(2025, 9, 22);
-        LocalDate endDate = LocalDate.of(2025, 9, 28);
+        LocalDate startDate = LocalDate.of(2025, 10, 6);
+        LocalDate endDate = LocalDate.of(2025, 10, 12);
 
         AtomicInteger successCount = new AtomicInteger(0);
         AtomicInteger failCount = new AtomicInteger(0);
@@ -193,6 +181,21 @@ public class CsvSplitter {
                 } else {
                     System.err.println("Failed to send data for employee: " + employeeId + " on " + currentDate);
                     failCount.incrementAndGet();
+                }
+
+                // Envio para a API de mood/daily/recommendations
+                int moodIndex = RANDOM.nextInt(MOOD_EMOJIS.length);
+                String moodEmoji = MOOD_EMOJIS[moodIndex];
+                String moodFeeling = MOOD_FEELINGS[moodIndex];
+                JSONObject moodPayload = new JSONObject();
+                moodPayload.put("emoji", moodEmoji);
+                moodPayload.put("feeling", moodFeeling);
+                moodPayload.put("createdAt", formattedDate);
+                boolean moodSuccess = sendMoodRecommendation(moodPayload.toString(), authToken);
+                if (moodSuccess) {
+                    System.out.println("Successfully sent mood for employee: " + employeeId + " on " + currentDate);
+                } else {
+                    System.err.println("Failed to send mood for employee: " + employeeId + " on " + currentDate);
                 }
 
                 // Add a small delay to avoid overwhelming the server
@@ -278,16 +281,6 @@ public class CsvSplitter {
             case "SCALE":
                 JSONArray options = question.getJSONArray("options");
                 return options.getString(RANDOM.nextInt(options.length()));
-
-            case "TEXT":
-                if (question.getString("text").contains("sentimento")) {
-                    return TEXT_RESPONSES[RANDOM.nextInt(TEXT_RESPONSES.length)];
-                } else if (question.getString("text").contains("desafio")) {
-                    return CHALLENGE_RESPONSES[RANDOM.nextInt(CHALLENGE_RESPONSES.length)];
-                } else {
-                    return TEXT_RESPONSES[RANDOM.nextInt(TEXT_RESPONSES.length)];
-                }
-
             default:
                 return "No response";
         }
@@ -358,12 +351,62 @@ public class CsvSplitter {
     }
 
     /**
+     * Send mood recommendation to the API
+     * @param moodData the JSON data containing mood information
+     * @param authToken the authentication token
+     * @return true if the request was successful, false otherwise
+     */
+    private static boolean sendMoodRecommendation(String moodData, String authToken) {
+        try {
+            URL url = new URL(API_ENDPOINT_MOOD);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Accept", "application/json");
+            connection.setRequestProperty("Authorization", "Bearer " + authToken);
+            connection.setDoOutput(true);
+
+            // Send JSON data
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = moodData.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
+
+            // Check response code
+            int responseCode = connection.getResponseCode();
+            if (responseCode >= 200 && responseCode < 300) {
+                return true;
+            } else {
+                System.err.println("Error response code: " + responseCode);
+
+                // Read error message if available
+                if (connection.getErrorStream() != null) {
+                    try (BufferedReader br = new BufferedReader(
+                            new InputStreamReader(connection.getErrorStream(), StandardCharsets.UTF_8))) {
+                        StringBuilder response = new StringBuilder();
+                        String responseLine;
+                        while ((responseLine = br.readLine()) != null) {
+                            response.append(responseLine.trim());
+                        }
+                        System.err.println("Error response: " + response);
+                    }
+                }
+
+                return false;
+            }
+        } catch (Exception e) {
+            System.err.println("Error sending mood data: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Main method to execute the JSON HTTP request sending functionality
      * @param args command line arguments (not used)
      */
     public static void main(String[] args) {
         try {
-            String inputFilePath = "src/main/resources/Result_94.csv";
+            String inputFilePath = "src/main/resources/Result_34.csv";
 
             sendJsonSurveyData(inputFilePath);
         } catch (IOException | InterruptedException e) {

@@ -2,36 +2,40 @@ package br.com.fiap.softmind.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.com.fiap.softmind.data.model.Engagement
+import br.com.fiap.softmind.data.model.AdminReport
+import br.com.fiap.softmind.data.remote.ApiClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-open class EngagementViewModel : ViewModel() {
-    internal val _engagementSelected = MutableStateFlow<Engagement?>(null)
-    val engagementSelected: StateFlow<Engagement?> = _engagementSelected
+class EngagementViewModel : ViewModel() {
 
-    init {
-        loadRandomEngagement()
-    }
+    private val _adminReport = MutableStateFlow<AdminReport?>(null)
+    val adminReport: StateFlow<AdminReport?> = _adminReport
 
-    fun loadRandomEngagement() {
-//        viewModelScope.launch {
-//            try {
-//                val response = RetrofitClient.instance.getEngagement()
-//                if (response.isSuccessful) {
-//                    response.body()?.let { engagementResponse ->
-//                        val list = engagementResponse.engajamentos
-//                        if (list.isNotEmpty()) {
-//                            _engagementSelected.value = list.random()
-//                        }
-//                    }
-//                } else {
-//                    println("Erro na resposta da API: ${response.code()} - ${response.message()}")
-//                }
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//            }
-//        }
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage
+
+    fun loadAdminReport() {
+        viewModelScope.launch {
+            try {
+                _isLoading.value = true
+                _errorMessage.value = null
+
+                val response = ApiClient.reportService.getAdminReport()
+                if (response.isSuccessful) {
+                    _adminReport.value = response.body()
+                } else {
+                    _errorMessage.value = "Erro ao carregar relatório (${response.code()})"
+                }
+            } catch (e: Exception) {
+                _errorMessage.value = e.message ?: "Erro desconhecido"
+            } finally {
+                _isLoading.value = false
+            }
+        }
     }
 }

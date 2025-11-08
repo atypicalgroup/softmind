@@ -1,8 +1,13 @@
 package br.com.fiap.softmind.componentes.emojiScreen
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -10,44 +15,51 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import br.com.fiap.softmind.R
-import android.content.Intent
-import android.net.Uri
-import androidx.compose.foundation.clickable
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextDecoration
+import br.com.fiap.softmind.componentes.InterFont
+import br.com.fiap.softmind.data.remote.model.SupportPoint
+import br.com.fiap.softmind.viewmodel.SupportViewModel
 
 @Composable
 fun SupportPointsSection(
-    //Parametros que serão carregados do backend
-    horarioFuncionamento: String,
-    nomeResponsavel: String,
-    telefoneResponsavel: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: SupportViewModel = viewModel()
 ) {
     var showDialog by remember { mutableStateOf(false) }
+    val supportPoints by viewModel.supportPoints.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
-    // Botão que abre o diálogo
+    // 🔹 Carrega os pontos assim que o componente for exibido
+    LaunchedEffect(Unit) {
+        viewModel.loadSupportPoints()
+    }
+
+    // 🔹 Botão principal que abre o modal
     SupportPointsButton(
+        nome = stringResource(R.string.pontos_de_apoio),
         onClick = { showDialog = true },
         modifier = modifier
     )
 
+    // 🔹 Modal com a lista de pontos
     if (showDialog) {
-        //Passando os dados recebidos para o dialogo
         SupportPointsDialog(
             onDismissRequest = { showDialog = false },
-            horarioFuncionamento = horarioFuncionamento,
-            nomeResponsavel = nomeResponsavel,
-            telefoneResponsavel = telefoneResponsavel
+            isLoading = isLoading,
+            supportPoints = supportPoints
         )
     }
 }
@@ -55,9 +67,8 @@ fun SupportPointsSection(
 @Composable
 private fun SupportPointsDialog(
     onDismissRequest: () -> Unit,
-    horarioFuncionamento: String,
-    nomeResponsavel: String,
-    telefoneResponsavel: String
+    isLoading: Boolean,
+    supportPoints: List<SupportPoint>
 ) {
     val context = LocalContext.current
 
@@ -73,87 +84,134 @@ private fun SupportPointsDialog(
                 fontWeight = FontWeight.Bold
             )
         },
-        // Conteúdo do Diálogo
         text = {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = horarioFuncionamento,
-                    textAlign = TextAlign.Center
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Column(horizontalAlignment = Alignment.Start) {
-                    Row {
+            if (isLoading) {
+                Text("Carregando pontos de apoio...", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+            } else {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    if (supportPoints.isEmpty()) {
                         Text(
-                            text = stringResource(R.string.nome_responsavel_label),
-                            fontWeight = FontWeight.Bold
+                            text = "Nenhum ponto de apoio encontrado.",
+                            textAlign = TextAlign.Center
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
-
-                        Text(
-                            text = nomeResponsavel
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row {
-                        Text(
-                            text = stringResource(R.string.telefone_responsavel_label),
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = telefoneResponsavel,
-                            color = Color(0xFF00BFA5),
-                            textDecoration = TextDecoration.Underline,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.clickable {
-                                val intent = Intent(Intent.ACTION_DIAL).apply {
-                                    data = Uri.parse("tel:$telefoneResponsavel")
+                    } else {
+                        supportPoints.forEach { point ->
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp)
+                                    .background(Color(0xFFF5F5F5), RoundedCornerShape(12.dp))
+                                    .padding(12.dp)
+                            ) {
+                                Text(
+                                    text = point.name,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp
+                                )
+                                Text(
+                                    text = point.description,
+                                    fontSize = 14.sp,
+                                    color = Color.DarkGray
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                point.contactNumber.forEach { phone ->
+                                    Text(
+                                        text = phone,
+                                        color = Color(0xFF00BFA5),
+                                        textDecoration = TextDecoration.Underline,
+                                        fontWeight = FontWeight.Bold,
+                                        modifier = Modifier.clickable {
+                                            val intent = Intent(Intent.ACTION_DIAL).apply {
+                                                data = Uri.parse("tel:$phone")
+                                            }
+                                            context.startActivity(intent)
+                                        }
+                                    )
                                 }
-                                context.startActivity(intent)
                             }
-                        )
+                        }
                     }
                 }
             }
         },
-        // Botão de ação ("Voltar")
         confirmButton = {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 DialogBackButton(onClick = onDismissRequest)
             }
         }
     )
 }
 
+//@Composable
+//fun SupportPointsButton(
+//    nome: String,
+//    onClick: () -> Unit,
+//    modifier: Modifier = Modifier
+//) {
+//    Button(
+//        onClick = onClick,
+//        modifier = modifier
+//            .fillMaxWidth(0.8f)
+//            .height(52.dp)
+//            .clip(RoundedCornerShape(26.dp))
+//            .background(
+//                brush = Brush.horizontalGradient(
+//                    colors = listOf(Color(0xFF98FB98), Color(0xFF62BEC3))
+//                )
+//            ),
+//        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+//        elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
+//    ) {
+//        Text(
+//            text = nome,
+//            color = Color.Black,
+//            fontSize = 18.sp,
+//            letterSpacing = 0.3.sp,
+//            fontWeight = FontWeight.SemiBold
+//        )
+//    }
+//}
+
+
 @Composable
-private fun SupportPointsButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun SupportPointsButton(
+    nome: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Button(
         onClick = onClick,
         modifier = modifier
-            .fillMaxWidth(0.6f)
-            .height(48.dp)
-            .background(
-                brush = Brush.horizontalGradient(
-                    colors = listOf(Color(0xFF98FB98), Color(0xFF62BEC3))
-                ),
-                shape = RoundedCornerShape(24.dp)
-            ),
+            .width(200.dp)
+            .height(50.dp),
+        shape = RoundedCornerShape(25.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Transparent
         ),
+        contentPadding = PaddingValues(),
     ) {
-        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier
+                .background(
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(Color(0xFF98FB98), Color(0xFF62BEC3))
+                    ),
+                    shape = RoundedCornerShape(25.dp)
+                )
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
             Text(
-                text = stringResource(R.string.pontos_de_apoio),
+                text = nome,
                 color = Color.Black,
                 fontSize = 18.sp,
+                fontFamily = InterFont,
+                fontWeight = Bold,
                 letterSpacing = 0.3.sp
             )
         }
@@ -161,10 +219,10 @@ private fun SupportPointsButton(onClick: () -> Unit, modifier: Modifier = Modifi
 }
 
 @Composable
-private fun DialogBackButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun DialogBackButton(onClick: () -> Unit) {
     Button(
         onClick = onClick,
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth(0.5f)
             .height(48.dp)
             .background(
@@ -173,46 +231,19 @@ private fun DialogBackButton(onClick: () -> Unit, modifier: Modifier = Modifier)
                 ),
                 shape = RoundedCornerShape(24.dp)
             ),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Transparent
-        ),
+        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
     ) {
-        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-            Text(
-                text = stringResource(R.string.voltar),
-                color = Color.Black,
-                fontSize = 18.sp,
-                letterSpacing = 0.3.sp
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, widthDp = 320)
-@Composable
-fun SupportPointsSectionPreview() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        SupportPointsSection(
-            horarioFuncionamento = "Segunda a Sexta, das 08:00 às 18:00.",
-            nomeResponsavel = "Dr. Carlos Andrade",
-            telefoneResponsavel = "(11) 91234-5678"
+        Text(
+            text = stringResource(R.string.voltar),
+            color = Color.Black,
+            fontSize = 18.sp,
+            letterSpacing = 0.3.sp
         )
     }
 }
 
-@Preview(showBackground = true, widthDp = 320)
+@Preview(showBackground = true)
 @Composable
-fun SupportPointsDialogPreview() {
-    SupportPointsDialog(
-        onDismissRequest = {},
-        horarioFuncionamento = "Segunda a Sexta, das 08:00 às 18:00.",
-        nomeResponsavel = "Dr. Carlos Andrade",
-        telefoneResponsavel = "(11) 91234-5678"
-    )
+fun SupportPointsSectionPreview() {
+    SupportPointsSection()
 }

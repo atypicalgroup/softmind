@@ -2,9 +2,8 @@ package br.com.atypical.Softmind.Report.controller;
 
 import br.com.atypical.Softmind.Report.dto.AdminReportDTO;
 import br.com.atypical.Softmind.Report.service.ReportService;
-import br.com.atypical.Softmind.security.entities.User;
+import br.com.atypical.Softmind.Security.entities.User;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/reports")
@@ -52,5 +50,16 @@ public class AdminReportController {
                 .header("Content-Disposition", "attachment; filename=relatorio-semanal.pdf")
                 .body(pdfBytes);
     }
+    @Operation(
+            summary = "Resumo Geral de bem-estar",
+            description = "Retorna o relatório geral da empresa do admin autenticado",
+            tags = "Administração"
+    )
+    @GetMapping("/admin")
+    public ResponseEntity<AdminReportDTO> getGlobalReport(@AuthenticationPrincipal User user) {
+        var report = reportService.getGlobalAdminReport(user);
+        return ResponseEntity.ok(report);
+    }
+
 }
 
