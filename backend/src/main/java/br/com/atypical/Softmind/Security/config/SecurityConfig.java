@@ -77,17 +77,16 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // ✅ Permite chamadas do seu domínio HTTPS na Hostinger
         config.setAllowedOrigins(List.of(
                 "https://papayawhip-shrew-563776.hostingersite.com",
-                "https://softmind.atypicalgroup.com.br" // se futuramente usar domínio próprio
+                "https://softmind.atypicalgroup.com.br",
+                "http://91.108.126.24"// se futuramente usar domínio próprio
         ));
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 
-        // ⚠️ (Importante) Permitir preflight OPTIONS de qualquer rota
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
