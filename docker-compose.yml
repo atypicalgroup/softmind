@@ -1,0 +1,30 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: softmind_backend
+    restart: always
+    env_file:
+      - .env
+    environment:
+      SPRING_DATA_MONGODB_URI: ${MONGO_URI}
+      SPRING_DATA_MONGODB_DATABASE: ${MONGO_DATABASE}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_PORT: ${MAIL_PORT}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      MAIL_PROTOCOL: ${MAIL_PROTOCOL}
+      MAIL_PROPERTIES_MAIL_SMTP_AUTH: ${MAIL_PROPERTIES_MAIL_SMTP_AUTH}
+      MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: ${MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE}
+      FROM_EMAIL: ${FROM_EMAIL}
+    ports:
+      - "${APP_PORT}:8080"
+    networks:
+      - softmind-net
+
+networks:
+  softmind-net:
+    driver: bridge
