@@ -4,10 +4,10 @@ spring:
   config:
     import: optional:file:.env[.properties]
   mail:
-    host: ${MAIL_HOST}
-    port: ${MAIL_PORT}
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
+    host: smtp.hostinger.com
+    port: 587
+    username: suporte@atypicalgroup.com.br
+    password: Suporte@typical2025
     properties:
       mail:
         smtp:
@@ -17,17 +17,17 @@ spring:
 
   data:
     mongodb:
-      uri: ${MONGO_URI}
+      uri: mongodb+srv://dba-softmind:DbaSoftmind%402025@project-fiap.2uqftjf.mongodb.net/?retryWrites=true&w=majority&appName=Project-Fiap
       auto-index-creation: true
-      database: ${MONGO_DATABASE}
+      database: softmind
 
 security:
   jwt:
-    secret: ${JWT_SECRET}
-    expiration: ${JWT_EXPIRATION}
+    secret: softmind-super-secret-key-2025-strong!
+    expiration: 86400000
 
 tmdb:
-  token: ${TMDB_TOKEN}
+  token: eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhOWYyY2E4YjZlZTBhNWUzOTI4YjhhZDM5ODc3ZGVjMCIsIm5iZiI6MTc1ODA2Mjg5Ny45MzYsInN1YiI6IjY4YzllOTMxZDA2ZGM0MjE2MGRlODBmZiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.EFBQ5RJCX_AaDACxgMzWNgmzFf3Syc0DNvWNhOiMlB0
 
 server:
   port: 8000
