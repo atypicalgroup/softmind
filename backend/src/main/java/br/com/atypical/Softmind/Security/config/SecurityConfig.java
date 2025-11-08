@@ -32,48 +32,62 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // <-- habilita CORS
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // 🔓 Rotas públicas (sem autenticação)
                         .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
-                                "/swagger-ui.html"
+                                "/swagger-ui.html",
+                                "/auth/**",
+                                "/api/physical-activities/**",
+                                "/api/movies/**"
                         ).permitAll()
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/api/physical-activities/**").permitAll()
-                        .requestMatchers("/api/movies/**").permitAll()
+                        // 🔒 Rotas restritas
                         .requestMatchers("/reports/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
+                // 🔑 Filtro JWT
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
+    // 🔐 Encoder para senhas
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    // ⚙️ Manager padrão do Spring
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
+    // 🌍 Requisições REST internas
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
     }
 
+    // 🌐 Configuração CORS
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("https://papayawhip-shrew-563776.hostingersite.com")); // frontend Angular
+
+        // ✅ Permite chamadas do seu domínio HTTPS na Hostinger
+        config.setAllowedOrigins(List.of(
+                "https://papayawhip-shrew-563776.hostingersite.com",
+                "https://softmind.atypicalgroup.com.br" // se futuramente usar domínio próprio
+        ));
+
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 
+        // ⚠️ (Importante) Permitir preflight OPTIONS de qualquer rota
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
