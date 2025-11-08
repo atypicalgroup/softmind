@@ -93,6 +93,5 @@ jobs:
           az containerapp update \
             --name ${{ vars.CONTAINERAPP_NAME }} \
             --resource-group ${{ vars.RESOURCE_GROUP }} \
-            --image ${{ needs.build.outputs.image_name }} \
-            --set-env-vars TMDB_TOKEN=${{ secrets.TMDB_TOKEN }}
+            --image ${{ needs.build.outputs.image_name }}
 
