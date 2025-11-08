@@ -50,7 +50,7 @@ export interface MoodSummary {
 
 @Injectable({ providedIn: 'root' })
 export class ReportService {
-  private readonly API_URL = 'http://localhost:8000/reports/admin'; // 🚀 backend real
+  private readonly API_URL = 'https://softmindapp.salmonpond-fe404e5c.brazilsouth.azurecontainerapps.io/reports/admin'; // 🚀 backend real
 
   constructor(private http: HttpClient) {}
 

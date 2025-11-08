@@ -21,7 +21,7 @@ export interface SurveyModel {
   providedIn: 'root'
 })
 export class SurveyService {
-  private readonly API_URL = 'http://localhost:8000/surveys';
+  private readonly API_URL = 'https://softmindapp.salmonpond-fe404e5c.brazilsouth.azurecontainerapps.io/surveys';
 
   constructor(
     private http: HttpClient,

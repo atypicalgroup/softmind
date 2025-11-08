@@ -13,7 +13,7 @@ export interface SupportPoint {
   providedIn: 'root'
 })
 export class SupportService {
-  private readonly API_URL = 'http://localhost:8000/supports'; // ajuste conforme backend
+  private readonly API_URL = 'https://softmindapp.salmonpond-fe404e5c.brazilsouth.azurecontainerapps.io/supports'; // ajuste conforme backend
 
   constructor(private http: HttpClient) {}
 

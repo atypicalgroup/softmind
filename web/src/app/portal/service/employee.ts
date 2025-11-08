@@ -15,7 +15,7 @@ export interface EmployeeModel {
   providedIn: 'root'
 })
 export class EmployeeService {
-  private readonly API_URL = 'http://localhost:8000/employees'; // ajuste conforme seu backend
+  private readonly API_URL = 'https://softmindapp.salmonpond-fe404e5c.brazilsouth.azurecontainerapps.io/employees'; // ajuste conforme seu backend
 
   constructor(private http: HttpClient) {}
 

@@ -23,7 +23,7 @@ interface PasswordResetResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8000/auth'; // ✅ ajuste em produção
+  private apiUrl = 'https://softmindapp.salmonpond-fe404e5c.brazilsouth.azurecontainerapps.io/auth'; // ✅ ajuste em produção
 
   private userSubject = new BehaviorSubject<User | null>(null);
   user$ = this.userSubject.asObservable();
