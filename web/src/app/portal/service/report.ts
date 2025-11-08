@@ -50,7 +50,7 @@ export interface MoodSummary {
 
 @Injectable({ providedIn: 'root' })
 export class ReportService {
-  private readonly API_URL = 'http://localhost:8000/reports/admin'; // 🚀 backend real
+  private readonly API_URL = 'http://91.108.126.24:8080/reports/admin'; // 🚀 backend real
 
   constructor(private http: HttpClient) {}
 

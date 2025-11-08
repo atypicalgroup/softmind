@@ -4,8 +4,22 @@ import { AuthService } from '../auth/auth-service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
-  const token = authService.getToken(); // ajuste conforme seu AuthService
+  const token = authService.getToken();
 
+  const publicRoutes = [
+    '/auth/login',
+    '/auth/register',
+    '/auth/forgot-password',
+    '/auth/verify-token',
+    '/auth/change-password'
+  ];
+
+  // Se a URL contém uma rota pública → não adiciona token
+  if (publicRoutes.some(route => req.url.includes(route))) {
+    return next(req);
+  }
+
+  // Se há token → clona e adiciona o header Authorization
   if (token) {
     const cloned = req.clone({
       setHeaders: {
@@ -14,5 +28,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     });
     return next(cloned);
   }
+
+  // Sem token → segue normal
   return next(req);
 };

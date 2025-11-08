@@ -13,7 +13,7 @@ export interface SupportPoint {
   providedIn: 'root'
 })
 export class SupportService {
-  private readonly API_URL = 'http://localhost:8000/supports'; // ajuste conforme backend
+  private readonly API_URL = 'http://91.108.126.24:8080/supports'; // ajuste conforme backend
 
   constructor(private http: HttpClient) {}
 

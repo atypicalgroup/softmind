@@ -23,7 +23,7 @@ interface PasswordResetResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8000/auth'; // ✅ ajuste em produção
+  private apiUrl = 'http://91.108.126.24:8080/auth';
 
   private userSubject = new BehaviorSubject<User | null>(null);
   user$ = this.userSubject.asObservable();

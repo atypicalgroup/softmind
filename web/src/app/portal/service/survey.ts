@@ -21,7 +21,7 @@ export interface SurveyModel {
   providedIn: 'root'
 })
 export class SurveyService {
-  private readonly API_URL = 'http://localhost:8000/surveys';
+  private readonly API_URL = 'http://91.108.126.24:8080/surveys';
 
   constructor(
     private http: HttpClient,
